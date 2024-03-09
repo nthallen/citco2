@@ -1,6 +1,8 @@
 freemem.tmc
 TMbase.genui
 TMbase.tbl
+savelog.cmd
+doreport
 IFScmd.cc
 IFScmd.dat
 IFScmd.h
@@ -26,6 +28,9 @@ IFSengextoui.o
 freemem.tmc
 TMbase.genui
 TMbase.tbl
+savelog.cmd
+doreport
+account.pm
 Makefile
 IFScltnc.exe
 IFScol.exe
