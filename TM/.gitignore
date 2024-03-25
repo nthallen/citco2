@@ -35,11 +35,7 @@ IFSengextoui.o
 IFStblnc.tmc.dep
 *.err
 Makefile
-IFScltnc.exe
-IFScol.exe
-IFSdispnc.exe
-IFSengext.exe
-IFSsrvr.exe
+*.exe
 freemem.tmc
 TMbase.genui
 TMbase.tbl
