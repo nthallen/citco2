@@ -1,0 +1,12 @@
+Input "PTB330.tbl";
+Input "TMbase.tbl";
+
+MainStack {
+  HBox { +-; IFS; -+ };
+  HBox { [PTB_HK]; |+; [TMbaseB] };
+}
+
+{
+  HBox { |+; [MainStack]; |+ };
+  -;
+}

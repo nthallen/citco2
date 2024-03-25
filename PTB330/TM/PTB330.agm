@@ -1,4 +1,4 @@
-ModuleDef PTB330 [ Panel= GrpP=PTB PrpT=PTB GrpS=PTB PltP=P PltT=T PltS=stale ] {
+ModuleDef PTB330 [ Panel= GrpP=PTB GrpT=PTB GrpS=PTB PltP=P PltT=T PltS=stale ] {
   Vaisala PTB330 Baracap Digital Barometer
 }
 
@@ -7,6 +7,14 @@ mode (default) {
   colbase = PTB330_col.tmc
   genuibase = PTB330.genui:PTB330.genui.in
   - : PTB330.tbl:PTB330.tbl.in
+  DISTRIB = @MODDIR@/../PTB330
+  CPPFLAGS = -I @MODDIR@/..
   IGNORE = PTB330.genui PTB330.tbl
   OBJ = PTB330.genui PTB330.tbl
+  %%
+.PHONY : clean-PTB330 @MODDIR@/../PTB330
+	$(MAKE) --directory=@MODDIR@/..
+clean-dist : clean-PTB330
+clean-PTB330 :
+	$(MAKE) --directory=@MODDIR@/.. clean
 }

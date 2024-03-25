@@ -1,4 +1,4 @@
  1 PTB_P          @Panel@@GrpP@ @PltP@
- 1 PTB_T_t PTB_T  @Panel@@GrpT@ @PltT@
+ 1 PTB_T          @Panel@@GrpT@ @PltT@
  1 PTB_dev_stale  @Panel@@GrpS@ @PltS@
  1 PTB_drv_stale  @Panel@@GrpS@ @PltS@
