@@ -4,7 +4,7 @@
 
 <opts> "p:"
 <sort>
-        -p <port> Specify RS232 port
+        -p <port> Specify RS232 port (default: /dev/ttyS1)
 
 <switch>
   case 'p':

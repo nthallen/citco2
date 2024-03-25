@@ -1,0 +1,12 @@
+ModuleDef PTB330 [ Panel= GrpP=PTB PrpT=PTB GrpS=PTB PltP=P PltT=T PltS=stale ] {
+  Vaisala PTB330 Baracap Digital Barometer
+}
+
+mode (default) {
+  tmcbase = PTB330.tmc
+  colbase = PTB330_col.tmc
+  genuibase = PTB330.genui:PTB330.genui.in
+  - : PTB330.tbl:PTB330.tbl.in
+  IGNORE = PTB330.genui PTB330.tbl
+  OBJ = PTB330.genui PTB330.tbl
+}

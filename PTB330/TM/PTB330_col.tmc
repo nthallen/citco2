@@ -1,0 +1,5 @@
+%{
+  /* PTB330_col.tmc */
+  #include "PTB330.h"
+  PTB330_t PTB330;
+%}

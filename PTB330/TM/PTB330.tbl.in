@@ -1,0 +1,12 @@
+PTB_stale {
+  stale:;
+  "  dev:" (PTB_dev_stale,3);
+  "  drv:" (PTB_drv_stale,3);
+}
+
+PTB_HK {
+  HBox { +-; PTB330; -+ };
+  P: (PTB_P,6) hPa;
+  T: (PTB_T,5) C;
+  [PTB_stale];
+}
