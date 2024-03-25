@@ -11,4 +11,5 @@ Module Email dest=/home/citco2/bin/Email
 Module PTB330
 
 IFSdisp : $extbase IFS.tbl
+IFSalgo : IFS.tma
 doit : IFS.doit

@@ -10,6 +10,11 @@ IFSdispnc.cc
 IFSdispncoui.cc
 IFSdispnc.o
 IFSdispncoui.o
+IFSalgoa.tmc
+IFSalgo.cc
+IFSalgooui.cc
+IFSalgo.o
+IFSalgooui.o
 doit.dep
 IFScmd.cc
 IFScmd.dat
@@ -45,6 +50,7 @@ account.pm
 PTB330.genui
 PTB330.tbl
 IFSdispnc
+IFSalgo
 doit
 IFScltnc
 IFSsrvr

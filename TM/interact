@@ -6,4 +6,4 @@
   Launch    tm_gen  IFScol -v
   Launch    cmd     IFSsrvr -H srvr: -S: -v
   Launch    -       PTB330
-# Launch    -TMC-   IFSalgo
+  Launch    -TMC-   IFSalgo
