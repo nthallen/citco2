@@ -2,7 +2,7 @@
 TGTDIR = /home/citco2
 DISTRIB = interact services
 SCRIPT = VERSION Experiment.config
-IGNORE = Makefile *.exe
+IGNORE = Makefile '*.exe'
 
 tmcbase = base.tmc
 Module TMbase mode=ignore
