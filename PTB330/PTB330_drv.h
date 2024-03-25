@@ -15,6 +15,7 @@ class PTB330_dev : public Serial {
   protected:
     bool tm_sync();
     bool protocol_input();
+    bool skip_whitespace();
     TM_data_sndr *TM;
 };
 

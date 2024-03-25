@@ -1,5 +1,5 @@
 /* PTB330.tmc */
-TM typedef float PTB_P_t { text "%6.2f"; }
+TM typedef float PTB_P_t { text "%7.2f"; }
 TM typedef float PTB_T_t { text "%5.1f"; }
 TM typedef uint8_t PTB_stale_t { text "%3u"; }
 

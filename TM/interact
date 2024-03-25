@@ -3,7 +3,7 @@
 		      msg "Running script interact"
   Launch    tm_bfr  bfr -H bfr: -S:
   Launch    -TMC-   lgr -N $(mlf_find LOG) -n lgr
-  Launch    tm_gen  IFScol
+  Launch    tm_gen  IFScol -v
   Launch    cmd     IFSsrvr -H srvr: -S: -v
   Launch    -       PTB330
 # Launch    -TMC-   IFSalgo
