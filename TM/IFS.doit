@@ -1,0 +1,5 @@
+display IFSdisp -n disp
+client IFSclt
+memo
+batchfile interact
+

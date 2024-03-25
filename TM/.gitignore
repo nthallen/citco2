@@ -10,6 +10,7 @@ IFSdispnc.cc
 IFSdispncoui.cc
 IFSdispnc.o
 IFSdispncoui.o
+doit.dep
 IFScmd.cc
 IFScmd.dat
 IFScmd.h
@@ -37,6 +38,7 @@ Makefile
 IFScltnc.exe
 IFScol.exe
 IFSdispnc.exe
+IFSengext.exe
 IFSsrvr.exe
 freemem.tmc
 TMbase.genui
@@ -47,6 +49,7 @@ account.pm
 PTB330.genui
 PTB330.tbl
 IFSdispnc
+doit
 IFScltnc
 IFSsrvr
 IFScol
