@@ -37,6 +37,7 @@ bool PTB330_dev::protocol_input() {
       not_str("\r\n")) {
     if (cp >= nc) {
       report_err("%s: unfinished input\n", iname);
+      return false;
     }
     consume(nc);
   } else {
