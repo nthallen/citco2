@@ -5,6 +5,7 @@ SCRIPT = VERSION Experiment.config
 IGNORE = Makefile '*.exe'
 
 tmcbase = base.tmc
+genuibase = IFS.genui
 Module TMbase mode=ignore
 Module savelog
 Module Email dest=/home/citco2/bin/Email

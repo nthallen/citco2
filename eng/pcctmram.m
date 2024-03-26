@@ -1,5 +1,5 @@
-function pengtmram(varargin);
-% pengtmram( [...] );
+function pcctmram(varargin);
+% pcctmram( [...] );
 % T Mbase RAM
 h = timeplot({'memused'}, ...
       'T Mbase RAM', ...

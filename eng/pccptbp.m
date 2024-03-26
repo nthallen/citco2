@@ -1,5 +1,5 @@
-function pengptbp(varargin);
-% pengptbp( [...] );
+function pccptbp(varargin);
+% pccptbp( [...] );
 % PTB P
 h = timeplot({'PTB_P'}, ...
       'PTB P', ...
