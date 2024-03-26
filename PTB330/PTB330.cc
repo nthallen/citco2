@@ -29,7 +29,8 @@ bool PTB330_dev::skip_whitespace() {
 
 bool PTB330_dev::protocol_input() {
   float P, TP;
-  if (not_float(P) ||
+  if (skip_whitespace() ||
+      not_float(P) ||
       not_str("\t") ||
       skip_whitespace() ||
       not_float(TP) ||
