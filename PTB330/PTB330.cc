@@ -52,6 +52,10 @@ bool PTB330_dev::protocol_input() {
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
   
+  // Initialize telemetry data with non-numbers to avoid zero reports
+  PTB330.P = 99999.0;
+  PTB330.TP1 = 999.0;
+  
   { Loop ELoop;
 
     AppID.report_startup();

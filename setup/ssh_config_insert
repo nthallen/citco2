@@ -1,0 +1,15 @@
+### Begin citco2 ssh_config_insert ###
+# Match all is necessary to close any preceding host blocks
+Match all
+include /etc/monarch/citco2/ssh_config
+
+# Users have their own accounts on the "flight" computer.
+# The general configuration defined in the file above therefore
+# does not specify a filename. If your username on your local
+# machine differs from your username on the flight computer,
+# you will need to specify it outside this block using the
+# following syntax or equivalent:
+#   hostname moacc-phocus
+#   user my_username
+
+### End citco2 ssh_config_insert ###
