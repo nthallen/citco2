@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
   
   // Initialize telemetry data with non-numbers to avoid zero reports
   PTB330.P = 99999.0;
-  PTB330.TP1 = 999.0;
+  PTB330.TP1 = 9999.0;
   
   { Loop ELoop;
 
