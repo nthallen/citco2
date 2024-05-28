@@ -1,9 +1,20 @@
 Input "PTB330.tbl";
+Input "WTX530.tbl";
 Input "TMbase.tbl";
 
 MainStack {
   HBox { +-; IFS; -+ };
-  HBox { [PTB_HK]; |+; [TMbaseB] };
+  HBox {
+    [WTX]; |+;
+    {
+      [WTX_Wind];
+      [WTX_Precip];
+    }; |+;
+    {
+      [WTX_HK];
+      [PTB_HK]
+    }; |+; [TMbaseB]
+  };
 }
 
 {

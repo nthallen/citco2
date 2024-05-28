@@ -1,0 +1,17 @@
+<package> WTX530
+<include> "WTX530_drv.h"
+<include> msg oui
+
+<opts> "p:"
+<sort>
+        -p <port> Specify RS485/Modbus RTU port (default: /dev/ttyS1)
+
+<switch>
+  case 'p':
+    WTX530_port = optarg; break;
+
+<package> appid_default
+<include> "dasio/appid.h"
+<defs>
+  DAS_IO::AppID_t DAS_IO::AppID("WTX530",
+    "Vaisala WTX530 Weather Transmitter Driver", "V1.0");

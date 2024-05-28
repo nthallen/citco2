@@ -1,0 +1,32 @@
+WTX_stale {
+  stale: HBox { (WTX_drv_stale,3); "/"; (WTX_dev_stale,3) }
+}
+
+WTX_HK {
+  HBox { +-; "WTX530 HK"; -+ };
+  WindQ: (WTX_WindQ,3);
+  Fresh: (WTX_Fresh,2);
+  [WTX_stale];
+}
+
+WTX_Wind {
+  HBox { +-; "Wind"; -+ };
+  Dir: (WTX_WindDir,5) deg;
+  Spd: (WTX_WindSpd,5) "m/s";
+}
+
+WTX_Precip {
+  HBox { +-; "Precip"; -+ };
+  Rate:  (WTX_PrecipInt,6) "mm/h";
+  Accum: (WTX_PrecipAcc,6) "mm";
+  Type:  (WTX_PrecipType,6);
+}
+
+WTX {
+  HBox { +-; WTX530; -+ };
+  T:      (WTX_AirT,5)    C;
+  DewPt:  (WTX_DewPt,5)   C;
+  RH:     (WTX_RH,5)      "%";
+  P:      (WTX_AbsAirP,6) hPa;
+  Solar:  (WTX_SolRad,5)  "W/m2";
+}

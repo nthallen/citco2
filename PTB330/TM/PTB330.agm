@@ -14,6 +14,7 @@ mode (default) {
   %%
 .PHONY : clean-PTB330 @MODDIR@/../PTB330
 all-dist : @MODDIR@/../PTB330
+@MODDIR@/../PTB330 :
 	$(MAKE) --directory=@MODDIR@/..
 clean-dist : clean-PTB330
 clean-PTB330 :

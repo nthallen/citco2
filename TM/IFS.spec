@@ -10,6 +10,7 @@ Module TMbase mode=ignore
 Module savelog
 Module Email dest=/home/citco2/bin/Email
 Module PTB330
+Module WTX530
 
 IFSdisp : $extbase IFS.tbl
 IFSalgo : IFS.tma

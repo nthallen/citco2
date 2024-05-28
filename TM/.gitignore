@@ -5,6 +5,8 @@ savelog.cmd
 doreport
 PTB330.genui
 PTB330.tbl
+WTX530.genui
+WTX530.tbl
 IFStblnc.tmc
 IFSdispnc.cc
 IFSdispncoui.cc
@@ -49,6 +51,8 @@ doreport
 account.pm
 PTB330.genui
 PTB330.tbl
+WTX530.genui
+WTX530.tbl
 IFSdispnc
 IFSalgo
 doit

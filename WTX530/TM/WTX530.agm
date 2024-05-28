@@ -1,0 +1,22 @@
+ModuleDef WTX530 [ Panel= ] {
+  Vaisala WTX530 Vaisala Weather Transmitter
+}
+
+mode (default) {
+  tmcbase = WTX530.tmc
+  colbase = WTX530_col.tmc
+  genuibase = WTX530.genui:WTX530.genui.in
+  - : WTX530.tbl:WTX530.tbl.in
+  DISTRIB = @MODDIR@/../WTX530
+  CPPFLAGS = -I @MODDIR@/..
+  IGNORE = WTX530.genui WTX530.tbl
+  OBJ = WTX530.genui WTX530.tbl
+  %%
+.PHONY : clean-WTX530 @MODDIR@/../WTX530
+all-dist : @MODDIR@/../WTX530
+@MODDIR@/../WTX530 :
+	$(MAKE) --directory=@MODDIR@/..
+clean-dist : clean-WTX530
+clean-WTX530 :
+	$(MAKE) --directory=@MODDIR@/.. clean
+}

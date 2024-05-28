@@ -1,0 +1,62 @@
+/* WTX530.tmc */
+%{
+  const char *WTX_PTtxt(int16_t val) {
+    switch (val) {
+      case 0:  return "  none";
+      case 40: return "precip";
+      case 90: return "  hail";
+      default: return "******";
+    }
+  }
+%}
+
+TM typedef int16_t WTX_RH_t { text "%5.1lf"; }
+TM typedef int16_t WTX_WindDir_t { text "%5.1lf"; }
+TM typedef int16_t WTX_PrecipType_t { text "%6d" WTX_PTtxt(); }
+TM typedef uint16_t WTX_WindQ_t { text "%3d"; }
+TM typedef int16_t WTX_SolRad_t { text "%5.1lf"; }
+TM typedef int16_t WTX_AirT_t { text "%5.1lf"; }
+TM typedef int16_t WTX_DewPt_t { text "%5.1lf"; }
+TM typedef int16_t WTX_WindSpd_t { text "%5.1lf"; }
+TM typedef uint16_t WTX_Precip_t { text "%6.2lf"; }
+TM typedef int16_t WTX_AbsAirP_t { text "%5d"; }
+TM typedef uint8_t WTX_Fresh_t { text "%02X"; }
+TM typedef uint8_t WTX_stale_t { text "%3u"; }
+
+TM 1 Hz WTX_RH_t WTX_RH;
+TM 1 Hz WTX_WindDir_t WTX_WindDir;
+TM 1 Hz WTX_PrecipType_t WTX_PrecipType;
+TM 1 Hz WTX_WindQ_t WTX_WindQ;
+TM 1 Hz WTX_SolRad_t WTX_SolRad;
+TM 1 Hz WTX_AirT_t WTX_AirT;
+TM 1 Hz WTX_DewPt_t WTX_DewPt;
+TM 1 Hz WTX_WindSpd_t WTX_WindSpd;
+TM 1 Hz WTX_Precip_t WTX_PrecipAcc;
+TM 1 Hz WTX_Precip_t WTX_PrecipInt;
+TM 1 Hz WTX_AbsAirP_t WTX_AbsAirP;
+TM 1 Hz WTX_Fresh_t WTX_Fresh;
+TM 1 Hz WTX_stale_t WTX_dev_stale;
+TM 1 Hz WTX_stale_t WTX_drv_stale;
+
+TM "Receive" WTX530 1;
+
+group WTX (WTX_RH, WTX_WindDir, WTX_PrecipType, WTX_WindQ,
+            WTX_SolRad, WTX_AirT, WTX_DewPt, WTX_WindSpd,
+            WTX_PrecipAcc, WTX_PrecipInt, WTX_AbsAirP,
+            WTX_Fresh, WTX_dev_stale, WTX_drv_stale) {
+  WTX_RH = WTX530.RH;
+  WTX_WindDir = WTX530.WindDir;
+  WTX_PrecipType = WTX530.PrecipType;
+  WTX_WindQ = WTX530.WindQ;
+  WTX_SolRad = WTX530.SolRad;
+  WTX_AirT = WTX530.AirT;
+  WTX_DewPt = WTX530.DewPt;
+  WTX_WindSpd = WTX530.WindSpd;
+  WTX_PrecipAcc = WTX530.PrecipAcc;
+  WTX_PrecipInt = WTX530.PrecipInt;
+  WTX_AbsAirP = WTX530.AbsAirP;
+  WTX_Fresh = WTX530.Fresh;
+  WTX_dev_stale = WTX530.stale;
+  WTX_drv_stale = WTX530_obj->Stale(255);
+  WTX530_obj->synch();
+}

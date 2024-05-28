@@ -1,0 +1,24 @@
+ 1 WTX_AirT @Panel@WTX Temp
+ 1 WTX_DewPt @Panel@WTX Temp 
+ 1 WTX_RH @Panel@WTX RH
+ 1 WTX_AbsAirP @Panel@WTX P
+ 1 WTX_SolRad @Panel@WTX SolRad
+ 
+ 1 WTX_WindDir @Panel@WTX_Wind Dir
+ 1 WTX_WindSpd @Panel@WTX_Wind Speed
+ 1 WTX_WindQ @Panel@WTX_Wind Quality
+ 
+ 1 WTX_PrecipType @Panel@WTX_Precip Type
+ 1 WTX_PrecipAcc @Panel@WTX_Precip Accum
+ 1 WTX_PrecipInt @Panel@WTX_Precip Intensity
+
+ 1 RH:WTX_Fresh:0 @Panel@WTX_Status Fresh
+ 1 WD:WTX_Fresh:1 @Panel@WTX_Status Fresh
+ 1 PTWQSR:WTX_Fresh:2 @Panel@WTX_Status Fresh
+ 1 AT:WTX_Fresh:3 @Panel@WTX_Status Fresh
+ 1 DP:WTX_Fresh:4 @Panel@WTX_Status Fresh
+ 1 WSPC:WTX_Fresh:5 @Panel@WTX_Status Fresh
+ 1 AP:WTX_Fresh:6 @Panel@WTX_Status Fresh
+
+ 1 WTX_dev_stale @Panel@WTX_Status Stale Dev
+ 1 WTX_drv_stale @Panel@WTX_Status Stale Drv

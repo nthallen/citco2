@@ -1,0 +1,5 @@
+%{
+  /* WTX530_col.tmc */
+  #include "WTX530.h"
+  WTX530_t WTX530;
+%}
