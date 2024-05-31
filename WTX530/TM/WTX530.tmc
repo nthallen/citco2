@@ -11,15 +11,15 @@
 %}
 
 TM typedef int16_t WTX_RH_t { text "%5.1lf"; }
-TM typedef int16_t WTX_WindDir_t { text "%5.1lf"; }
+TM typedef int16_t WTX_WindDir_t { text "%6.1lf"; }
 TM typedef int16_t WTX_PrecipType_t { text "%6d" WTX_PTtxt(); }
 TM typedef uint16_t WTX_WindQ_t { text "%3d"; }
 TM typedef int16_t WTX_SolRad_t { text "%5.1lf"; }
 TM typedef int16_t WTX_AirT_t { text "%5.1lf"; }
 TM typedef int16_t WTX_DewPt_t { text "%5.1lf"; }
-TM typedef int16_t WTX_WindSpd_t { text "%5.1lf"; }
+TM typedef int16_t WTX_WindSpd_t { text "%6.1lf"; }
 TM typedef uint16_t WTX_Precip_t { text "%6.2lf"; }
-TM typedef int16_t WTX_AbsAirP_t { text "%5d"; }
+TM typedef int16_t WTX_AbsAirP_t { text "%6.1lf"; }
 TM typedef uint8_t WTX_Fresh_t { text "%02X"; }
 TM typedef uint8_t WTX_stale_t { text "%3u"; }
 
@@ -54,7 +54,7 @@ group WTX (WTX_RH, WTX_WindDir, WTX_PrecipType, WTX_WindQ,
   WTX_WindSpd = WTX530.WindSpd;
   WTX_PrecipAcc = WTX530.PrecipAcc;
   WTX_PrecipInt = WTX530.PrecipInt;
-  WTX_AbsAirP = WTX530.AbsAirP;
+  WTX_AbsAirP = WTX530.AbsAirP >= 3000 ? WTX530.AbsAirP : WTX_AbsAirP;
   WTX_Fresh = WTX530.Fresh;
   WTX_dev_stale = WTX530.stale;
   WTX_drv_stale = WTX530_obj->Stale(255);
