@@ -68,8 +68,9 @@ int WTX530_ID = 1;
 int main(int argc, char **argv) {
   oui_init_options(argc, argv);
   Loop ELoop;
-  Modbus::RTU *MB = new Modbus::RTU("RTU", 80, WTX530_port);
-  MB->setup(19200, 8, 'e', 1, 5, 1);
+  Modbus::RTU *MB = new Modbus::RTU("RTU", 250, WTX530_port);
+  // MB->set_qerr_threshold(-1); // For testing
+  MB->setup(19200, 8, 'n', 1, 5, 1);
   MB->flush_input();
 
   MB->add_device(new Modbus::WTX530_dev(
