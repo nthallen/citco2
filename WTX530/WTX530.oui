@@ -1,6 +1,7 @@
 <package> WTX530
 <include> "WTX530_drv.h"
 <include> msg oui
+<include> modbus_rtu
 
 <opts> "p:"
 <sort>
