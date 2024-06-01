@@ -18,7 +18,7 @@ PTB330_dev::PTB330_dev(const char *port, TM_data_sndr *TM)
 
 bool PTB330_dev::tm_sync() {
   ++PTB330.stale;
-  return iwrite("SEND\r");
+  return iwrite("SEND 0\r");
 }
 
 bool PTB330_dev::skip_whitespace() {
