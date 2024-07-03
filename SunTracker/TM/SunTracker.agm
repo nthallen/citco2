@@ -1,0 +1,23 @@
+ModuleDef SunTracker {
+  SunTracker HTTP/UDP driver
+  The TM and command definitions are common between the various
+  sun tracker drivers, so ST.tmc and ST.cmd remain in the main
+  TM directory. However, ST.cmd is suppressed in the Coelostat
+  driver.
+}
+
+mode (present,default) {
+  cmdbase = ST.cmd
+  DISTRIB = @MODDIR@/../SunTracker
+  %%
+@MODDIR@/../SunTracker :
+	cd @MODDIR@/.. && make SunTracker
+}
+
+mode (absent) {}
+
+%%
+.PHONY : clean-SunTracker
+clean-dist : clean-SunTracker
+clean-SunTracker :
+	cd @MODDIR@/.. && make clean

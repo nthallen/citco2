@@ -1,0 +1,20 @@
+<package> ST
+<include> msg oui
+<include> "SunTracker.h"
+<follow> msg
+
+<opts> "2"
+<sort>
+	-2 Use Bruker alternate protocol
+<switch>
+  case '2':
+    ST_Revision = 2;
+    break;
+<unsort>
+Host_Session function ST: Sun Tracker IP
+
+<package> appid_default
+<include> "dasio/appid.h"
+<defs>
+  DAS_IO::AppID_t DAS_IO::AppID("ST", "Sun Tracker", "V2.0");
+
