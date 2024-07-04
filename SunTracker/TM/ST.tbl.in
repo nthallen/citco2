@@ -1,0 +1,11 @@
+SunTracker {
+  HBox { +-; "Sun Tracker"; -+ };
+  modus:   (ST_modus,4);
+  tpg_azi: (ST_tpg_azi,6);
+  tpg_ele: (ST_tpg_ele,7);
+  Sol_ele: (Sol_ele,7);
+  t_int:   (ST_t_int,5);
+  flip:    (ST_flip,3);
+  Tdrift:  (ST_Tdrift,6);
+  Stale:   (ST_stale,3);
+}

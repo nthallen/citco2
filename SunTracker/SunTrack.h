@@ -19,23 +19,18 @@
 */
 
 typedef struct __attribute__((__packed__)) {
-  unsigned short ST_status; // Unused with HTML-based tracker
-  signed   short ST_Tdrift;
-  unsigned short ST_tpg_azi;
-  signed   short ST_tpg_ele;
-  unsigned short ST_t_int;
-  unsigned char  ST_flip;  // 0 => Left, 1 => Right, 2 => Unknown
-  unsigned char  ST_modus; // ST_MODE_* below
-  // unsigned short ST_tdg;
-  // unsigned short ST_min_int;
-  // unsigned short ST_max_int;
-  // unsigned char  ST_cdt;
+  // uint16_t ST_status; // Unused with HTML-based tracker
+  int16_t  ST_Tdrift;
+  uint16_t ST_tpg_azi;
+  int16_t  ST_tpg_ele;
+  uint16_t ST_t_int;
+  uint8_t  ST_flip;  // 0 => Left, 1 => Right, 2 => Unknown
+  uint8_t  ST_modus; // ST_MODE_* below
+  // uint16_t ST_tdg;
+  // uint16_t ST_min_int;
+  // uint16_t ST_max_int;
+  // uint8_t  ST_cdt;
 } ST_SSR_t;
-
-typedef struct __attribute__((__packed__)) {
-  signed   short ST_off_azi;
-  signed   short ST_off_ele;
-} ST_ROA_t;
 
 /* Modes:
  * TPL Track Position Local

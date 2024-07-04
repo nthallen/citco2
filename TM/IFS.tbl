@@ -1,3 +1,4 @@
+Input "ST.tbl";
 Input "PTB330.tbl";
 Input "WTX530.tbl";
 Input "TMbase.tbl";
@@ -13,7 +14,10 @@ MainStack {
     {
       [WTX_HK];
       [PTB_HK]
-    }; |+; [TMbaseB]
+    };
+  };
+  HBox {
+    [SunTracker]; |+; [TMbaseB]
   };
 }
 

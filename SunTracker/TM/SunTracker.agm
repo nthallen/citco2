@@ -1,4 +1,4 @@
-ModuleDef SunTracker {
+ModuleDef SunTracker [ Panel= ] {
   SunTracker HTTP/UDP driver
   The TM and command definitions are common between the various
   sun tracker drivers, so ST.tmc and ST.cmd remain in the main
@@ -7,11 +7,21 @@ ModuleDef SunTracker {
 }
 
 mode (present,default) {
+  tmcbase = ST.tmc
+  tmcbase = SZA.tmc
   cmdbase = ST.cmd
+  colbase = sza_calc.c
+  - : ST.tbl:ST.tbl.in
+  genuibase = ST.genui:ST.genui.in
   DISTRIB = @MODDIR@/../SunTracker
+  CPPFLAGS = -I @MODDIR@/.. -I @MODDIR@
+  IGNORE = ST.genui ST.tbl
+  OBJ = ST.genui ST.tbl
   %%
+.PHONY : @MODDIR@/../SunTracker
+all-dist : @MODDIR@/../SunTracker
 @MODDIR@/../SunTracker :
-	cd @MODDIR@/.. && make SunTracker
+	$(MAKE) --directory=@MODDIR@/..
 }
 
 mode (absent) {}
@@ -20,4 +30,4 @@ mode (absent) {}
 .PHONY : clean-SunTracker
 clean-dist : clean-SunTracker
 clean-SunTracker :
-	cd @MODDIR@/.. && make clean
+	$(MAKE) --directory=@MODDIR@/.. clean

@@ -1,3 +1,7 @@
+SWData.h
+SWData.tmc
+SWData_col.tmc
+SWData.cmd
 freemem.tmc
 TMbase.genui
 TMbase.tbl
@@ -7,6 +11,8 @@ PTB330.genui
 PTB330.tbl
 WTX530.genui
 WTX530.tbl
+ST.genui
+ST.tbl
 IFStblnc.tmc
 IFSdispnc.cc
 IFSdispncoui.cc
@@ -30,6 +36,7 @@ IFSsrvroui.o
 IFScol.cc
 tm.dac
 IFScoloui.cc
+sza_calc.o
 IFScol.o
 IFScoloui.o
 IFSengext.cdf
@@ -43,6 +50,11 @@ IFStblnc.tmc.dep
 *.err
 Makefile
 *.exe
+Config
+SWData.h
+SWData.tmc
+SWData_col.tmc
+SWData.cmd
 freemem.tmc
 TMbase.genui
 TMbase.tbl
@@ -53,6 +65,8 @@ PTB330.genui
 PTB330.tbl
 WTX530.genui
 WTX530.tbl
+ST.genui
+ST.tbl
 IFSdispnc
 IFSalgo
 doit

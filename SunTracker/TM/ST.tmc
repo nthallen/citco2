@@ -1,0 +1,49 @@
+%{
+  #include "SunTrack.h"
+  ST_SSR_t ST_SSR;
+  static const char *ST_modtext[] = {
+    " TPL",
+    " TPS",
+    " TPM",
+    " TMM",
+    " TPG",
+    " TTM",
+    "INIT"
+  };
+  const char *ST_modus_text( unsigned char modus ) {
+    if ( modus > 6 ) return "????";
+    else return ST_modtext[modus];
+  }
+%}
+TM "Receive" ST_SSR 0;
+
+TM typedef uint16_t ST_angle_t { text "%6.2lf"; }
+TM typedef int16_t  ST_elev_t  { text "%7.2lf"; }
+TM typedef int16_t  ST_drift_t { text "%6d"; }
+TM typedef uint8_t  ST_modus_t { text "%4d" ST_modus_text(); }
+TM typedef uint16_t ST_USHRT   { text "%5u"; }
+TM typedef uint8_t  ST_UCHAR   { text "%3u"; }
+
+TM 1 Hz ST_drift_t ST_Tdrift;
+TM 1 Hz ST_angle_t ST_tpg_azi;
+TM 1 Hz ST_elev_t  ST_tpg_ele;
+TM 1 Hz ST_USHRT   ST_t_int;
+TM 1 Hz ST_UCHAR   ST_flip;
+TM 1 Hz ST_modus_t ST_modus;
+TM 1 Hz ST_UCHAR   ST_stale;
+/* TM 1 Hz ST_USHRT ST_tdg; */
+/* TM 1 Hz ST_USHRT ST_min_int; */
+/* TM 1 Hz ST_USHRT ST_max_int; */
+/* TM 1 Hz ST_UCHAR ST_cdt; */
+
+Group ST ( ST_Tdrift, ST_tpg_azi, ST_tpg_ele,
+           ST_t_int, ST_flip, ST_modus, ST_stale ) {
+  ST_Tdrift = ST_SSR.ST_Tdrift;
+  ST_tpg_azi = ST_SSR.ST_tpg_azi;
+  ST_tpg_ele = ST_SSR.ST_tpg_ele;
+  ST_t_int = ST_SSR.ST_t_int;
+  ST_flip = ST_SSR.ST_flip;
+  ST_modus = ST_SSR.ST_modus;
+  ST_stale = ST_SSR_obj->Stale(255);
+  /* ST_SSR_obj->synch(); */
+}

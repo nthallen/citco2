@@ -1,0 +1,27 @@
+%{
+  #include <math.h>
+  #include "dasio/tmctime.h"
+  #include "SWData.h"
+  #include "sza_calc.h"
+  #include "location.h"
+  static int sim_ele = 0;
+%}
+TM 1 Hz ST_elev_t Sol_ele;
+Collect Sol_ele {
+  int SE;
+  switch ( sim_ele ) {
+    case 1: SE = -200; sim_ele = 2; break;
+    case 2: SE = Sol_ele < 2000 ? Sol_ele + 100 : Sol_ele; break;
+    case -1: SE = 2000; sim_ele = -2; break;
+    case -2: SE = Sol_ele > -200 ? Sol_ele - 100 : Sol_ele; break;
+    default:
+       SE = floor(
+           (90 - sza_calc( LATITUDE(), LONGITUDE(),
+	     itime(), 0, 0, 0 ))*100); break;
+  }
+  Sol_ele = SE;
+}
+
+if ( SWStat == SWS_SIM_SUNRISE ) { sim_ele = 1; }
+if ( SWStat == SWS_SIM_SUNSET ) { sim_ele = -1; }
+if ( SWStat == SWS_CALC_ELE ) { sim_ele = 0; }

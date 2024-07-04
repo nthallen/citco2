@@ -10,8 +10,8 @@
 #include "dasio/tm_data_sndr.h"
 #include "dasio/cmd_reader.h"
 #include "SunTrack.h"
-// #include "collect.h"
-#define HOST "10.10.0.2"
+// #define HOST "10.10.0.2"
+#define HOST "128.100.78.55"
 
 extern const char *hostname;
 extern int ST_Revision;

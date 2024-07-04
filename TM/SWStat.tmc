@@ -1,0 +1,4 @@
+%{
+  /* SWStat.tmc: typedefs */
+%}
+TM typedef uint8_t UCHAR { text "%3u"; }

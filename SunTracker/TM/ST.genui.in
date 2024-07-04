@@ -1,0 +1,8 @@
+  1 ST_Tdrift ST Tdrift
+  1 ST_flip_bit:ST_flip:0 ST Flip
+  1 ST_modus  ST Modus %.0lf [.25 .95 0 1]
+  1 ST_stale  ST Stale [.25 .95 0 1]
+  1 ST_t_int   ST t_int [.25 .95 0 1]
+  1 ST_tpg_azi ST Azimuth [0 0 -1.1 -1.1] ST
+  1 ST_tpg_ele ST Elevation [0 1 -1.1 1.1] ST
+  1 Sol_ele    ST Elevation Model
