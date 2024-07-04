@@ -11,9 +11,6 @@
 STcmd::STcmd(const char *name, curl_multi_obj *co_in)
       : Cmd_reader("cmd", 80, name)
 {
-  fd = open( name, O_RDONLY );
-  if ( fd < 0 )
-    msg( 3, "Cannot open command channel %s: %s", name, strerror(errno) );
   co = co_in;
 }
 

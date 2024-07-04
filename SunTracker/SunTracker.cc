@@ -10,6 +10,7 @@ int ST_Revision = 1;
 int main(int argc, char **argv ) {
   oui_init_options(argc, argv);
   {
+    AppID.report_startup();
     curl_multi_obj *co = new curl_multi_obj();
     curl_multi *Sr = curl_multi::getInstance();
     co->set_log_level(CT_LOG_BODIES);
@@ -17,7 +18,7 @@ int main(int argc, char **argv ) {
     STcmd *Cmd = new STcmd("SunTrack", co);
     Sr->add_child(Port);
     Sr->add_child(Cmd);
-    AppID.report_startup();
+    Cmd->connect();
     Port->transmit(true);
     Sr->event_loop();
     AppID.report_shutdown();
