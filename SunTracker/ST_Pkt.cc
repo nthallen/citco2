@@ -22,7 +22,6 @@ ST_Pkt::ST_Pkt() {
   datetime[0] = '\0';
   Cloud_Detector = '\0';
   setenv("TZ","UTC00",1);
-  ST_SSR.ST_status = 0;
   ST_SSR.ST_Tdrift = 0;
   ST_SSR.ST_tpg_azi = 0;
   ST_SSR.ST_tpg_ele = 0;
