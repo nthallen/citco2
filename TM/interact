@@ -7,6 +7,6 @@
   Launch    cmd     IFSsrvr -H srvr: -S: -v
   Launch    -       PTB330
   Launch    -       WTX530 -e -v
-  Launch    -       SunTracker
+  Launch    -       SunTracker -v
   Launch    -       tmdf -p /home
   Launch    -TMC-   IFSalgo

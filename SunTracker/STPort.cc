@@ -18,7 +18,6 @@ const char STPort::magic[64] = {25, 67, 77, 47};
 STPort::STPort(const char *ip, int revision)
     : Interface("UDP", 300)
 {
-  // Fl_Read|Fl_Timeout) {
   struct addrinfo hints, *res, *p;
   int rv, ioflags;
   const char *HOST_PORT = "3003";
@@ -98,6 +97,7 @@ STPort::STPort(const char *ip, int revision)
   namelen = res->ai_addrlen;
   name = (sockaddr *)new_memory(namelen);
   memcpy(name, res->ai_addr, namelen);
+  flags = Fl_Read;
 }
 
 /**
@@ -111,6 +111,7 @@ void STPort::transmit(bool first) {
   if ( rv == -1 )
     msg(MSG_ERROR, "%s: Error from sendto: '%s'", iname, strerror(errno) );
   TO.Set(1, 975);
+  flags |= Fl_Timeout;
 }
 
 void STPort::adopted()
