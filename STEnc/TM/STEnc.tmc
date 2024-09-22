@@ -1,8 +1,9 @@
 /* These variables are the same ones used by the Dome modules */
 /* This file must follow ST.tmc, which defines ST_angle_t */
 /* TM 1 Hz ST_angle_t DOME_azi; */
-TM 1 Hz UCHAR DOME_status;
-TM 1 Hz UCHAR DOME_stale;
+TM typedef uint8_t STEnc_status_t { text "%3u"; }
+TM 1 Hz STEnc_status_t STEnc_status;
+TM 1 Hz STEnc_status_t STEnc_stale;
 
 Group STEnc ( STEnc_status, STENc_stale ) {
   STENc_status = STEnc.STEnc_status;
