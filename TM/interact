@@ -3,10 +3,10 @@
 		      msg "Running script interact"
   Launch    tm_bfr  bfr -H bfr: -S:
   Launch    -TMC-   lgr -N $(mlf_find LOG) -n lgr
-  Launch    tm_gen  IFScol -v
+  Launch    tm_gen  IFScol
   Launch    cmd     IFSsrvr -H srvr: -S: -v
   Launch    -       PTB330
   Launch    -       WTX530 -e -v
-  Launch    -       SunTracker -v
+  Launch    -       SunTracker -2
   Launch    -       tmdf -p /home
   Launch    -TMC-   IFSalgo

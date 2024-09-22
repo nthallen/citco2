@@ -2,6 +2,7 @@ Input "ST.tbl";
 Input "PTB330.tbl";
 Input "WTX530.tbl";
 Input "TMbase.tbl";
+Input "STEnc.tbl";
 
 MainStack {
   HBox { +-; IFS; -+ };
@@ -17,7 +18,7 @@ MainStack {
     };
   };
   HBox {
-    [SunTracker]; |+; [TMbaseB]
+    [SunTracker]; |+; [STEnc]; |+; [TMbaseB]
   };
 }
 

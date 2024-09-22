@@ -13,6 +13,8 @@ WTX530.genui
 WTX530.tbl
 ST.genui
 ST.tbl
+STEnc.tbl
+STEnc.genui
 IFStblnc.tmc
 IFSdispnc.cc
 IFSdispncoui.cc
@@ -67,6 +69,8 @@ WTX530.genui
 WTX530.tbl
 ST.genui
 ST.tbl
+STEnc.tbl
+STEnc.genui
 IFSdispnc
 IFSalgo
 doit

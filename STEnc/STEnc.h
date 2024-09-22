@@ -4,6 +4,8 @@
   #include "dasio/cmd_reader.h"
   #include "uldaq.h"
 
+  using namespace DAS_IO;
+
   /*
    * status:
    *   0: Enclosure open limit status

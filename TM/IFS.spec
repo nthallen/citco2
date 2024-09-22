@@ -16,6 +16,7 @@ Module Email dest=/home/citco2/bin/Email
 Module PTB330
 Module WTX530
 Module SunTracker
+Module STEnc mode=present
 
 IFSdisp : $extbase IFS.tbl
 IFSalgo : IFS.tma

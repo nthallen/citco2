@@ -25,7 +25,8 @@ STEnc_cmd::~STEnc_cmd()
  */
 bool STEnc_cmd::protocol_input()
 {
-  int cmd, relay_cmd;
+  int relay_cmd;
+  uint8_t cmd;
   switch (buf[cp]) {
     case 'A':
     case 'H':
@@ -34,7 +35,7 @@ bool STEnc_cmd::protocol_input()
     case 'Q':
       return true;
     case 'S':
-      if (not_str("S:") || not_int(cmd)) {
+      if (not_str("S:") || not_uint8(cmd)) {
         report_err("%s: Invalid syntax", iname);
         return false;
       }
@@ -57,7 +58,8 @@ bool STEnc_cmd::protocol_input()
   return false;
 }
 
-bool tm_sync()
+bool STEnc_cmd::tm_sync()
 {
-  uint8_t raw_status = STE->read_both();
+  STE->read_both();
+  return false;
 }

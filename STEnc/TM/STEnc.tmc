@@ -7,6 +7,6 @@ TM 1 Hz STEnc_status_t STEnc_stale;
 
 Group STEnc ( STEnc_status, STENc_stale ) {
   STENc_status = STEnc.STEnc_status;
-  STEnc_stale = STEnc_obj->stale(255);
+  STEnc_stale = STEnc_obj->Stale(255);
   STEnc_obj->synch();
 }

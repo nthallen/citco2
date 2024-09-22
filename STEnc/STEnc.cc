@@ -2,7 +2,7 @@
 #include <errno.h>
 #include <string.h>
 #include "STEnc.h"
-#include "nortlib.h"
+#include "nl.h"
 #include "uldaq.h"
 
 #define MAX_STR_LENGTH 64
@@ -26,31 +26,22 @@ STEnc::~STEnc()
 bool STEnc::connect()
 {
   int MAX_DEV_COUNT = 1;
-	DaqDeviceDescriptor devDescriptors[MAX_DEV_COUNT];
-	DaqDeviceInterface interfaceType = USB_IFC;
-	unsigned int numDevs = MAX_DEV_COUNT;
-	int hasDIO = 0;
-	DigitalPortType portType;
-	DigitalPortIoType portIoType;
-
-	char portTypeStr[MAX_STR_LENGTH];
-	char portIoTypeStr[MAX_STR_LENGTH];
-
-	unsigned long long data = 0;
-	UlError err = ERR_NO_ERROR;
-
-	// Get descriptors for all of the available DAQ devices
-	err = ulGetDaqDeviceInventory(interfaceType, devDescriptors,
-            &numDevs);
-  if (check_ulerr(err, "ulGetDaqDeviceInventory"))
+  DaqDeviceDescriptor devDescriptors[MAX_DEV_COUNT];
+  DaqDeviceInterface interfaceType = USB_IFC;
+  unsigned int numDevs = MAX_DEV_COUNT;
+  UlError err = ERR_NO_ERROR;
+  // Get descriptors for all of the available DAQ devices
+  err = ulGetDaqDeviceInventory(interfaceType, devDescriptors,
+      &numDevs);
+  if (check_ulerror(err, "ulGetDaqDeviceInventory"))
     return true;
 
-	// verify at least one DAQ device is detected
-	if (numDevs == 0)
-	{
-		msg(MSG_ERROR, "No DAQ device is detected");
-		return true;
-	}
+  // verify at least one DAQ device is detected
+  if (numDevs == 0)
+  {
+    msg(MSG_ERROR, "No DAQ device is detected");
+    return true;
+  }
 
   if (numDevs != 1)
   {
@@ -65,34 +56,35 @@ bool STEnc::connect()
     return true;
   }
 
-	// get a handle to the DAQ device associated with the first descriptor
-	daqDeviceHandle = ulCreateDaqDevice(devDescriptors[0]);
+  // get a handle to the DAQ device associated with the first descriptor
+  daqDeviceHandle = ulCreateDaqDevice(devDescriptors[0]);
 
-	if (daqDeviceHandle == 0)
-	{
-		msg(MSG_ERROR, "Unable to create a handle to USB-PDISO8");
-		return true;
-	}
-	// establish a connection to the DAQ device
-	err = ulConnectDaqDevice(daqDeviceHandle);
-  if (check_ulerr(err, "ulGetDaqDeviceInventory"))
+  if (daqDeviceHandle == 0)
+  {
+    msg(MSG_ERROR, "Unable to create a handle to USB-PDISO8");
     return true;
-	msg(MSG, "%s ready\n", devDescriptors[0].devString);
+  }
+  // establish a connection to the DAQ device
+  err = ulConnectDaqDevice(daqDeviceHandle);
+  if (check_ulerror(err, "ulGetDaqDeviceInventory"))
+    return true;
+  msg(MSG, "%s ready\n", devDescriptors[0].devString);
   read_both();
+  return false;
 }
 
 bool STEnc::set_relays(uint8_t val)
 {
   unsigned long long data = val;
   UlError err = ulDOut(daqDeviceHandle, AUXPORT0, data);
-  return check_ulerr(err, "ulDOut(PORT0)");
+  return check_ulerror(err, "ulDOut(PORT0)");
 }
 
 uint8_t STEnc::read(DigitalPortType ptype, const char *desc)
 {
   unsigned long long data;
 	UlError err = ulDIn(daqDeviceHandle, ptype, &data);
-  check_ulerr(err, desc);
+  check_ulerror(err, desc);
   uint8_t rval = (uint8_t)data;
   return rval;
 }

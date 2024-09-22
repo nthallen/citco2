@@ -1,16 +1,10 @@
 <package> STEnc
 <include> "STEnc.h"
-<include> msg
-<follow> msg
+<include> msg oui
+<follow> msg oui
 
-<opts> "d:"
-<sort>
-	-d <serial device>
-<switch>
-  case 'd':
-    STEnc_path = optarg;
-    break;
-
-<package> msghdr_default
-<var>
-  char *msg_hdr_default = "STEnc";
+<package> appid_default
+<include> "dasio/appid.h"
+<defs>
+  DAS_IO::AppID_t DAS_IO::AppID("STEnc",
+    "SunTracker Enclosure Driver", "V2.0");
