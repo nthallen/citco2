@@ -40,12 +40,10 @@
         // Status bit definitions for telemetry:
         static const uint16_t S_OPEN_LIMIT = 1;
         static const uint16_t S_CLOSE_LIMIT = 2;
-        static const uint16_t S_CLOSE_SW = 4;
-        static const uint16_t S_OPEN_SW = 8;
-        static const uint16_t S_OPERATING = 0x10;
-        static const uint16_t S_WEATHER = 0x20;
-        static const uint16_t S_POWER = 0x40;
-        static const uint16_t S_SPARE = 0x80;
+        static const uint16_t S_OPERATING = 4;
+        static const uint16_t S_WEATHER = 8;
+        static const uint16_t S_POWER = 0x10;
+        static const uint16_t S_SPARE = 0x20;
         static const uint16_t S_CLOSE_RELAY = 0x100;
         static const uint16_t S_OPEN_RELAY = 0x200;
         // Status switch bit definitions:
