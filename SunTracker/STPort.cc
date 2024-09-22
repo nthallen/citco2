@@ -118,6 +118,7 @@ void STPort::adopted()
 {
   ST_Pkt_sndr *ST_SSR_sndr = Packet.get_ST_SSR_sndr();
   ELoop->add_child(ST_SSR_sndr);
+  ST_SSR_sndr->connect();
 }
 
 bool STPort::protocol_input()

@@ -1,0 +1,7 @@
+# Cambridge Bay Sun Tracker Enclosure Display
+STEnc {
+  HBox { +-; "Enclosure"; -+ };
+  Position:  (STEnc_pos,7);
+  Command:   (STEnc_cmd,7);
+  Stale:     (STEnc_stale,3);
+}

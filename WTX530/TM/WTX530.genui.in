@@ -5,7 +5,7 @@
  1 WTX_SolRad @Panel@WTX SolRad
  
  1 WTX_WindDir @Panel@WTX_Wind Dir %.1lf
- 1 WTX_WindSpd @Panel@WTX_Wind Speed %.1lf
+ 1 WTX_WindSpd @Panel@WTX_Wind Speed
  1 WTX_WindQ @Panel@WTX_Wind Quality
  
  1 WTX_PrecipType @Panel@WTX_Precip Type %.0lf

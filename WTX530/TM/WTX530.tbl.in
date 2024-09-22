@@ -12,7 +12,7 @@ WTX_HK {
 WTX_Wind {
   HBox { +-; "Wind"; -+ };
   Dir: (WTX_WindDir,6) deg;
-  Spd: (WTX_WindSpd,6) "m/s";
+  Spd: (WTX_WindSpd,5) "m/s";
 }
 
 WTX_Precip {

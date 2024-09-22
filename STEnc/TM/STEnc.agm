@@ -1,0 +1,31 @@
+ModuleDef STEnc {
+  Sun Tracker Enclosure driver for Cambridge Bay
+}
+
+# genuibase = STEnc.genui
+
+mode (present) {
+  tmcbase   = STEnc.tmc
+  colbase   = STEnc_col.tmc
+  cmdbase   = STEnc.cmd
+  genuibase = STEnc.genui:STEnc.genui.in
+  extbase   = STEnc_conv.tmc
+  - : STEnc.tbl:STEnc.tbl.in
+  DISTRIB = @MODDIR@/../STEnc
+  CPPFLAGS = -I @MODDIR@/..
+  IGNORE = STEnc.tbl STEnc.genui
+  OBJ    = STEnc.tbl STEnc.genui
+  %%
+.PHONY : @MODDIR@/../STEnc
+@MODDIR@/../STEnc :
+	$(MAKE) --directory=@MODDIR@/..
+}
+
+mode (default) {
+}
+
+%%
+.PHONY : clean-STEnc
+clean-dist : clean-STEnc
+clean-STEnc :
+	$(MAKE) --directory=@MODDIR@/.. clean

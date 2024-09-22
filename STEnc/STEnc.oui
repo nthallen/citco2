@@ -1,0 +1,16 @@
+<package> STEnc
+<include> "STEnc.h"
+<include> msg
+<follow> msg
+
+<opts> "d:"
+<sort>
+	-d <serial device>
+<switch>
+  case 'd':
+    STEnc_path = optarg;
+    break;
+
+<package> msghdr_default
+<var>
+  char *msg_hdr_default = "STEnc";

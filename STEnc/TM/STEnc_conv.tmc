@@ -1,0 +1,18 @@
+%{
+  /* STEnc_conv.tmc */
+  const char *STEnc_pos_text[] = {
+    "Unknown", " Opened", " Closed", "***Both"
+  };
+  const char *STEnc_cmd_text[] = {
+    "Unknown", " Opened", " Closed", "***Both"
+  }
+%}
+
+TM typedef unsigned char STEnc_pos_t { text "%7d" STEnc_pos_text(); }
+TM typedef unsigned char STEnc_cmd_t { text "%7d" STEnc_cmd_text[]; }
+
+STEnc_pos_t STEnc_pos; Invalidate STEnc_pos;
+{ STEnc_pos = STEnc_status & 3; Validate STEnc_pos; }
+
+STEnc_cmd_t STEnc_cmd; Invalidate STEnc_cmd;
+{ STEnc_cmd = (STEnc_status>>3) & 3; Validate STEnc_cmd; }

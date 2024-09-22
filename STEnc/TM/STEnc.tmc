@@ -1,0 +1,11 @@
+/* These variables are the same ones used by the Dome modules */
+/* This file must follow ST.tmc, which defines ST_angle_t */
+/* TM 1 Hz ST_angle_t DOME_azi; */
+TM 1 Hz UCHAR DOME_status;
+TM 1 Hz UCHAR DOME_stale;
+
+Group STEnc ( STEnc_status, STENc_stale ) {
+  STENc_status = STEnc.STEnc_status;
+  STEnc_stale = STEnc_obj->stale(255);
+  STEnc_obj->synch();
+}

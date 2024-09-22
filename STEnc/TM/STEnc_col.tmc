@@ -1,0 +1,5 @@
+%{
+  #include "STEnc.h"
+  STEnc_TM_t STEnc;
+%}
+TM "Receive" STEnc 1;

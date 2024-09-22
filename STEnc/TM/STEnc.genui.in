@@ -1,0 +1,5 @@
+1 STEnc_Open_Limit:STEnc_status:0  Enclosure Status
+1 STEnc_Close_Limit:STEnc_status:1 Enclosure Status
+1 STEnc_Open_Relay:STEnc_status:3  Enclosure Status
+1 STEnc_Close_Relay:STEnc_status:4 Enclosure Status
+1 STEnc_stale                      Enclosure Stale
