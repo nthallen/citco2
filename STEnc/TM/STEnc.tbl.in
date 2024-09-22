@@ -3,5 +3,6 @@ STEnc {
   HBox { +-; "Enclosure"; -+ };
   Position:  (STEnc_pos,7);
   Command:   (STEnc_cmd,7);
+  Bits:      (STEnc_bits,2);
   Stale:     (STEnc_stale,3);
 }

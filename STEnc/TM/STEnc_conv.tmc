@@ -8,11 +8,16 @@
   };
 %}
 
-TM typedef unsigned char STEnc_pos_t { text "%7d" STEnc_pos_text[]; }
-TM typedef unsigned char STEnc_cmd_t { text "%7d" STEnc_cmd_text[]; }
+TM typedef uint8_t STEnc_pos_t { text "%7d" STEnc_pos_text[]; }
+TM typedef uint8_t STEnc_cmd_t { text "%7d" STEnc_cmd_text[]; }
+TM typedef uint8_t STEnc_bits_t { text "%02X"; }
 
 STEnc_pos_t STEnc_pos; Invalidate STEnc_pos;
 { STEnc_pos = STEnc_status & 3; Validate STEnc_pos; }
 
 STEnc_cmd_t STEnc_cmd; Invalidate STEnc_cmd;
 { STEnc_cmd = (STEnc_status>>8) & 3; Validate STEnc_cmd; }
+
+STEnc_bits_t STEnc_bits; Invalidate STEnc_bits;
+{ STEnc_bits = STEnc_status & 0xFF; Validate STEnc_bits; }
+
