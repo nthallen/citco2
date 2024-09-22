@@ -4,7 +4,7 @@
     "Unknown", " Opened", " Closed", "***Both"
   };
   const char *STEnc_cmd_text[] = {
-    "Unknown", " Opened", " Closed", "***Both"
+    "Unknown", " Closed", " Opened", "***Both"
   };
 %}
 
@@ -15,4 +15,4 @@ STEnc_pos_t STEnc_pos; Invalidate STEnc_pos;
 { STEnc_pos = STEnc_status & 3; Validate STEnc_pos; }
 
 STEnc_cmd_t STEnc_cmd; Invalidate STEnc_cmd;
-{ STEnc_cmd = (STEnc_status>>3) & 3; Validate STEnc_cmd; }
+{ STEnc_cmd = (STEnc_status>>8) & 3; Validate STEnc_cmd; }

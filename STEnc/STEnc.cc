@@ -91,13 +91,13 @@ uint8_t STEnc::read(DigitalPortType ptype, const char *desc)
 
 void STEnc::read_both()
 {
-  uint8_t relays = read(AUXPORT0, "ulDIn(PORT0)");
-  uint8_t status = read(AUXPORT1, "ulDIn(PORT1)");
-  TM->STEnc_status =
-    ((relays & RELAY_OPEN) ? S_OPEN_RELAY : 0) |
-    ((relays & RELAY_CLOSE) ? S_OPEN_RELAY : 0) |
-    ((status & SW_OPEN) ? S_OPEN_LIMIT : 0) |
-    ((status & SW_CLOSE) ? S_CLOSE_LIMIT : 0);
+  uint16_t relays = read(AUXPORT0, "ulDIn(PORT0)");
+  uint16_t status = read(AUXPORT1, "ulDIn(PORT1)");
+  TM->STEnc_status = status | (relays << 8);
+//  ((relays & RELAY_OPEN) ? S_OPEN_RELAY : 0) |
+//  ((relays & RELAY_CLOSE) ? S_OPEN_RELAY : 0) |
+//  ((status & SW_OPEN) ? S_OPEN_LIMIT : 0) |
+//  ((status & SW_CLOSE) ? S_CLOSE_LIMIT : 0);
 }
 
 bool STEnc::check_ulerror(UlError err, const char *desc)
