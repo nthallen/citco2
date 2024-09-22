@@ -10,6 +10,7 @@ STEnc_cmd::STEnc_cmd(STEnc *STE)
     : Cmd_reader("cmd", 20, "STEnc"),
       STE(STE)
 {
+  flags |= gflag(0);
 }
 
 STEnc_cmd::~STEnc_cmd()
@@ -23,7 +24,7 @@ STEnc_cmd::~STEnc_cmd()
  *   Q\n Quit
  *   S:[012]\n Close/Open/Neither
  */
-bool STEnc_cmd::protocol_input()
+bool STEnc_cmd::app_input()
 {
   int relay_cmd;
   uint8_t cmd;
@@ -40,14 +41,15 @@ bool STEnc_cmd::protocol_input()
         return false;
       }
       switch(cmd) {
-        case 0: relay_cmd = STEnc::RELAY_OPEN; break;
-        case 1: relay_cmd = STEnc::RELAY_CLOSE; break;
+        case 0: relay_cmd = STEnc::RELAY_CLOSE; break;
+        case 1: relay_cmd = STEnc::RELAY_OPEN; break;
         case 2: relay_cmd = STEnc::RELAY_NONE; break;
         default:
           report_err("%s: S command value out of range: '%d'",
             iname, cmd);
           return false;
       }
+      msg(MSG_DEBUG, "Sending relay command %d", relay_cmd);
       STE->set_relays(relay_cmd);
       break;
     default:

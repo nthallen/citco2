@@ -8,5 +8,6 @@
   Launch    -       PTB330
   Launch    -       WTX530 -e -v
   Launch    -       SunTracker -2
+  Launch    -       STEnc -vv
   Launch    -       tmdf -p /home
   Launch    -TMC-   IFSalgo

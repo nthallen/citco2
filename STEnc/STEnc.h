@@ -46,9 +46,6 @@
         static const uint16_t S_SPARE = 0x20;
         static const uint16_t S_CLOSE_RELAY = 0x100;
         static const uint16_t S_OPEN_RELAY = 0x200;
-        // Status switch bit definitions:
-        static const uint8_t SW_OPEN = 1;
-        static const uint8_t SW_CLOSE = 2;
       private:
         /**
          * @param err Error return from library function
@@ -72,7 +69,7 @@
       public:
         STEnc_cmd(STEnc *STE);
         ~STEnc_cmd();
-        bool protocol_input();
+        bool app_input();
       protected:
         bool tm_sync() override;
       private:

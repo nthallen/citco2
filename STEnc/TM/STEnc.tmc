@@ -2,8 +2,9 @@
 /* This file must follow ST.tmc, which defines ST_angle_t */
 /* TM 1 Hz ST_angle_t DOME_azi; */
 TM typedef uint16_t STEnc_status_t { text "%5u"; }
+TM typedef uint8_t STEnc_stale_t { text "%3u"; }
 TM 1 Hz STEnc_status_t STEnc_status;
-TM 1 Hz STEnc_status_t STEnc_stale;
+TM 1 Hz STEnc_stale_t STEnc_stale;
 
 Group STEnc ( STEnc_status, STENc_stale ) {
   STENc_status = STEnc.STEnc_status;

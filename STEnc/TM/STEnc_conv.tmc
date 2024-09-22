@@ -1,10 +1,10 @@
 %{
   /* STEnc_conv.tmc */
   const char *STEnc_pos_text[] = {
-    "Unknown", " Opened", " Closed", "***Both"
+    "Unknown", " Closed", " Opened", "***Both"
   };
   const char *STEnc_cmd_text[] = {
-    "Unknown", " Closed", " Opened", "***Both"
+    "   none", "  Close", "   Open", "***Both"
   };
 %}
 

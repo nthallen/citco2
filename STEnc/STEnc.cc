@@ -49,7 +49,7 @@ bool STEnc::connect()
     return true;
   }
   
-  if (!strcmp(devDescriptors[0].productName, "USB-PDISO8"))
+  if (strcmp(devDescriptors[0].productName, "USB-PDISO8"))
   {
     msg(MSG_ERROR, "Unrecognized DAQ device: '%s'",
       devDescriptors[0].productName);
