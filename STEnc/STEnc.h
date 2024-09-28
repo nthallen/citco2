@@ -1,6 +1,8 @@
 #ifndef STENC_H_INCLUDED
 #define STENC_H_INCLUDED
 
+#include <cstdint>
+
 /*
  * status:
  *   0: Enclosure open limit status
