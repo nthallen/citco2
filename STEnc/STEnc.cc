@@ -1,7 +1,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
-#include "STEnc.h"
+#include "STEnc_int.h"
 #include "nl.h"
 #include "uldaq.h"
 

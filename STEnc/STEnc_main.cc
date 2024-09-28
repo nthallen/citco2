@@ -1,7 +1,7 @@
 /* STEnc_main.cc
  * Driver for East Trout Lake Sun Tracker Enclosure
  */
-#include "STEnc.h"
+#include "STEnc_int.h"
 #include "oui.h"
 #include "nl.h"
 #include "dasio/appid.h"

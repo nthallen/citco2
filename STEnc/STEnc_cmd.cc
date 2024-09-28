@@ -2,7 +2,7 @@
  * STEnc_cmd.cc
  */
 #include <string.h>
-#include "STEnc.h"
+#include "STEnc_int.h"
 #include "nl.h"
 // #include "nl_assert.h"
 

@@ -4,17 +4,20 @@ ModuleDef STEnc {
 
 # genuibase = STEnc.genui
 
-mode (present) {
+mode (present, present_no_driver) {
   tmcbase   = STEnc.tmc
   colbase   = STEnc_col.tmc
   cmdbase   = STEnc.cmd
   genuibase = STEnc.genui:STEnc.genui.in
   extbase   = STEnc_conv.tmc
   - : STEnc.tbl:STEnc.tbl.in
-  DISTRIB = @MODDIR@/../STEnc
   CPPFLAGS = -I @MODDIR@/..
   IGNORE = STEnc.tbl STEnc.genui
   OBJ    = STEnc.tbl STEnc.genui
+}
+
+mode (present) {
+  DISTRIB = @MODDIR@/../STEnc
   %%
 .PHONY : @MODDIR@/../STEnc
 @MODDIR@/../STEnc :
