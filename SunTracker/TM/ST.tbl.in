@@ -9,3 +9,10 @@ SunTracker {
   Tdrift:  (ST_Tdrift,6);
   Stale:   (ST_stale,3);
 }
+
+Radiance {
+  HBox { +-; "Radiance"; -+ };
+  Solar:   (WTX_SolRad,5)      "W/m2";
+  Model:   (model_intensity,7) "W/m2";
+  Ratio:   (radiance_ratio,5)  (ok_to_open,3);
+}

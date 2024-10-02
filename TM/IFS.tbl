@@ -18,7 +18,10 @@ MainStack {
     };
   };
   HBox {
-    [SunTracker]; |+; [STEnc]; |+; [TMbaseB]
+    [SunTracker]; |+;
+    { [STEnc];
+      [Radiance]
+    }; |+; [TMbaseB]
   };
 }
 

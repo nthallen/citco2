@@ -1,4 +1,6 @@
 State Init {
-  > Telemetry Start
+      > Telemetry Start
+  +1  > Radiance Open THreshold Set 70 percent
+      > Radiance Close Threshold Set 25 percent
 }
 

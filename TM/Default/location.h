@@ -3,16 +3,18 @@
    LONGITUDE() is E. Longitude
    ALTITUDE() is Altitude in meters
 
-  This is the location for rooftop enclosure of ETL building
+  This is the approximate location of the rooftop enclosure on
+  the container at CHARS, Cambridge Bay, Nunavut, CA.
   (added 3 meters to site altitude for height of the building)
+  Altitude is a WAG
 */
 
 #ifndef LOCATION_H_INCLUDED
 #define LOCATION_H_INCLUDED
 
-#define LATITUDE() (54.353738)
-#define LONGITUDE() (-104.986667)
-#define ALTITUDE() (502)
+#define LATITUDE() (69.121154)
+#define LONGITUDE() (-105.039675)
+#define ALTITUDE() (8)
 
 /* RADIANCE_THRESHOLD is referenced in Radiance.tmc. It is
    a scale factor by which the standard radiance model is
@@ -23,7 +25,11 @@
 
    Prior to late August 2018, model_intensity displayed
    the standard model, not the scaled value.
+   
+   RADIANCE_THRESHOLD is no longer referenced in Radiance.tmc.
+   The value has been replaced with Rad_Open_Pct which can
+   be set from the TMA or the command line, along with
+   Rad_Close_Pct.
 */
-#define RADIANCE_THRESHOLD 0.7
 
 #endif

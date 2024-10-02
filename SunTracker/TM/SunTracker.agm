@@ -9,6 +9,7 @@ ModuleDef SunTracker [ Panel= ] {
 mode (present,default) {
   tmcbase = ST.tmc
   tmcbase = SZA.tmc
+  extbase = Radiance.tmc
   cmdbase = ST.cmd
   colbase = sza_calc.c
   - : ST.tbl:ST.tbl.in

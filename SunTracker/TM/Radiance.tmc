@@ -1,0 +1,53 @@
+/* Radiance.tmc Calculate model_intensity
+   This module references the following values from other sources:
+     convert(Sol_ele) Solar Elevation, defined in SZA.tmc && sza_calc.c
+     convert(WTX_SolRad) Solar Radiance, defined in WTX530.tmc
+     Rad_Open_Pct, defined in Config/IFS.sws
+ */
+%{
+  #include <math.h>
+  #include <time.h>
+  #include "location.h"
+
+  int Day_Of_Year( time_t now ) {
+    struct tm *times = gmtime(&now);
+    return times->tm_yday;
+  }
+
+  double earth_sun_distance = 0.;
+  #define PI 3.1415926535897932384626
+
+  const char *radok_text(UCHAR x) {
+    return x ? " ok" : "!ok";
+  }
+%}
+TM typedef double RADIANCE { text "%7.2lf"; }
+RADIANCE model_intensity; invalidate model_intensity;
+TM typedef uint8_t RADOK_t { text "%2d" radok_text(); }
+RADOK_t ok_to_open; invalidate ok_to_open;
+TM typedef int16_t RADIANCE_RATIO_t { text "%5.1lf"; }
+RADIANCE_RATIO_t radiance_ratio; invalidate radiance_ratio;
+
+{ double SElr, z, h, airmass, zod, trans, scattered, direct;
+  if (earth_sun_distance == 0.) {
+    int doy;
+    doy = Day_Of_Year(itime());
+    earth_sun_distance = 1 - 0.03 * cos(2*PI*(doy-4)/365.25);
+  }
+  SElr = convert(Sol_ele)*PI/180;
+  z = PI/2 - SElr; /* (90-convert(Sol_ele))*PI/180; */
+  h = (z*z)/2;
+  airmass = exp(h*exp((h*h*h)/1.756));
+  zod = 0.09;
+  trans = exp(-zod*airmass);
+  scattered = 0.015/(1+exp(-SElr/(1.2*PI/180)));
+  direct = trans * sin(SElr);
+  model_intensity = 1130*(direct+scattered) /
+    (earth_sun_distance*earth_sun_distance);
+  radiance_ratio = 1000. * convert(WTX_SolRad) / model_intensity;
+  ok_to_open = model_intensity > 1.0 &&
+    convert(radiance_ratio) > Rad_Open_Pct;
+  validate model_intensity;
+  validate radiance_ratio;
+  validate ok_to_open;
+}
