@@ -1,6 +1,7 @@
-host moacc-phocus phocus
+host moacc-phocus phocus 129.222.185.198
+hostname 129.222.185.198
 port 10569
 ForwardAgent yes
 ForwardX11 yes
 ForwardX11Trusted yes
-SetEnv TERM=xterm-156color
+SetEnv TERM=xterm-256color
