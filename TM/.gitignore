@@ -20,6 +20,7 @@ IFSdispnc.cc
 IFSdispncoui.cc
 IFSdispnc.o
 IFSdispncoui.o
+IFSalgosws.tma
 IFSalgoa.tmc
 IFSalgo.cc
 IFSalgooui.cc

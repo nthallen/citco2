@@ -21,7 +21,7 @@ Module SunTracker
 Module STEnc mode=present
 
 IFSdisp : $extbase IFS.tbl
-IFSalgo : $extbase IFS.tma
+IFSalgo : $extbase IFS.tma $swsbase
 doit : IFS.doit
 
 CPPFLAGS = -I Config -DBLOCK_KB_CMDS
