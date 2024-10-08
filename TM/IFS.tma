@@ -1,6 +1,361 @@
+%{
+  /* IFS.tma for cambridgebay_ifs13 */
+  #include <stdlib.h> /* for abs() */
+  #include <time.h>
+  #include "dasio/cmd_writer.h"
+  #include "location.h"
+  #include "nl.h"
+
+  int DayOfYear( time_t now ) {
+    struct tm *times = gmtime(&now);
+    return times->tm_yday;
+  }
+
+  int16_t DayOfWeek( time_t now ) {
+    long dt = (now+(long)(LONGITUDE()*240))/(24L*60*60);
+    int16_t DoW = dt%7;
+    return DoW;
+  }
+
+  const char *Weather_Reason = "Startup";
+%}
+
+%{
+  /* HercDioB status monitor goes here */
+%}
+
 State Init {
       > Telemetry Start
   +1  > Radiance Open THreshold Set 70 percent
       > Radiance Close Threshold Set 25 percent
+      Validate Init_Choice;
 }
 
+State Init_Choice "Startup.tmas" {
+     Hold until ( SWStat == SWS_TIME_WARP ) or 2:00;
+
+## Uncomment IFS commands
+# +1 > IFS Time Synch
+#    > IFS Set Preamp Gains 3 3
+# Don't set InSb preamp gain until after filling.
+
+  +1 Validate Init_Decide;
+
+   # These two will never occur, but are here
+   # to improve the visualization
+  +1 Validate Holding;
+  +1 Validate Failure;
+}
+
+State Init_Decide {
+#    > IFS Read Status
+  +2 { if ( Convert(Sol_ele) < 0. ) Validate Init_Close; }
+  +2 depending on ( Bad_Weather ) { Validate Nap; }
+ +10 Validate Ready_To_Play;
+}
+
+State Unexpected_Restart {
+  > Email Error Message Unexpected Restart, Entering Holding
+  Validate Holding;
+}
+
+State Holding {
+  Validate Dome_Close;
+  > Startup Define Validate Holding;
+  Hold until (Convert(Sol_ele) > 0.);
+  Hold until (Convert(Sol_ele) < 0.);
+  +1 > Savelog Shutdown from Holding
+  Validate Shutdown;
+}
+
+State Holding_with_Lamp_Runs {
+  Validate Dome_Close;
+# Validate IFS_Status_Update;
+  > Startup Define Validate Holding_with_Lamp_Runs;
+  Hold until (Convert(Sol_ele) > 0.);
+  Hold until (Convert(Sol_ele) < 0.);
+# Validate Pump_Down_Init;
+# Hold until Valid (Pump_Idle);
+  Validate Bedtime_Story;
+}
+
+State Failure {
+#    > IFS Direct SRC=0
+#    > IFS Direct VAC=0
+  +1 > Enclosure Close
+# +1 > IFS IdleScan
+#+60 > Power Pump Off
+  +1 > Startup Define Validate Failure;
+     Hold until (Convert(Sol_ele) > 0.);
+     Hold until (Convert(Sol_ele) < 0.);
+  +1 > Savelog Shutdown from Failure
+     Validate Shutdown;
+#  Each Failure Partition sends its own email for help.
+}
+
+State Init_Close {
+  Validate Dome_Close;
+  Validate Sleep;
+}
+
+State ReInit {
+  > Startup Clear
+  Validate Watchdog_Okay;
+  Validate Init_Choice;
+}
+
+State ReInit_and_Pump_Down {
+  > Startup Clear
+  Validate Watchdog_Okay;
+  Validate Pump_Down;
+}
+
+State Pump_Down {
+# Hold Until ( IFSCStat == IFS_SCAN_IDLE ||
+#              IFSCStat == IFS_SCAN_WAIT) OR 4:00;
+# Validate IFS_Status_Update;
+# Validate Pump_Down_Init;
+# Hold until Valid (Pump_Idle);
+  Validate Init_Choice;
+}
+
+State Sleep {
+  depending on ( Watchdog_Error ) { Validate Failure; }
+# Validate IFS_Status_Update;
+  Hold Until ( Convert(Sol_ele) > 0. );
+  Validate Wake_Up;
+}
+
+State Wake_Up {
+    depending on ( Watchdog_Error ) { Validate Failure; }
+
+#+1 { if (convert(LN2Depth) < 15)
+#       ci_sendfcmd(0, "Email Warning Message LN2 Tank depth is %.1lf\n",
+#         convert(LN2Depth));
+#   }
+#+1 Validate IFS_Status_Update;
+#+1 Validate InSb_Fill;
+#+1 Validate Pump_Down_Init;
+#   Hold until Valid (Pump_Idle);
+    > Email Report Message Container has completed Wake_Up State sequence.
+    depending on ( Good_Weather ) { Validate Ready_To_Play; }
+    { if ( Convert(Sol_ele) < 0. ) Validate Bedtime; }
+}
+
+State Ready_To_Play {
+  depending on ( Watchdog_Error ) { Validate Failure; }
+  { if ( Convert(Sol_ele) < 0. ) Validate Bedtime; }
+  depending on ( Bad_Weather) { Validate Nap; }
+
+  Validate Dome_Open;
+  #> Sun Tracker Track To Programmed Sun Position
+  Hold Until Valid ( Dome_Opened ) or 2:00;
+  #> Sun Tracker Track by Diode
+
+  # > Email Report Message Enclosure opened in Ready_to_Play
+  +10:00 > Email Report Message Enclosure open conditions for 10 minutes in Ready_to_Play
+
+# Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
+#               IFSCStat == IFS_SCAN_WAIT ) &&
+#              ST_modus == ST_MODE_TTM );
+
+#   > Email Report Message Scanning
+#  #We do this on wakeup at ETL:
+#  #depending on (InSb_Startup) { Validate InSb_Fill; }
+#+1 Validate IFS_Status_Idle;
+#   depending on (InSb_Filled) { Validate Init_Set_InSb_Gains; }
+#   depending on (InSb_Chilled) { Validate Play; }
+#+1 > Email Warning Message Starting in Play_InGaAs: !InSb_Chilled
+#+1 Validate Play_InGaAs;
+}
+
+# State Init_Set_InSb_Gains {}
+# State Play NoLog {}
+# State Play_InGaAs NoLog {}
+
+State Scanner_Failure {
+   > Email Error Message Scanner failure.
+   Validate Failure;
+}
+
+# State Scanner_CAN_Err {}
+# State Scanner_InSbNR {}
+
+State Nap {
+  depending on ( Watchdog_Error ) { Validate Failure; }
+
+  { ci_sendfcmd(Cmd_Send,
+      "Email Report Message Container has entered Nap State due to %s\n",
+      Weather_Reason ); }
+  Validate Dome_Close;
+  # > Sun Tracker Sleep
+# Hold Until ( IFSCStat == IFS_SCAN_IDLE || IFSCStat == IFS_SCAN_WAIT ) or 4:00;
+# Validate IFS_Status_Update;
+  depending on ( Good_Weather ) { Validate Ready_To_Play; }
+  { if ( Convert(Sol_ele) < 0. ) Validate Bedtime_Story; }
+}
+
+State Bedtime {
+  depending on (Watchdog_Error ) { Validate Failure; }
+  depending on (Bad_Weather) { Validate Nap; }
+#     Hold Until ( IFSCStat == IFS_SCAN_IDLE || IFSCStat == IFS_SCAN_WAIT ) or 4:00;
+      Validate Dome_Close;
+   #  > Sun Tracker Sleep
+      > Email Report Message Enclosure closed for the evening
+  +10 Validate Bedtime_Story;
+}
+
+State Bedtime_Story {
+  +10 Validate Lights_Out;
+}
+
+# States for Bedtime Stories
+
+State Lights_Out {
+# > IFS Direct SRC=0
+# > IFS Set Preamp Gains 3 3
+# Hold Until ( (IFSCStat == IFS_SCAN_IDLE) ||
+#               (IFSCStat == IFS_SCAN_WAIT) );
+  > SaveLog Bedtime Shutdown
+  Validate Quick_Shutdown;
+}
+
+###
+
+# Just Make sure IFS gets to idle mode, but leave
+# Dome where it is.
+State Quick_Shutdown {
+  "Waiting for IFS Idle";
+# Hold Until ( IFSCStat == IFS_SCAN_IDLE );
+  Validate Shutdown;
+}
+
+# Interactive full shutdown
+# Make sure IFS gets to idle, then close up
+State Full_Shutdown {
+  "Waiting for IFS Idle";
+# Hold Until ( IFSCStat == IFS_SCAN_IDLE ) OR 1:00;
+  Validate Dome_Close;
+  "Waiting for Enclosure to Close";
+  Hold Until Valid ( Dome_Closed ) or 2:00;
+  Validate Shutdown;
+}
+
+State Shutdown {
+  +1 > Enclosure Exit
+  +1 > Sun Tracker Exit
+# +1 > IFS Exit
+  +3 > Quit
+}
+
+Partition
+#----------------------------------------------
+# Partition 2: Watchdog
+#----------------------------------------------
+
+State Watchdog_Okay {
+  #depending on ( Dome_Failed ) { Validate Watchdog_Error; }
+  #depending on ( WBX_Failed ) { Validate Watchdog_Error; }
+  #depending on ( Pump_Failed ) { Validate Watchdog_Error; }
+  #depending on ( IdleScan_Failed ) { Validate Watchdog_Error; }
+}
+
+State Watchdog_Error {
+}
+Partition
+#----------------------------------------------
+# Partition 3: Weather
+#----------------------------------------------
+
+State Bad_Weather {
+  { if (WTX_drv_stale == 255 || WTX_dev_stale == 255)
+      Validate WTX_Failed; } 
+  { if ( (convert(WTX_PrecipInt) > 0) &&
+         WTX_RH < 88 /* && ws_low */ && ok_to_open )
+      Validate Good_Weather;
+  }
+}
+
+State Good_Weather {
+  { if (WTX_drv_stale == 255 || WTX_dev_stale == 255)
+      Validate WTX_Failed; } 
+  { if (convert(WTX_PrecipInt) > 0 || WTX_RH > 90) {
+      Weather_Reason = "Rain";
+      Validate Bad_Weather;
+    }
+  }
+  { if ( convert(radiance_ratio) < Rad_Close_Pct ) {
+      Weather_Reason = "Dark Sky";
+      Validate Bad_Weather;
+    }
+  }
+# { if ( ws_high ) {
+#     Weather_Reason = "High Winds";
+#     Validate Bad_Weather;
+#   }
+# }
+}
+
+State WTX_Failed {
+   { msg (0, "WTX failure. Indicated by WTX stale counter." ); }
+   > Email Error Message WTX failure.  Indicated by WTX stale counter.
+   +1:00 { if (WTX_drv_stale < 2 && WTX_dev_stale <2) Validate Bad_Weather; }
+}
+
+Partition
+
+#----------------------------------------------
+# Partition 4: Enclosure Control
+#----------------------------------------------
+State Dome_Holding {
+}
+
+# STEnc_pos&1 indicates Closed
+# STEnc_pos&2 indicates Opened
+State Dome_Close {
+  { if ( STEnc_stale == 255 ) Validate Dome_Lost_Contact; }
+  Hold Until ( !(STEnc_pos&1) ) or 2
+  else Validate Dome_Closed;
+# > Enclosure Close
+# Hold Until (STEnc_pos&1) or 2:00
+# else Validate Dome_Close_Failed;
+  Validate Dome_Closed;
+}
+
+State Dome_Closed {
+  { if ( STEnc_stale == 255 ) Validate Dome_Lost_Contact; }
+}
+
+State Dome_Open {
+  { if ( STEnc_stale == 255 ) Validate Dome_Lost_Contact; }
+  Hold Until (!(STEnc_pos&2)) or 2
+  else Validate Dome_Opened;
+# > Enclosure Open
+# Hold Until (STEnc_pos&2) or 2:00
+# else Validate Dome_Open_Failed;
+  Validate Dome_Opened;
+}
+
+State Dome_Opened NoLog {
+  { if (STEnc_stale == 255) Validate Dome_Lost_Contact; }
+}
+
+State Dome_Close_Failed {
+  { msg( 2, "Enclosure failed to close" ); }
+  > Email Error Message Enclosure failed to close
+  Validate Dome_Failed;
+}
+
+State Dome_Open_Failed {
+  { msg( 2, "Enclosure failed to open" ); }
+  > Email Error Message Enclosure failed to open
+  Validate Dome_Failed;
+}
+
+State Dome_Lost_Contact {
+  { msg( 2, "Lost contact wtih Enclosure or driver" ); }
+  > Email Error Message Lost contact with Enclosure or driver
+  Validate Dome_Failed;
+}
+
+State Dome_Failed {}

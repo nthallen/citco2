@@ -10,16 +10,18 @@ tmcbase = base.tmc
 tmcbase = SWStat.tmc
 genuibase = IFS.genui
 swsbase = Config/IFS.sws
+cmdbase = Startup.cmd
 Module TMbase mode=ignore
 Module savelog
 Module Email dest=/home/citco2/bin/Email
 Module PTB330
 Module WTX530
 Module SunTracker
+#Module STEnc mode=present_no_driver
 Module STEnc mode=present
 
 IFSdisp : $extbase IFS.tbl
-IFSalgo : IFS.tma
+IFSalgo : $extbase IFS.tma
 doit : IFS.doit
 
-CPPFLAGS = -I Config
+CPPFLAGS = -I Config -DBLOCK_KB_CMDS
