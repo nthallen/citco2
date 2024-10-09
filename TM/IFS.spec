@@ -11,7 +11,7 @@ tmcbase = SWStat.tmc
 genuibase = IFS.genui
 swsbase = Config/IFS.sws
 cmdbase = Startup.cmd
-Module TMbase mode=ignore
+Module TMbase mode=ignore SWSnot=
 Module savelog
 Module Email dest=/home/citco2/bin/Email
 Module PTB330

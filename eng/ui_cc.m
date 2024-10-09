@@ -14,6 +14,7 @@ else
   f = ne_dialg('citco2 Instrument',1);
 end
 f = ne_dialg(f, 'add', 0, 1, 'gcctm', 'T Mbase' );
+f = ne_dialg(f, 'add', 1, 0, 'pcctmsws', 'SW Stat' );
 f = ne_dialg(f, 'add', 1, 0, 'pcctmtd', 'T Drift' );
 f = ne_dialg(f, 'add', 1, 0, 'pcctmcpu', 'CPU' );
 f = ne_dialg(f, 'add', 1, 0, 'pcctmram', 'RAM' );
@@ -47,6 +48,7 @@ f = ne_dialg(f, 'add', 1, 0, 'pccstt_int', 't int' );
 f = ne_dialg(f, 'add', 1, 0, 'pccsta', 'Azimuth' );
 f = ne_dialg(f, 'add', 1, 0, 'pccste', 'Elevation' );
 f = ne_dialg(f, 'add', 1, 0, 'pccstr', 'Radiance' );
+f = ne_dialg(f, 'add', 1, 0, 'pccstratio', 'Ratio' );
 f = ne_dialg(f, 'add', 1, 0, 'pccststatus', 'Status' );
 f = ne_dialg(f, 'add', 0, 1, 'gcce', 'Enclosure' );
 f = ne_dialg(f, 'add', 1, 0, 'pcces', 'Status' );

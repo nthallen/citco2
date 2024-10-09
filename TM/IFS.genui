@@ -3,3 +3,5 @@ MNEMONIC cc
 HOMEDIR CITCO2_Data_Dir
 ROWS 20
 
+ 1 SWStat TMbase SWStat
+ 
