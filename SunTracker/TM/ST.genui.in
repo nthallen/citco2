@@ -8,5 +8,7 @@
   1 model_intensity ST Radiance Model
   1 WTX_SolRad      ST Radiance Observed
   1 radiance_ratio  ST Ratio
+  1 Rad_Open_Pct    ST Ratio
+  1 Rad_Close_Pct   ST Ratio
   1 OK2Open:ok_to_open:0 ST Status %.0lf
   1 ST_flip_bit:ST_flip:0 ST Status Flip

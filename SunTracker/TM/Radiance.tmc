@@ -44,9 +44,10 @@ RADIANCE_RATIO_t radiance_ratio; invalidate radiance_ratio;
   direct = trans * sin(SElr);
   model_intensity = 1130*(direct+scattered) /
     (earth_sun_distance*earth_sun_distance);
-  radiance_ratio = 1000. * convert(WTX_SolRad) / model_intensity;
-  ok_to_open = model_intensity > 1.0 &&
-    convert(radiance_ratio) > Rad_Open_Pct;
+  radiance_ratio = ((model_intensity > 1) && (WTX_SolRad >= 0))
+    ? 1000. * convert(WTX_SolRad) / model_intensity
+    : 0;
+  ok_to_open = convert(radiance_ratio) > Rad_Open_Pct;
   validate model_intensity;
   validate radiance_ratio;
   validate ok_to_open;

@@ -5,10 +5,11 @@
     " TPL",
     " TPS",
     " TPM",
-    " TMM",
     " TPG",
-    " TTM",
-    "INIT"
+    " TMM",
+    "INIT",
+    " AOA",
+    " TMR"
   };
   const char *ST_modus_text( unsigned char modus ) {
     if ( modus > 6 ) return "????";

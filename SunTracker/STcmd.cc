@@ -59,6 +59,9 @@ bool STcmd::execute_cmd()
         case 'D': // track mode
           co->enqueue_transaction(new ST_Set_Mode(co, "TTM Mode", 4));
           return false;
+        case 'R': // CamTracker mode
+          co->enqueue_transaction(new ST_Set_Mode(co, "TMR Mode", 7));
+          return false;
         default:
           break;
       }

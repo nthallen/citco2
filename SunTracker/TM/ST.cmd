@@ -25,6 +25,7 @@
 &ST_Command <const char *>
   : Track to Programmed Sun Position { $0 = "TS"; }
   : Track to Programmed Moon Position { $0 = "TM"; }
+  : Track by CamTracker { $0 = "TR"; }
   : Track by Diode { $0 = "TD"; }
 # : Cloud Detector Off { $0 = "C0"; }
 # : Cloud Detector On { $0 = "C1"; }

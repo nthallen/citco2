@@ -14,5 +14,6 @@ Radiance {
   HBox { +-; "Radiance"; -+ };
   Solar:   (WTX_SolRad,5)      "W/m2";
   Model:   (model_intensity,7) "W/m2";
-  Ratio:   (radiance_ratio,5)  (ok_to_open,3);
+  Ratio:   (radiance_ratio,5)  "%";
+  HBox { HGlue 0+1; { (ok_to_open,3) Opn: (Rad_Open_Pct,3) Cls: (Rad_Close_Pct,3) "%" }};
 }

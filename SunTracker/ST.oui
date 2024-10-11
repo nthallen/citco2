@@ -11,7 +11,7 @@
     ST_Revision = 2;
     break;
 <unsort>
-Host_Session function ST: Sun Tracker IP
+Host_Session function ST: Sun Tracker IP (10.10.0.2)
 
 <package> appid_default
 <include> "dasio/appid.h"
