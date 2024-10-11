@@ -271,7 +271,8 @@ State Bad_Weather {
   { if (WTX_drv_stale == 255 || WTX_dev_stale == 255)
       Validate WTX_Failed; } 
   { if ( (convert(WTX_PrecipInt) == 0) &&
-         WTX_RH < 88 /* && ws_low */ && ok_to_open )
+         convert(WTX_RH) < 88 /* && ws_low */ &&
+         ok_to_open )
       Validate Good_Weather;
   }
 }
@@ -279,7 +280,7 @@ State Bad_Weather {
 State Good_Weather {
   { if (WTX_drv_stale == 255 || WTX_dev_stale == 255)
       Validate WTX_Failed; } 
-  { if (convert(WTX_PrecipInt) > 0 || WTX_RH > 90) {
+  { if (convert(WTX_PrecipInt) > 0 || convert(WTX_RH) > 90) {
       Weather_Reason = "Rain";
       Validate Bad_Weather;
     }
