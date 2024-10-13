@@ -88,6 +88,7 @@ bool STEnc::reconnect()
 {
   disconnect();
   connect();
+  return false;
 }
 
 bool STEnc::set_relays(uint8_t val)
@@ -97,13 +98,13 @@ bool STEnc::set_relays(uint8_t val)
   return check_ulerror(err, "ulDOut(PORT0)");
 }
 
-bool STEnc::read(DigitalPortType ptype, const char *desc, uint8_t &rval)
+bool STEnc::read(DigitalPortType ptype, const char *desc, uint16_t &rval)
 {
   unsigned long long data;
 	UlError err = ulDIn(daqDeviceHandle, ptype, &data);
   if (check_ulerror(err, desc))
     return true;
-  uint8_t rval = (uint8_t)data;
+  rval = (uint16_t)(data & 0xFF);
   return false;
 }
 

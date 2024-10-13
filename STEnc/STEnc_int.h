@@ -51,7 +51,7 @@
          * @param rval The returned value
          * @return true on error
          */
-        bool read(DigitalPortType ptype, const char *desc, uint8_t &rval);
+        bool read(DigitalPortType ptype, const char *desc, uint16_t &rval);
         
         STEnc_TM_t *TM;
         DaqDeviceHandle daqDeviceHandle;
