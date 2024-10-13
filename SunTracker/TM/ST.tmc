@@ -12,7 +12,7 @@
     " TMR"
   };
   const char *ST_modus_text( unsigned char modus ) {
-    if ( modus > 6 ) return "????";
+    if ( modus > 7 ) return "????";
     else return ST_modtext[modus];
   }
 %}

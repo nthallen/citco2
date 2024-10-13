@@ -14,6 +14,7 @@
 ST_Pkt::ST_Pkt() {
   ready = 0;
   stale = 0;
+  dT_reported = false;
   strmessage[0] = '\0';
   wantedmode[0] = '\0';
   currentmode[0] = '\0';
@@ -129,6 +130,14 @@ void ST_Pkt::report() {
       if ( dT < SHRT_MIN ) deltaT = SHRT_MIN;
       else if ( dT > SHRT_MAX ) deltaT = SHRT_MAX;
       else deltaT = (short)dT;
+      if (dT == SHRT_MIN || dT == SHRT_MAX) {
+        if (! dT_reported ) {
+          msg(MSG_ERROR, "Reported time: %s", datetime);
+          dT_reported = true;
+        }
+      } else {
+        dT_reported = false;
+      }
     } else {
       msg( 1, "Invalid datetime string: '%s'", datetime );
       deltaT = SHRT_MIN;

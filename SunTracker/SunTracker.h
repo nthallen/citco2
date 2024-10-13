@@ -76,6 +76,7 @@ class ST_Pkt {
     //send_id ST_SSR_id;
     int ready;
     int stale;
+    bool dT_reported;
     char strmessage[42];
     char wantedmode[21];
     char currentmode[37];
