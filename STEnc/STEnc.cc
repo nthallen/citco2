@@ -73,6 +73,23 @@ bool STEnc::connect()
   return false;
 }
 
+bool STEnc::disconnect()
+{
+  if (daqDeviceHandle)
+  {
+    ulDisconnectDaqDevice(daqDeviceHandle);
+    ulReleaseDaqDevice(daqDeviceHandle);
+    daqDeviceHandle = 0;
+  }
+  return false;
+}
+
+bool STEnc::reconnect()
+{
+  disconnect();
+  connect();
+}
+
 bool STEnc::set_relays(uint8_t val)
 {
   unsigned long long data = val;
@@ -80,20 +97,30 @@ bool STEnc::set_relays(uint8_t val)
   return check_ulerror(err, "ulDOut(PORT0)");
 }
 
-uint8_t STEnc::read(DigitalPortType ptype, const char *desc)
+bool STEnc::read(DigitalPortType ptype, const char *desc, uint8_t &rval)
 {
   unsigned long long data;
 	UlError err = ulDIn(daqDeviceHandle, ptype, &data);
-  check_ulerror(err, desc);
+  if (check_ulerror(err, desc))
+    return true;
   uint8_t rval = (uint8_t)data;
-  return rval;
+  return false;
 }
 
-void STEnc::read_both()
+bool STEnc::read_both()
 {
-  uint16_t relays = read(AUXPORT0, "ulDIn(PORT0)");
-  uint16_t status = read(AUXPORT1, "ulDIn(PORT1)");
-  TM->STEnc_status = status | (relays << 8);
+  if (TM->STEnc_status | (1<<7)) {
+    reconnect();
+  } else {
+    uint16_t relays, status;
+    if (read(AUXPORT0, "ulDIn(PORT0)", relays) ||
+        read(AUXPORT1, "ulDIn(PORT1)", status)) {
+      TM->STEnc_status |= 1<<7;
+      return true;
+    }
+    TM->STEnc_status = status | (relays << 8);
+  }
+  return false;
 //  ((relays & RELAY_OPEN) ? S_OPEN_RELAY : 0) |
 //  ((relays & RELAY_CLOSE) ? S_OPEN_RELAY : 0) |
 //  ((status & SW_OPEN) ? S_OPEN_LIMIT : 0) |

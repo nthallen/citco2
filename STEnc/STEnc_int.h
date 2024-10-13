@@ -15,13 +15,15 @@
         STEnc(STEnc_TM_t *STEnc_TM);
         ~STEnc();
         bool connect();
+        bool disconnect();
+        bool reconnect();
         
         /**
          * @param val Value to be written to the relay output
          * @return true if there is an error (reported)
          */
         bool set_relays(uint8_t val);
-        void read_both();
+        bool read_both();
         // Command bit definitions
         static const uint8_t RELAY_OPEN = 2;
         static const uint8_t RELAY_CLOSE = 1;
@@ -46,9 +48,10 @@
         /**
          * @param ptype The DigitalPortType to read from
          * @param desc The context for error reporting
-         * @return The value read
+         * @param rval The returned value
+         * @return true on error
          */
-        uint8_t read(DigitalPortType ptype, const char *desc);
+        bool read(DigitalPortType ptype, const char *desc, uint8_t &rval);
         
         STEnc_TM_t *TM;
         DaqDeviceHandle daqDeviceHandle;
