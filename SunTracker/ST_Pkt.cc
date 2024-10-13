@@ -130,7 +130,7 @@ void ST_Pkt::report() {
       if ( dT < SHRT_MIN ) deltaT = SHRT_MIN;
       else if ( dT > SHRT_MAX ) deltaT = SHRT_MAX;
       else deltaT = (short)dT;
-      if (dT == SHRT_MIN || dT == SHRT_MAX) {
+      if (deltaT == SHRT_MIN || deltaT == SHRT_MAX) {
         if (! dT_reported ) {
           msg(MSG_ERROR, "Reported time: %s", datetime);
           dT_reported = true;
