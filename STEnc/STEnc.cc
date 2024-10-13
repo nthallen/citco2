@@ -112,7 +112,7 @@ bool STEnc::read(DigitalPortType ptype, const char *desc, uint16_t &rval)
 
 bool STEnc::read_both()
 {
-  if (TM->STEnc_status | (1<<7)) {
+  if (TM->STEnc_status & (1<<7)) {
     reconnect();
   } else {
     uint16_t relays, status;
