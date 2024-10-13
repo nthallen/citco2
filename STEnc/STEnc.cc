@@ -69,7 +69,9 @@ bool STEnc::connect()
   if (check_ulerror(err, "ulGetDaqDeviceInventory"))
     return true;
   msg(MSG, "%s ready\n", devDescriptors[0].devString);
-  read_both();
+  
+  TM->STEnc_status = 0;
+  // read_both();
   return false;
 }
 
