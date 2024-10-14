@@ -1,0 +1,18 @@
+<package> MKS925
+<include> "MKS925_int.h"
+<include> msg oui
+<follow> msg oui
+
+<opts> "p:"
+<sort>
+        -p <port> Specify RS232 port (default: /dev/ttyS3)
+
+<switch>
+  case 'p':
+    mks925_dev::port = optarg; break;
+
+<package> appid_default
+<include> "dasio/appid.h"
+<defs>
+  DAS_IO::AppID_t DAS_IO::AppID("MKS925",
+    "MKS925 Micropirani Pressure Gauge", "V1.0");
