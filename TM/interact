@@ -9,5 +9,6 @@
   Launch    -       WTX530 -e -v
   Launch    -       SunTracker -2
   Launch    -       STEnc -vv
+  Launch    -       MKS925 -v
   Launch    -       tmdf -p /home
   Launch    -TMC-   IFSalgo
