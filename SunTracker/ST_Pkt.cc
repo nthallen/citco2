@@ -133,6 +133,7 @@ void ST_Pkt::report() {
       if (deltaT == SHRT_MIN || deltaT == SHRT_MAX) {
         if (! dT_reported ) {
           msg(MSG_ERROR, "Reported time: %s", datetime);
+          msg(MSG_ERROR, "dT = %.5lg", dT);
           dT_reported = true;
         }
       } else {
