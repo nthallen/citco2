@@ -4,4 +4,4 @@ HOMEDIR CITCO2_Data_Dir
 ROWS 20
 
  1 SWStat TMbase SWStat
- 
+ 1 MFCtr  TMbase MFCtr

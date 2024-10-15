@@ -15,6 +15,7 @@ else
 end
 f = ne_dialg(f, 'add', 0, 1, 'gcctm', 'T Mbase' );
 f = ne_dialg(f, 'add', 1, 0, 'pcctmsws', 'SW Stat' );
+f = ne_dialg(f, 'add', 1, 0, 'pcctmmfc', 'MF Ctr' );
 f = ne_dialg(f, 'add', 1, 0, 'pcctmtd', 'T Drift' );
 f = ne_dialg(f, 'add', 1, 0, 'pcctmcpu', 'CPU' );
 f = ne_dialg(f, 'add', 1, 0, 'pcctmram', 'RAM' );
@@ -53,6 +54,11 @@ f = ne_dialg(f, 'add', 1, 0, 'pccststatus', 'Status' );
 f = ne_dialg(f, 'add', 0, 1, 'gcce', 'Enclosure' );
 f = ne_dialg(f, 'add', 1, 0, 'pcces', 'Status' );
 f = ne_dialg(f, 'add', 1, 0, 'pccestale', 'Stale' );
+f = ne_dialg(f, 'newcol');
+f = ne_dialg(f, 'add', 0, 1, 'gccmks', 'MKS925' );
+f = ne_dialg(f, 'add', 1, 0, 'pccmksp', 'P' );
+f = ne_dialg(f, 'add', 1, 0, 'pccmkst', 'T' );
+f = ne_dialg(f, 'add', 1, 0, 'pccmkss', 'Stale' );
 f = ne_listdirs(f, dirfunc, 15);
 f = ne_dialg(f, 'newcol');
 ne_dialg(f, 'resize');

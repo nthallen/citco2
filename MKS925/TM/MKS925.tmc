@@ -1,0 +1,18 @@
+/* MKS925.tmc */
+TM typedef float MKS_Torr_t { text "%9.3e"; }
+TM typedef float MKS_T_t { text "%5.1f"; }
+TM typedef uint8_t MKS_stale_t { text "%3u"; }
+
+TM 1 Hz MKS_Torr_t MKS_P;
+TM 1 Hz MKS_T_t MKS_T;
+TM 1 Hz MKS_stale_t MKS_stale;
+
+TM "Receive" MKS925 1;
+
+group MKS (MKS_P, MKS_T, MKS_stale)
+{
+  MKS_P = MKS925.P;
+  MKS_T = MKS925.T;
+  MKS_stale = MKS925_obj->Stale(255);
+  MKS925_obj->synch();
+}

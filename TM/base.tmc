@@ -1,3 +1,4 @@
 /* base.tmc */
+TM MAXCOLS = 100;
 TM typedef uint16_t synch_t { text "%5u"; }
 TM 1 Hz synch_t Synch, MFCtr;

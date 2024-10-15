@@ -1,0 +1,5 @@
+%{
+  /* MKS925_col.tmc */
+  #include "MKS925.h"
+  MKS925_t MKS925;
+%}

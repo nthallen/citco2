@@ -19,6 +19,7 @@ Module WTX530
 Module SunTracker
 Module STEnc mode=present_no_driver
 #Module STEnc mode=present
+Module MKS925
 
 IFSdisp : $extbase IFS.tbl
 IFSalgo : $extbase IFS.tma $swsbase

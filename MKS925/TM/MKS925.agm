@@ -1,0 +1,22 @@
+ModuleDef MKS925 [ Panel= ] {
+  MKS925 Micropirani
+}
+
+mode (default) {
+  tmcbase = MKS925.tmc
+  colbase = MKS925_col.tmc
+  genuibase = MKS925.genui:MKS925.genui.in
+  - : MKS925.tbl:MKS925.tbl.in
+  DISTRIB = @MODDIR@/../MKS925
+  CPPFLAGS = -I @MODDIR@/..
+  IGNORE = MKS925.genui MKS925.tbl
+  OBJ = MKS925.genui MKS925.tbl
+  %%
+.PHONY : clean-MKS925 @MODDIR@/../MKS925
+all-dist : @MODDIR@/../MKS925
+@MODDIR@/../MKS925 :
+	$(MAKE) --directory=@MODDIR@/..
+clean-dist : clean-MKS925
+clean-MKS925 :
+	$(MAKE) --directory=@MODDIR@/.. clean
+}

@@ -1,0 +1,10 @@
+MKS_stale {
+  stale: (MKS_stale,3);
+}
+
+MKS_HK {
+  HBox { +-; MKS925; -+ };
+  P: (MKS_P,9) Torr;
+  T: (MKS_T,5) C;
+  [MKS_stale];
+}
