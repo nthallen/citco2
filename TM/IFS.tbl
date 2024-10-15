@@ -3,26 +3,36 @@ Input "PTB330.tbl";
 Input "WTX530.tbl";
 Input "TMbase.tbl";
 Input "STEnc.tbl";
+Input "MKS925.tbl";
 
 MainStack {
   HBox { +-; IFS; -+ };
   HBox {
-    [WTX]; |+;
     {
-      [WTX_Wind];
-      [WTX_Precip];
-    }; |+;
-    {
-      [WTX_HK];
-      [PTB_HK]
+      HBox {
+        {
+          [WTX_Wind];
+          [WTX_Precip];
+        }; |+;
+        {
+          [WTX_HK];
+          [PTB_HK]
+        };
+      };
+      HBox {
+        [SunTracker]; |+;
+        { [STEnc];
+          [Radiance]
+        };
+      };
     };
-  };
-  HBox {
-    [SunTracker]; |+;
-    { [STEnc];
-      [Radiance]
-    }; |+; [TMbaseB]
-  };
+    |+;
+    {
+      [WTX];
+      [MKS_HK];
+      [TMbaseB]
+    }
+  }
 }
 
 {
