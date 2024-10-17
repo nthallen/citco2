@@ -152,8 +152,8 @@ State Ready_To_Play {
   Hold Until Valid ( Dome_Opened ) or 2:00;
   #> Sun Tracker Track by Diode
 
-  # > Email Report Message Enclosure opened in Ready_to_Play
-  +10:00 > Email Report Message Enclosure open conditions for 10 minutes in Ready_to_Play
+  > Email Report Message Enclosure opened in Ready_to_Play
+# +10:00 > Email Report Message Enclosure open conditions for 10 minutes in Ready_to_Play
 
 # Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
 #               IFSCStat == IFS_SCAN_WAIT ) &&

@@ -8,7 +8,7 @@
     " TPG",
     " TMM",
     "INIT",
-    " AOA",
+    " TMR", // Actually AOA, but still cam tracker mode
     " TMR"
   };
   const char *ST_modus_text( unsigned char modus ) {
