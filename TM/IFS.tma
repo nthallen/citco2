@@ -26,8 +26,8 @@
 
 State Init {
       > Telemetry Start
-  +1  > Radiance Open THreshold Set 40 percent
-      > Radiance Close Threshold Set 15 percent
+  +1  > Radiance Open Threshold Set 70 percent
+      > Radiance Close Threshold Set 60 percent
       Validate Init_Choice;
 }
 
