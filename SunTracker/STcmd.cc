@@ -40,6 +40,14 @@ bool STcmd::execute_cmd()
         default: break;
       }
       break;
+    case 'S':
+      switch (buf[1]) {
+        case 'L':
+          co->enqueue_transaction(new ST_Sleep(co));
+          return false;
+        default: break;
+      }
+      break;
     case 'T':
       switch (buf[1]) {
         case 'Y':

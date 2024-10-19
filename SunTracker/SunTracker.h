@@ -168,5 +168,19 @@ class ST_Read_Top : public Transaction {
     int Got_top(CURLcode);
 };
 
+class ST_Sleep;
+typedef int (ST_Sleep::*ST_SleepReq)(CURLcode);
+
+class ST_Sleep : public Transaction {
+  public:
+    ST_Sleep(curl_multi_obj *co);
+    ~ST_Sleep();
+    int take_next_step(CURLcode);
+  private:
+    ST_SleepReq next_step;
+    int Submit_req(CURLcode);
+    int End(CURLcode);
+};
+
 #endif // __cplusplus
 #endif
