@@ -124,6 +124,7 @@ void ST_Pkt::report() {
       double dT;
       st_new.tm_year -= 1900;
       --st_new.tm_mon;
+      st_new.tm_isdst = 0;
       st_time = mktime(&st_new);
       our_time = time(NULL);
       dT = difftime(st_time, our_time);
