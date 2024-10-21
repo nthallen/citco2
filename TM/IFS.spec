@@ -13,16 +13,16 @@ swsbase = Config/IFS.sws
 cmdbase = Startup.cmd
 Module TMbase mode=ignore SWSnot=
 Module savelog
-Module Email dest=/home/citco2/bin/Email
+Module Email cfgsrcdir=Config/ dest=/home/citco2/bin/Email
 Module PTB330
 Module WTX530
 Module SunTracker
-#Module STEnc mode=present_no_driver
-Module STEnc mode=present
 Module MKS925
 
+Module Config/Site
+
 IFSdisp : $extbase IFS.tbl
-IFSalgo : $extbase IFS.tma $swsbase
+IFSalgo : $extbase Config/IFS.tma $swsbase
 doit : IFS.doit
 
 CPPFLAGS = -I Config -DBLOCK_KB_CMDS

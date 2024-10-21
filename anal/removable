@@ -1,0 +1,143 @@
+#! /bin/sh
+# removable ( umount | mount )
+function nl_error {
+  echo "removable: $*" >&2
+  exit 1
+}
+
+# check_parts returns a non-zero status if any partitions exist
+function check_parts {
+  drive=$1
+  n=`ls ${drive}t* 2>/dev/null | wc -l | sed -e 's/^ *//'`
+  return $n
+}
+
+function initialize {
+  if pidin -P devb-ahci arg | grep -q devb-ahci; then
+    syspart=`mount | grep " on / type qnx4"`
+    syspart=${syspart#*/dev/}
+    syspart=${syspart% on / type qnx4*}
+    sysdev=${syspart%t*}
+    syspart=${syspart#$sysdev}
+    if [ "$sysdev" = "hd1" ]; then
+      newdisk=/dev/hd0
+    elif [ "$sysdev" = "hd0" ]; then
+      nl_error "System disk is on /dev/hd0: reboot to access removable drive"
+    else
+      nl_error "Did not understand mount config: sysdev=$sysdev syspart=$syspart"
+    fi
+  else
+    newdisk=/dev/hd2
+  fi
+  [ -e $newdisk ] || nl_error "$newdisk not found: Try 'removable mount' first"
+  echo "Ready to initialize $newdisk"
+  parts=''
+  for part in ${newdisk}t*; do
+    [ -e $part ] && parts="$parts $part"
+  done
+  if [ -n "$parts" ]; then
+    echo "$newdisk has existing partitions"
+    echo "Dismounting:"
+    for part in $parts; do
+      echo "  $part"
+      umount $part
+    done
+  fi
+  while fdisk $newdisk show | grep -q "^[1-4]\. [^-]"; do
+    echo "If you want to preserve the data on this drive, stop now."
+    echo "Otherwise, we will invoke fdisk, so you can manually"
+    echo "delete any existing partitions."
+    echo -n "Continue? [N/y]: "
+    read j
+    case $j in
+      [yY]*) ;;
+      *) echo "Aborting initialization of $newdisk"; return;;
+    esac
+    fdisk $newdisk
+  done
+
+  fdisk $newdisk add -t77
+  mount -e $newdisk
+  [ -e ${newdisk}t77 ] || nl_error "${newdisk}t77 did not appear after mount -e"
+
+  # Now need to double-check that this did not go so far as
+  # to automount the drive
+  while mount | grep -q $newdisk; do
+    mntd=`mount | grep $newdisk`
+    fs=${mntd#* on }
+    fs=${fs%% *}
+    if [ -e "$fs" ]; then
+      echo "umounting $fs"
+      umount $fs
+      [ -e "$fs" ] && nl_error "Unable to umount $fs after mount -e"
+    else
+      nl_error "Do not understand mount response: '$mntd'"
+    fi
+  done
+
+  [ -e ${newdisk}t77 ] || nl_error "${newdisk}t77 disappeared after umount"
+  dinit -h ${newdisk}t77
+  mount -tqnx4 ${newdisk}t77 /removable || nl_error "Failed to mount /removable"
+  echo "mount=/removable" >/removable/.diskroot
+  
+  mkdir -p /removable/citco2/raw/flight || nl_error mkdir /removable/citco2/raw/flight failed
+  mkdir /removable/citco2/spectra || nl_error mkdir /removable/citco2/spectra failed
+  mkdir /removable/citco2/spectra.tmp || nl_error mkdir /removable/citco2/spectra.tmp failed
+  chown -R flight:flight /removable/citco2
+  chmod -R 0775 /removable/citco2
+}
+
+if [ `id -u` != 0 ]; then
+  exec /usr/pkg/bin/sudo $0 $*
+fi
+
+op=$1
+case $op in
+  mount) mount_opt='';;
+  umount) mount_opt=',noslave';;
+  initialize) initialize; exit 0;;
+  *) nl_error Must specify mount, umount or initialize
+esac
+
+if pidin -P devb-ahci arg | grep -q devb-ahci; then
+  nl_error "mount and umount not currently supported on Hercules III"
+fi
+
+[ -d /dev/huarp ] && nl_error IFSloop must not be active during u/mount
+  
+driver_pid=`pidin -P devb-eide arg | grep 0x170 | sed -e 's/^ *//' -e 's/ .*$//'`
+
+if [ -z "$driver_pid" ]; then
+  [ -e /dev/hd1 -o -e /dev/hd2 ] && nl_error Could not identify driver
+fi
+
+for drive in /dev/hd1 /dev/hd2; do
+  if [ -e $drive ]; then
+    echo Dismounting $drive
+    umount $drive
+    check_parts $drive || nl_error umount of $drive did not remove partitions
+  fi
+done
+
+if [ -n $driver_pid ]; then
+  echo "Shutting down the driver ($driver_pid)"
+  kill $driver_pid
+  [ -e /dev/hd1 -o -e /dev/hd2 ] && sleep 1
+  [ -e /dev/hd1 -o -e /dev/hd2 ] &&
+    nl_error "Killing driver ($driver_pid) did not remove drives"
+fi
+
+echo "(Re)starting the driver"
+devb-eide blk auto=partition qnx6 sync=optional cam quiet eide ioport=0x170,irq=15,nobmstr$mount_opt
+waitfor /dev/hd1t178 || nl_error Did not see /dev/hd1t178
+mount -tqnx6 /dev/hd1t178 /data
+waitfor /dev/hd1t179 || nl_error Did not see /dev/hd1t179
+mount -tqnx6 /dev/hd1t179 /d1
+if [ $op = mount ]; then
+  waitfor /dev/hd2t77 || nl_error Did not see /dev/hd2t77
+  mount /dev/hd2t77 /removable
+else
+  [ -e /dev/hd2 ] && nl_error /dev/hd2 still present after driver restarted
+fi
+mount
+

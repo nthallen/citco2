@@ -1,0 +1,11 @@
+#! /bin/sh
+
+#ifdef __USAGE
+#%C      [start]
+#endif
+
+ifsdoit_arg=wait
+[ "$1" = "start" ] && ifsdoit_arg=''
+
+cd /home/citco2
+./doit ${IFSDOIT_OPT--sa} $ifsdoit_arg

@@ -1,0 +1,28 @@
+#! /bin/sh
+# bin2csv $dir
+
+function nl_error {
+  echo bin2csv: ERROR: $* >&2
+  exit 1
+}
+
+csv=/home/citco2/bin/anal/csv
+
+dir=$1
+[ -d $dir ] || nl_error "Cannot locate directory '$dir'"
+[ -f $dir/VERSION ] || nl_error "Cannot locate VERSION in '$dir'"
+ver=`cat $dir/VERSION`
+dir=`fullpath -t $dir`
+RUN=`basename $dir`
+dest=$dir/TM
+[ -d $dest ] || mkdir $dest || nl_error "Cannot mkdir '$dest'"
+
+cd /home/citco2
+extract $dir ccengext
+cd /home/citco2/anal/$RUN
+
+cp cceng_1.csv $dest/${RUN}_1.csv
+cp cceng_1_2.csv $dest/${RUN}_2.csv
+cp cceng_1_8.csv $dest/${RUN}_8.csv
+
+rm -f *.csv

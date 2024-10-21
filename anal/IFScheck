@@ -1,0 +1,28 @@
+#!/bin/sh
+echo "--- SITE_INSTRUMENT ---"
+ls -l /home/citco2/src/TM/Config | cut -d/ -f8
+echo
+echo "--- NOW (UT) ---"
+date -u "+%T %d-%b-%Y %a"
+echo
+echo "--- WHODUNIT ---"
+cd /data/citco2
+egrep "keybd: Startup|keybd: Shutdown" citco2.RT.*.log
+echo
+echo "--- RECENT LOG ---"
+tail citco2.log
+echo
+echo "--- LATEST MIN/MAX ---"
+if [ -d scan ]; then
+  cd scan
+  for i in $(ls -1rt | grep "\.0$" | tail -n 10 | head -n 9)
+  do
+    STRING=$(echo $(/usr/local/bin/OpusHdr $i | grep M.Y | sed -e "s/[1-9]\.[0-9]*e/0.000/" | cut -c -13))
+    TIM=$(echo $(/usr/local/bin/OpusHdr $i | grep TIM1 | cut -c 9-16))
+    echo $TIM $STRING
+  done
+  cd ..
+fi
+echo
+echo "--- LATEST STATE CHANGE ---"
+egrep "Entering State (Init|Pump_Down|ReInit|Holding.*|Sleep|Wake_Up|Ready_To_Play|Play|Scanner_Failure|Nap|Bedtime.*|Lights_Out|Quick_Shutdown|Full_Shutdown|Shutdown|Failure)$" citco2.log | tail -1 | sed -e "s/\[DEBUG\] TMA: Entering State //"

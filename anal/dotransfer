@@ -1,0 +1,13 @@
+#!/bin/sh
+
+TXSCRIPT="/tmp/transfer-request.sh"
+
+NOW=$(date +_%F_%T)
+
+NEWSCRIPT=$TXSCRIPT$NOW
+
+if [ -f "$TXSCRIPT" ]; then
+  mv "$TXSCRIPT" "$NEWSCRIPT"
+  $NEWSCRIPT
+fi
+

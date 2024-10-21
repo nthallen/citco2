@@ -1,0 +1,31 @@
+#! /bin/sh
+# Script to copy the CSV files from /data to /removable after
+# they are produced with the "extract-csv" script.
+# Must be run from directory "/data/citco2/raw/flight".
+# Argument is a list of savesets (i.e. YYMMDD.S).
+
+if [ -f md5.tmp ]; then
+  rm md5.tmp
+fi
+for dir in $*; do
+  tgt=/removable/citco2/raw/flight/$dir
+  if [ -d "$tgt" ]; then
+    if [ -f $dir-MD5SUM ]; then
+      rm $dir-MD5SUM
+      diff $dir/.MD5SUM $tgt/.MD5SUM
+      echo "Copying .MD5SUM from $dir to $tgt"
+      cp $dir/.MD5SUM $tgt/.MD5SUM
+      if [ ! -d $tgt/TM ]; then
+        echo "Creating directory $tgt/TM"
+        mkdir $tgt/TM
+      fi
+      echo "Copying TM files from $dir to $tgt"
+      cp $dir/TM/* $tgt/TM
+    else
+      echo "Missing file $dir-MD5SUM"
+    fi
+  else
+    echo "Missing target directory $tgt"
+  fi
+done
+

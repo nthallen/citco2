@@ -1,0 +1,22 @@
+#! /bin/sh
+# Script to compute the CSV files if there was a problem with them
+# during the overnight processing.
+# Must be run from directory "/data/citco2/raw/flight".
+# Argument is a list of savesets (i.e. YYMMDD.S).
+
+for dir in $*; do
+  if [ -d "$dir" ]; then
+    echo "Executing bin2csv on $dir"
+    /home/citco2/bin/anal/bin2csv $dir
+    if [ -f $dir/.MD5SUM ]; then
+      echo "Fixing dircksum on $dir"
+      mv $dir/.MD5SUM $dir-MD5SUM
+      dircksum $dir/TM | sed -e "s;$;/TM;" > md5.tmp
+      sed -e "/TM$/r md5.tmp" -e "/TM$/d" $dir-MD5SUM > $dir/.MD5SUM
+    else
+      echo "Calculating dircksum on $dir"
+      dircksum -w "$dir"
+    fi
+  fi
+done
+

@@ -1,0 +1,7 @@
+ModuleDef Site {
+  Site.agm.gse for MOACC Cambridge Bay non-Linux support computers
+}
+
+# Dome/Enclosure driver selection:
+#Module STEnc mode=present
+Module STEnc mode=present_no_driver

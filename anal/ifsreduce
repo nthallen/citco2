@@ -1,0 +1,149 @@
+#! /bin/sh
+# Analysis script to run under reduce as:
+# Analysis='bin/anal/ifsreduce background $analdir $directory'
+#   Can also be run in the foreground as
+# Analysis='bin/anal/ifsreduce $directory'
+# Assumes infoext has been run during extractions
+# This script will actually only enqueue processing unless the
+# environment variable BEDTIME = "yes"
+
+
+function nl_error {
+  echo "ifsreduce: $*" >&2
+  echo "2 ifsreduce: $*" >>/data/citco2/report.queue
+  exit 1;
+}
+
+# Not really an analysis task, but check status of NTP sync: doing it here
+# ensures this information is saved and sent in the outgoing emails. 
+echo "Status of NTP sync:"
+/usr/bin/ntpq -p 127.0.0.1 | grep -v "==" | cut -c 1-38,44-78
+
+analdir=''
+
+if [ "$1" = "background" ]; then
+  shift
+  analdir=$1
+  [ -d "$analdir" ] || nl_error Invalid analdir argument
+  shift
+fi
+
+if [ -n "$1" ]; then
+  dir=$1
+  [ -d "$dir" ] || nl_error Directory argument is not a directory
+  run=/${dir#*raw/}
+  [ "$run" = "$dir" ] && nl_error Expected raw/ in directory path
+
+  # Add this run to /data/citco2/saved.runs
+  echo $dir >>/data/citco2/saved.runs
+
+  if [ ! "$BEDTIME" = "yes" ]; then
+    echo Directory $dir queued for bedtime processing
+    exit 0
+  fi
+
+  if [ -n "$analdir" ]; then
+    echo Proceeding with bedtime processing in the background
+    nohup nice -2 $0 background $analdir >$analdir/ifsreduce.log 2>&1 &
+    exit 0
+  fi
+fi
+
+[ -f /data/citco2/saved.runs ] || nl_error Cannot find saved.runs file
+rm -f /data/citco2/saved.runs.$$
+mv /data/citco2/saved.runs /data/citco2/saved.runs.$$
+dirs=`cat /data/citco2/saved.runs.$$`
+
+for dir in $dirs; do
+  # redo our sanity checks
+  [ -n "$dir" ] || nl_error Must specify a directory argument
+  [ -d "$dir" ] || nl_error Directory argument is not a directory
+  run=/${dir#*raw/}
+  [ "$run" = "$dir" ] && nl_error Expected raw/ in directory path
+  saveset=${dir#*raw/flight/}
+  [ "$saveset" = "$dir" ] && nl_error Expected raw/flight/ in directory path
+
+  # Show remaining disk space
+  echo "Status of disk space:"
+  echo "Filesystem             1K-blocks      Used      Free     Use%  Mounted on"
+  df -k | grep -v "/dev/hd. " | sed -e "s/  *$//"
+
+  # First do extractions
+  if [ ! -d $dir/TM ]; then
+    rm -f $dir/.MD5SUM
+    echo "Executing bin2csv on $dir"
+    /home/citco2/bin/anal/bin2csv $dir
+  else
+    echo "Skipping bin2csv on $dir"
+  fi
+  
+  # Then do dircksum on the directory
+  if [ -f $dir/.MD5SUM ]; then
+    echo "Skipping dircksum on $dir"
+  else
+    echo "Calculating dircksum on $dir"
+    dircksum -w "$dir"
+  fi
+
+  # Detect removable drive
+  if [ -d "/removable" ]; then
+#    destroot=/removable
+    destroot=/NO-REMOVABLE-FOUND  # Disable the use of removable drive
+  elif [ -d "/fs/usb0" ]; then
+    destroot=/fs/usb0
+  elif [ -d "/fs/hd10-qnx4-1" ]; then
+    destroot=/fs/hd10-qnx4-1
+  else
+    destroot=/NO-REMOVABLE-FOUND
+  fi
+  dest=$destroot/citco2/raw$run
+
+  # Then copy from fixed disk to removable one
+  #   if the removable disk is missing and we have the needed config file,
+  #   create data transfer script instead.
+  if [ ! -d $destroot ]; then
+    echo Removable drive is missing: skipping data copy
+    if [ -f /home/citco2/src/QNX6/TM/Config/rsync_tx_vars ]; then
+      . /home/citco2/src/QNX6/TM/Config/rsync_tx_vars
+      site=$(ls -l /home/citco2/src/QNX6/TM/Config | cut -d/ -f10)
+      txscript="/tmp/transfer-request.sh"
+      txout="/tmp/transfer-result-$saveset.out"
+      if [ ! -f $txscript ]; then
+        echo "#!/bin/sh" > $txscript
+        echo "cd /data/citco2 || exit" >> $txscript
+      fi
+      fulldest="$txuser@$txdest$site"
+      echo "/usr/pkg/bin/rsync -a -e ssh $dir $fulldest > $txout 2>&1" >> $txscript
+      echo "/bin/chmod g+w $txout" >> $txscript
+      echo "/usr/bin/touch -c $txout" >> $txscript
+      chmod a+x $txscript
+      echo "Requested transfer of $dir to:"
+      echo "  $fulldest"
+    fi
+  elif [ ! -f $dest/.MD5SUM ]; then
+    echo "Copying data to $dest"
+    cp -cpr "$dir" $dest
+  else
+    echo "Skipping copy of $dir"
+  fi
+
+  # Verify the dircksum of the copy
+  if [ ! -d $destroot ]; then
+    echo Removable drive is missing: skipping cksum check
+  else
+    echo "Calculating dircksum on $dest"
+    dircksum $dest || nl_error dircksum failed
+  fi
+done
+
+echo Invoking spectral analysis script
+/home/citco2/bin/anal/exam.ksh $dirs
+
+rm /data/citco2/saved.runs.$$
+echo ifsreduce processing completed
+if [ -n "$analdir" -a -f $analdir/ifsreduce.log ]; then
+  logfile=`fullpath $analdir/ifsreduce.log`
+  echo "0 [$logfile] ifsreduce.log" >>/data/citco2/report.queue
+fi
+
+exit 0

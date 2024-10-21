@@ -1,0 +1,7 @@
+ModuleDef Site {
+  Site.agm.phocus for MOACC Cambridge Bay instrument computer phocus
+}
+
+# Dome/Enclosure driver selection:
+Module STEnc mode=present
+#Module STEnc mode=present_no_driver
