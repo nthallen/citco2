@@ -6,7 +6,7 @@ echo "--- NOW (UT) ---"
 date -u "+%T %d-%b-%Y %a"
 echo
 echo "--- WHODUNIT ---"
-cd /data/citco2
+cd /home/citco2
 egrep "keybd: Startup|keybd: Shutdown" citco2.RT.*.log
 echo
 echo "--- RECENT LOG ---"
