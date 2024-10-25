@@ -5,14 +5,15 @@
     " TPL",
     " TPS",
     " TPM",
-    " TPG",
     " TMM",
+    " TPG",
+    " TTM",
     "INIT",
-    " TMR", // Actually AOA, but still cam tracker mode
+    " AOA",
     " TMR"
   };
   const char *ST_modus_text( unsigned char modus ) {
-    if ( modus > 7 ) return "????";
+    if ( modus > 8 ) return "????";
     else return ST_modtext[modus];
   }
 %}

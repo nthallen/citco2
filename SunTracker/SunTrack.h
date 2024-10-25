@@ -48,5 +48,7 @@ typedef struct __attribute__((__packed__)) {
 #define ST_MODE_TPG 4
 #define ST_MODE_TTM 5
 #define ST_MODE_INIT 6
+#define ST_MODE_AOA 7
+#define ST_MODE_TMR 8
 
 #endif

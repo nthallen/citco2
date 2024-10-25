@@ -64,7 +64,7 @@ void ST_Pkt::new_data(unsigned char *data) {
     switch (pkt.Cloud_Detector) {
       case 'C': msg(0, "Cloud Detector On"); break;
       case 'N': msg(0, "Cloud Detector Off"); break;
-      default: msg(1, "Invalid Cloud Detector State"); break;
+      default: msg(1, "Unrecognized Cloud Detector State: '%c'", pkt.Cloud_Detector); break;
     }
     Cloud_Detector = pkt.Cloud_Detector;
   }
@@ -153,6 +153,8 @@ void ST_Pkt::report() {
       ST_SSR.ST_modus = ST_MODE_TPS;
     } else if (strncmp(currentmode, "Tracking Mode", 13) == 0) {
       ST_SSR.ST_modus = ST_MODE_TTM;
+    } else if (strncmp(currentmode, "CamTracker Mode", 15) == 0) {
+      ST_SSR.ST_modus = ST_MODE_TMR;
     } else {
       ST_SSR.ST_modus = ST_MODE_INIT;
     }
