@@ -6,7 +6,7 @@
   Launch    tm_gen  IFScol
   Launch    cmd     IFSsrvr -H srvr: -S: -v
   Launch    -       PTB330
-  Launch    -       WTX530 -e -v
+  Launch    -       WTX530 -e
   Launch    -       SunTracker -2
   Launch    -       STEnc -vv
   Launch    -       MKS925 -v
