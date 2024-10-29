@@ -35,7 +35,16 @@ MainStack {
   }
 }
 
+Algo {
+  P1: (AlgoP1,21) P3: (AlgoP3,25)
+}
+
 {
-  HBox { |+; [MainStack]; |+ };
+  HBox { |+;
+    { [MainStack];
+      -;
+      [Algo];
+    };
+    |+ };
   -;
 }

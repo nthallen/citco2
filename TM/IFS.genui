@@ -3,5 +3,9 @@ MNEMONIC cc
 HOMEDIR CITCO2_Data_Dir
 ROWS 20
 
- 1 SWStat TMbase SWStat
- 1 MFCtr  TMbase MFCtr
+ 1 SWStat        TMbase SWStat
+ 1 AlgoP1        Algo   P1 %.0lf
+ 1 AlgoP3        Algo   P3 %.0lf
+ 1 RH_Open_Pct   WTX RH
+ 1 RH_Close_Pct  WTX RH
+ 1 MFCtr         TMbase MFCtr

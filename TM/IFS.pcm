@@ -1,12 +1,12 @@
 
 --------Frame Statistics-----------
 Major Frame: 1 minor frames, 1 Hz
-Minor Frame: 77 bytes, 1 Hz
+Minor Frame: 81 bytes, 1 Hz
 Effective Frame Dimensions:
-  1 Rows 77 Columns
+  1 Rows 81 Columns
   1 rows/sec
-  616 bits/sec
-  Data:  584 bits/sec  95 %
+  648 bits/sec
+  Data:  616 bits/sec  95 %
   Synch: 32 bits/sec  5 %
   Empty: 0 bits/sec  0 %
 -------End of Frame Statistics-----
@@ -54,9 +54,13 @@ Effective Frame Dimensions:
 1/1 Hz 2 bytes Datum Disk (1,0,66,2)
 1/1 Hz 2 bytes Datum memused (1,0,68,2)
 1/1 Hz 2 bytes Datum Sol_ele (1,0,70,2)
-1/1 Hz 1 bytes Datum Rad_Close_Pct (1,0,72,1)
-1/1 Hz 1 bytes Datum Rad_Open_Pct (1,0,73,1)
-1/1 Hz 1 bytes Datum SWStat (1,0,74,1)
-1/1 Hz 2 bytes Datum Synch (1,0,75,2)
+1/1 Hz 1 bytes Datum AlgoP1 (1,0,72,1)
+1/1 Hz 1 bytes Datum AlgoP3 (1,0,73,1)
+1/1 Hz 1 bytes Datum Rad_Close_Pct (1,0,74,1)
+1/1 Hz 1 bytes Datum Rad_Open_Pct (1,0,75,1)
+1/1 Hz 1 bytes Datum RH_Close_Pct (1,0,76,1)
+1/1 Hz 1 bytes Datum RH_Open_Pct (1,0,77,1)
+1/1 Hz 1 bytes Datum SWStat (1,0,78,1)
+1/1 Hz 2 bytes Datum Synch (1,0,79,2)
 -------End of PCM Definition-------
 

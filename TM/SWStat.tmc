@@ -1,4 +1,51 @@
 %{
   /* SWStat.tmc: typedefs */
+  const char *AlgoP1_text[] = {
+    "                         ",
+    "Init                     ",
+    "Init_Choice              ",
+    "Init_Decide              ",
+    "Unexpected_Restart       ",
+    "Holding                  ",
+    "Holding_with_Lamp_Runs   ",
+    "Failure                  ",
+    "Init_Close               ",
+    "ReInit                   ",
+    "ReInit_and_Pump_Down     ",
+    "Pump_Down                ",
+    "Sleep                    ",
+    "Wake_Up                  ",
+    "Ready_To_Play            ",
+    "Init_Set_InSb_Gains      ",
+    "Play                     ",
+    "Play_InGaAs              ",
+    "Scanner_Failure          ",
+    "Scanner_CAN_Err          ",
+    "Scanner_InSbNR           ",
+    "Nap                      ",
+    "Bedtime                  ",
+    "Bedtime_Story            ",
+    "Lights_Out               ",
+    "Quick_Shutdown           ",
+    "Full_Shutdown            ",
+    "Shutdown                 "
+    };
+
+  const char *AlgoP1_textf(uint8_t snum) {
+    return AlgoP1_text[snum<=27?snum:0];
+  }
+
+  const char *AlgoP3_text[] = {
+    "                         ",
+    "Bad_Weather              ",
+    "Good_Weather             ",
+    "WTX_Failed               "
+    };
+
+  const char *AlgoP3_textf(uint8_t snum) {
+    return AlgoP3_text[snum<=3?snum:0];
+  }
 %}
 TM typedef uint8_t UCHAR { text "%3u"; }
+TM typedef uint8_t AlgoP1_t { text "%25u" AlgoP1_textf(); }
+TM typedef uint8_t AlgoP3_t { text "%25u" AlgoP3_textf(); }
