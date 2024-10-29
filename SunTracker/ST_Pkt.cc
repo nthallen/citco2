@@ -60,6 +60,7 @@ void ST_Pkt::new_data(unsigned char *data) {
   ready = 1;
   stale = 0;
   check_string("datetime", &datetime[0], &pkt.datetime[0], 41, 0);
+  #if 0 // Contents of this field unknown in CamTracker mode
   if (pkt.Cloud_Detector != Cloud_Detector) {
     switch (pkt.Cloud_Detector) {
       case 'C': msg(0, "Cloud Detector On"); break;
@@ -68,6 +69,7 @@ void ST_Pkt::new_data(unsigned char *data) {
     }
     Cloud_Detector = pkt.Cloud_Detector;
   }
+  #endif
 }
 
 /**
