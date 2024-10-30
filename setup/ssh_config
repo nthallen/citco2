@@ -1,5 +1,5 @@
-host moacc-phocus phocus 129.222.185.198
-hostname 129.222.185.198
+host moacc-phocus phocus 129.222.154.221
+hostname 129.222.154.221
 port 10569
 ForwardAgent yes
 ForwardX11 yes

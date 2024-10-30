@@ -21,7 +21,7 @@ Module MKS925
 
 Module Config/Site
 
-IFSdisp : $extbase IFS.tbl
+IFSdisp : $extbase IFS.tbl IFS_HK.tbl
 IFSalgo : $extbase Config/IFS.tma $swsbase
 doit : IFS.doit
 

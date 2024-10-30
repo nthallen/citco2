@@ -8,3 +8,8 @@ MKS_HK {
   T: (MKS_T,5) C;
   [MKS_stale];
 }
+
+MKS {
+  HBox { +-; MKS925; -+ };
+  P: (MKS_P,9) Torr;
+}

@@ -1,0 +1,36 @@
+# IFS_HK.tbl
+Input "WTX530.tbl";
+Input "PTB330.tbl";
+Input "ST.tbl";
+Input "STEnc.tbl";
+Input "MKS925.tbl";
+Input "TMbase.tbl";
+
+RH_HK {
+  HBox { " RH Opn/Cls:"; (RH_Open_Pct,3); "/"; (RH_Close_Pct,3); "%" };
+}
+
+HK_Stack {
+  HBox { +-; Housekeeping; -+ };
+  HBox {
+    {
+      [WTX_HK];
+      [PTB_HK];
+      [SunTracker_HK];
+      [RH_HK]
+    }; |+;
+    {
+      [MKS_HK];
+      [TMbaseB]
+    }
+  }
+}
+
+{
+  HBox {
+    |+;
+    [HK_Stack];
+    |+;
+  };
+  -
+}

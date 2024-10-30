@@ -8,3 +8,8 @@ PTB_HK {
   T: (PTB_T,5) C;
   [PTB_stale];
 }
+
+PTB {
+  HBox { +-; PTB330; -+ };
+  P: (PTB_P,7) hPa;
+}

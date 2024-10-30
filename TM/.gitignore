@@ -18,6 +18,7 @@ MKS925.tbl
 STEnc.tbl
 STEnc.genui
 IFStblnc.tmc
+IFS_HKtblnc.tmc
 IFSdispnc.cc
 IFSdispncoui.cc
 IFSdispnc.o
@@ -52,6 +53,7 @@ IFSengextoui.cc
 IFSengext.o
 IFSengextoui.o
 IFStblnc.tmc.dep
+IFS_HKtblnc.tmc.dep
 *.err
 Makefile
 *.exe
