@@ -33,7 +33,7 @@ SW_Variable: <uint8_t,UCHAR> SWStat SW Status
     : Set %d (Enter as RH percentage value) percent { $0 = $2; }
 
   SW_Variable: <unsigned char,AlgoP1_t> AlgoP1 Algo P1
-    : %d { $0 = $1; }
+    : Set %d { $0 = $2; }
     : Init { $0 = 1; }
     : Init_Choice { $0 = 2; }
     : Init_Decide { $0 = 3; }
@@ -62,4 +62,7 @@ SW_Variable: <uint8_t,UCHAR> SWStat SW Status
     : Full_Shutdown { $0 = 26; }
     : Shutdown { $0 = 27; }
   SW_Variable: <unsigned char,AlgoP3_t> AlgoP3 Algo P3
-    : %d { $0 = $1; }
+    : Set %d { $0 = $2; }
+    : Bad_Weather { $0 = 1; }
+    : Good_Weather { $0 = 2; }
+    : WTX_Failed { $0 = 3; }
