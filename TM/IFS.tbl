@@ -12,7 +12,7 @@ System {
 
 Algo {
   HBox { +-; Algorithm; -+ };
-  P1: (AlgoP1,21);
+  P1: (AlgoP1,25);
   P3: (AlgoP3,25)
 }
 

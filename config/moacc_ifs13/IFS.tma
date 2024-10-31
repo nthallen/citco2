@@ -132,6 +132,7 @@ State Pump_Down {
 State Sleep {
   depending on ( Watchdog_Error ) { Validate Failure; }
   > _Algo P1 Sleep
+  > Sun Tracker Sleep
 # Validate IFS_Status_Update;
   Hold Until ( Convert(Sol_ele) > 0. );
   Validate Wake_Up;
