@@ -4,11 +4,11 @@
   Launch    tm_bfr  bfr -H bfr: -S:
   Launch    -TMC-   lgr -N $(mlf_find LOG) -n lgr
   Launch    tm_gen  IFScol
-  Launch    cmd     IFSsrvr -H srvr: -S: -v
+  Launch    cmd     IFSsrvr -H srvr: -S:
   Launch    -       PTB330
   Launch    -       WTX530 -e
   Launch    -       SunTracker -2
-  Launch    -       STEnc -vv
-  Launch    -       MKS925 -v
+  Launch    -       STEnc
+  Launch    -       MKS925
   Launch    -       tmdf -p /home
   Launch    -TMC-   IFSalgo
