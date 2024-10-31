@@ -29,6 +29,8 @@ State Init {
       > _Algo P1 Init
   +1  > Radiance Open Threshold Set 70 percent
       > Radiance Close Threshold Set 60 percent
+      > RH Open Threshold Set 88 percent
+      > RH Close Threshold Set 90 percent
       Validate Init_Choice;
 }
 
@@ -306,7 +308,7 @@ State Bad_Weather {
   { if (WTX_drv_stale == 255 || WTX_dev_stale == 255)
       Validate WTX_Failed; } 
   { if ( (convert(WTX_PrecipInt) == 0) &&
-         convert(WTX_RH) < 88 /* && ws_low */ &&
+         convert(WTX_RH) < RH_Open_Pct /* && ws_low */ &&
          ok_to_open )
       Validate Good_Weather;
   }
@@ -316,7 +318,7 @@ State Bad_Weather {
 State Good_Weather {
   { if (WTX_drv_stale == 255 || WTX_dev_stale == 255)
       Validate WTX_Failed; } 
-  { if (convert(WTX_PrecipInt) > 0 || convert(WTX_RH) > 90) {
+  { if (convert(WTX_PrecipInt) > 0 || convert(WTX_RH) > RH_Close_Pct) {
       Weather_Reason = "Rain";
       Validate Bad_Weather;
     }
