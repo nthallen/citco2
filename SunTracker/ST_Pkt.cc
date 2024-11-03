@@ -169,9 +169,19 @@ void ST_Pkt::report() {
       ST_SSR.ST_flip = 2;
     }
 
+    // Apply gain of 1000 in CamTracker mode, then display/extract
+    // with %8.3lf format. Net effect is a gain of 1e-3 when not
+    // in CamTracker mode (i.e. existing instruments until they are
+    // upgraded)
     { float t_int = swap(pkt.Counter_Total_Intensity);
-      if (t_int < 0 || t_int > 65535) ST_SSR.ST_t_int = 65535;
-      else ST_SSR.ST_t_int = (unsigned short) t_int;
+      if (ST_SSR.ST_modus == ST_MODE_TMR) {
+        if (t_int < 0 || t_int > 65.535) ST_SSR.ST_t_int = 65535;
+        else ST_SSR.ST_t_int = (unsigned short) (t_int*1000);
+      } else if (t_int < 0 || t_int > 65535) {
+        ST_SSR.ST_t_int = 65535;
+      } else {
+        ST_SSR.ST_t_int = (unsigned short) t_int;
+      }
     }
 
     msg( -2, "%s: %g %g %g %g %g %g %g %g", datetime,

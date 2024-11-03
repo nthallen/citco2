@@ -35,7 +35,7 @@ typedef struct {
     float Tracker_Diode_Intensity_y2; // Integer
     float Intensity_Dx; // Integer
     float Intensity_Dy; // Integer
-    float Counter_Total_Intensity; // Integer
+    float Counter_Total_Intensity; // Integer, but apparently not in CamTracker mode
     float Counter_Clouds; // Integer
     float Counter_Differ_Azimuth; // Integer
     float Counter_Differ_Elevation; // Integer
