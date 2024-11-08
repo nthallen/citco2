@@ -4,7 +4,7 @@
 config-TM :
 	[ -e Site.agm ] || ln -sf Site.agm.phocus Site.agm
 	rm -f ../../TM/Config
-	ln -sf ../config/moacc_ifs13 ../../TM/Config
+	ln -sf ../config/moacc_ifs12 ../../TM/Config
 config-phocus : config-TM
 	ln -sf Site.agm.phocus Site.agm
 config-gse : config-TM
