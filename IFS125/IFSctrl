@@ -1,0 +1,674 @@
+#! /usr/bin/perl -w
+package IFSctrl;
+use strict;
+use LWP::UserAgent;
+use URI::Escape;
+use HTTP::Date;
+BEGIN {
+  $ENV{TMBINDIR} = '.' unless $ENV{TMBINDIR};
+}
+use lib $ENV{TMBINDIR};
+our ( %options, %directopts, %choices );
+use IFSopts;
+use IFStm;
+use IFSq;
+use IFSretr;
+
+#### Initializations
+
+# Generate %uc_cmd
+my %uc_scantype;
+for my $scantype ( keys %choices ) {
+  my $lc_cmd = lc($scantype);
+  if ( $uc_scantype{$lc_cmd} ) {
+    IFSq_msg( 2,
+      "Scantype '$scantype' conflicts with " .
+      "'$uc_scantype{$lc_cmd}'" );
+  } else {
+    $uc_scantype{$lc_cmd} = $scantype;
+  }
+}
+
+our %status;
+my $nstatus = 0;
+for my $statval (
+      qw(Absent Terminating Terminated Direct TSynch Idle Wait Error
+        Stress Abort Reset InSbNR CANErr),
+      sort(keys %choices) ) {
+  if ( defined $status{$statval} ) {
+    IFSq_msg( 2,
+      "Scantype name '$statval' conflicts with status value" );
+  } else {
+    $status{$statval} = $nstatus++;
+  }
+}
+  
+our $server = "192.168.1.101:80";
+my $simulate = 0;
+my $sim_file = 17432;
+my $sim_req = 0;
+my $verbosity = 0;
+my $jpg_url = '';
+
+# Process Command Line Options:
+#   IFSctrl display <width>
+#   IFSctrl cmdgen
+#   IFSctrl help
+#   IFSctrl [server hostname] [-v] [-j <URL>]
+#       -v turn on verbose logging of http traffic
+#       -j <URL> turn on jpg retrieval
+#   IFSctrl simulate
+
+if ( @ARGV ) {
+  my $cmd = lc(shift @ARGV);
+  if ( $cmd eq 'display' ) {
+    print_tmcfile( shift @ARGV );
+  } elsif ( $cmd eq 'cmdgen' ) {
+    print_cmdfile();
+  } elsif ( $cmd eq 'help' ) {
+    print_help();
+  } elsif ( $cmd eq 'server' ) {
+    $server = shift @ARGV ||
+      IFSq_msg( 3, "server option requires argument" );
+  } elsif ( $cmd eq 'simulate' ) {
+    $simulate = 1;
+  }
+  while ( @ARGV ) {
+    my $flag = shift @ARGV;
+    if ( $flag eq '-v' ) {
+      $verbosity = 1; # Dump http data
+    } elsif ( $flag eq '-j' ) {
+      $jpg_url = shift @ARGV ||
+        IFSq_msg(3, "-j optoin requires argument");
+    } else {
+      IFSq_msg( 3, "Unknown command line option: '$flag'" );
+    }
+  }
+}
+
+my $cur_filenum = 0;
+my $cur_filenum_inplay = 0;
+my $first_scan_slice = 0;
+#my $ua = new LWP::UserAgent(keep_alive => 1, timeout => 5);
+my $ua = new LWP::UserAgent(keep_alive => 1);
+
+#------------------------------------------------
+# Initialize log file and connection to IFSretr
+#------------------------------------------------
+$| = 1;
+open( LOG, ">>http.log" ) || die "Cannot log\n";
+IFSq_msg( 0, "IFSctrl Initialized" );
+IFSretr::init( "http://$server" );
+
+my $Exit_Req = 0;
+my $Cleanup = 'No';
+set_status( 'Idle' );
+
+while ( ! $Exit_Req ) {
+  my $pcmd;
+  while (1) {
+    my $cmd = IFSq_dequeue_wait();
+    $pcmd = parse_command($cmd);
+    if ( @{$pcmd->{errors}} ) {
+      set_status( 'Error' );
+    } elsif ( $pcmd->{op} eq 'HTTP' || $pcmd->{op} eq 'Exit' ) {
+      last;
+    } elsif ( $pcmd->{op} ne 'nop' ) {
+      set_status('Error');
+      IFSq_msg( 2, "Assertion failed: Unexpected op" );
+    }
+  }
+  last if $pcmd->{op} eq 'Exit';
+  # Now we are left with HTTP
+  NEW_SCAN:
+  while ( 1 ) {
+    set_status( $pcmd->{scantype} );
+    $Cleanup = $pcmd->{cleanup}
+      unless $pcmd->{cleanup} eq 'Maybe';
+    REPT_LOOP:
+    while (1) {
+      IFSretr::line( "#$pcmd->{cmd}\n" );
+      if ( $simulate ) {
+        http_simulate( $pcmd->{uri} );
+      } else {
+        my $final_download =
+          http_request( $pcmd->{uri}, $pcmd->{slices} );
+        #if ( $pcmd->{cleanup} ne 'Maybe' && ! $final_download ) {
+          # set_status( 'Error' );
+          # print LOG "ERROR: Expected download on last scan\n";
+        #}
+      }
+      DQ_CMD:
+      while (1) {
+        my $newcmd = IFSq_dequeue();
+        while (1) {
+          my $newpcmd = parse_command( $newcmd );
+          next DQ_CMD if @{$newpcmd->{errors}};
+          if ( $newpcmd->{op} eq 'Exit' ) {
+            $Exit_Req = 1;
+          } elsif ( $newpcmd->{op} eq 'HTTP' ) {
+            $pcmd = $newpcmd;
+            next NEW_SCAN;
+          } elsif ( $newpcmd->{op} eq 'nop' ) {
+            next REPT_LOOP if $pcmd->{repeat};
+          } else {
+            ### Assertion Failure
+          }
+          # last NEW_SCAN if $Cleanup eq 'No';
+          # $newcmd = 'IdleScan';
+          set_status( $Cleanup eq 'Yes' ? 'Wait' : 'Idle' );
+          last NEW_SCAN; # if we are not repeating
+        }
+      }
+    }
+  }
+}
+set_status('Terminated');
+IFSq_msg(0, "IFSctrl Shutting Down");
+exit 0;
+
+sub parse_params {
+  my ( $params, $errors ) = @_;
+  my %params;
+  while ( $params =~ s/\s*(\w+)=(?:([^"]\S*)|"([^"]*)")// ) {
+    my $param = $1;
+    my $value = $+;
+    push @$errors, "Invalid parameter: '$param'"
+      unless defined($options{$param}) ||
+             defined($directopts{$param});
+    $params{$param} = $value;
+  }
+  push @$errors, "Trailing garbage: '$params'"
+    if $params !~ m/^\s*$/;
+  return %params;
+}
+
+sub parse_command {
+  my $cmd = shift;
+  if ( $cmd ) {
+    chomp $cmd;
+    $cmd =~ s/#.*$//;
+    $cmd =~ s/^E[QU]//;
+  }
+  my $pcmd = { cmd => $cmd, op => 'nop', errors => [],
+    slices => 0 };
+  return $pcmd if $cmd =~ /^\s*$/;
+  if ( !defined($cmd) || $cmd =~ m/^\s*Exit\s*$/i ) {
+    $pcmd->{op} = 'Exit';
+  } elsif ( $cmd =~ m/^\s*Direct\s+(.*)$/i ) {
+    my $params = $1;
+    my %params = parse_params( $params, $pcmd->{errors} );
+    if ( keys(%params) == 0 ) {
+      push @{$pcmd->{errors}}, "No parameters specified for Direct";
+    }
+    unless ( @{$pcmd->{errors}} ) {
+      my $uri = build_uri( "/directcmd.htm",
+        submit => "Send command line",
+        UNI => build_query(%params) );
+      $pcmd->{op} = 'HTTP';
+      $pcmd->{repeat} = 0;
+      $pcmd->{uri} = $uri;
+      $pcmd->{scantype} = 'Direct';
+      $pcmd->{cleanup} = 'Maybe';
+    }
+  } elsif ( $cmd =~ m/^\s*Abort/i ) {
+    $pcmd->{op} = 'HTTP';
+    $pcmd->{repeat} = 0;
+    $pcmd->{uri} = build_uri( "/brow_stat.htm", sub => "Abort" );
+    $pcmd->{scantype} = "Abort";
+    $pcmd->{cleanup} = 'Maybe';
+  } elsif ( $cmd =~ m/^\s*Reset/i ) {
+    $pcmd->{op} = 'HTTP';
+    $pcmd->{repeat} = 0;
+    $pcmd->{uri} = build_uri( "/config/resetpage.htm", Sub => "RESET INSTRUMENT" );
+    $pcmd->{scantype} = "Reset";
+    $pcmd->{cleanup} = 'No';
+  } elsif ( $cmd =~ m/^\s*Time\s+Synch/i ) {
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday) = gmtime(time);
+    my $datestr = sprintf('%02d/%02d/%04d', $mday, $mon+1, $year+1900 );
+    my $timestr = sprintf('%02d:%02d:%02d', $hour, $min, $sec );
+    $pcmd->{op} = 'HTTP';
+    $pcmd->{repeat} = 0;
+#    $pcmd->{uri} = build_uri( "/config/hardware/settime.htm",
+#	DATE => $datestr,
+#	TIME => $timestr,
+#	TZ => 0,
+#	WRK => 'Save' );
+    $pcmd->{uri} = "http://$server/config/hardware/settime.htm?" .
+       "DATE=" . query_escape($datestr) .
+       "&TIME=" . query_escape($timestr) .
+       "&TZ=0&WRK=Save";
+    $pcmd->{scantype} = 'TSynch';
+    $pcmd->{cleanup} = 'Maybe';
+  } elsif ( $cmd =~ m/^\s*Read\sStatus/i ) {
+    $pcmd->{op} = 'HTTP';
+    $pcmd->{repeat} = 0;
+    $pcmd->{uri} = "http://$server/brow_stat.htm";
+    $pcmd->{scantype} = 'Direct';
+    $pcmd->{cleanup} = 'Maybe';
+  } elsif ( $cmd =~ m/^\s*(Repeat\s+)?(\w+)(.*)$/i ) {
+    my $repeat = $1 ? 1 : 0;
+    my $cmd = $2;
+    my $uc_cmd = $uc_scantype{lc($cmd)};
+    push @{$pcmd->{errors}}, "Invalid command: '$cmd'"
+      unless $uc_cmd;
+    my $params = $3;
+    $pcmd->{cmd} = "$uc_cmd$params";
+    my %params = parse_params( $params, $pcmd->{errors} );
+    unless ( @{$pcmd->{errors}} ) {
+      my %pparams = ( %options, %{$choices{$uc_cmd}}, %params );
+      my $uri = build_uri( "/brow_cmd.htm", %pparams );
+      $pcmd->{op} = 'HTTP';
+      $pcmd->{repeat} = $repeat;
+      $pcmd->{uri} = $uri;
+      $pcmd->{scantype} = $uc_cmd;
+      $pcmd->{cleanup} =
+        $uc_cmd =~ /IdleScan$/ ? 'No' : 'Yes';
+      $pcmd->{slices} = 1;
+    }
+  } else {
+    push @{$pcmd->{errors}}, "Syntax Error: '$cmd'";
+  }
+  for my $err ( @{$pcmd->{errors}} ) {
+    IFSq_msg( 2, "parse_command: $err" );
+  }
+  return $pcmd;
+}
+
+sub query_escape {
+  my $arg = uri_escape(shift, "^A-Za-z0-9\-_.!~*'() ");
+  $arg =~ s/ /+/g;
+  return $arg;
+}
+sub build_query {
+  my ( %params ) = @_;
+  return
+    join '&',
+      map join( '=', $_, query_escape($params{$_})),
+        keys %params;
+}
+sub build_uri {
+  my ( $url, %params ) = @_;
+  return join '?', "http://$server$url", build_query(%params);
+}
+
+sub print_help {
+  print
+    "Usage:\n",
+    "   IFSctrl display <width>\n",
+    "     Output .tmc code for displaying status values\n",
+    "   IFSctrl cmdgen\n",
+    "     Output .cmd code for available scan types\n",
+    "   IFSctrl help\n",
+    "     Print this message\n",
+    "   IFSctrl [server hostname] [-j <url>]\n",
+    "     Operating mode optionally setting server address\n";
+  exit(0);
+}
+
+sub print_tmcfile {
+  my $width = shift;
+  if ( ! defined $width ) {
+    $width = 0;
+    for my $statval ( keys %status ) {
+      my $len = length($statval);
+      $width = $len if $len > $width;
+    }
+  }
+  print
+    "/* Status Values at width $width */\n",
+    "%{\n",
+    "  const char *_IFSCStat_text[] = {\n",
+    join( ",\n",
+      map sprintf( "    \"%$width.${width}s\"", $_ ),
+        ( sort { $status{$a} <=> $status{$b} }
+          keys %status ), '*' x $width ),
+    "\n  };\n",
+    "  #define N_IFSCSTAT $nstatus\n",
+        map( "  #define IFS_SCAN_". uc($_) . " $status{$_}\n",
+          sort { $status{$a} <=> $status{$b} }
+          keys %status ),
+    "%}\n";
+  exit(0);
+}
+
+sub print_cmdfile {
+  print
+    "&ScanType <const char *>\n",
+    map( "  : $_ { \$0 = \"$_\"; }\n", keys %choices ),
+    "  ;\n";
+  exit(0);
+}
+
+sub http_simulate {
+  my $uri = shift;
+  set_tm( IFSScan => ++$sim_req );
+  my $http_per_slice = 5;
+  my $slice_per_scan = 3;
+  my $scan_per_request = 2;
+  my $IFSTR = 9*$http_per_slice * $slice_per_scan * $scan_per_request;
+  my $IFSRN = 0;
+  print LOG "Simulating connection to server\n";
+  for ( my $IFSSN = 0; $IFSSN < $scan_per_request; $IFSSN++ ) {
+    for ( my $slice = 0; $slice < $slice_per_scan; $slice++ ) {
+      $sim_file++;
+      processing_file( $sim_file );
+      for ( my $http = 0; $http < $http_per_slice; $http++ ) {
+        $IFSRN++;
+        $IFSTR -= 9;
+        my $IFSSR = $scan_per_request - 1 - $IFSSN;
+        set_tm( IFSSN => $IFSSN, IFSSR => $IFSSR,
+                IFSTR => $IFSTR,
+                IFSRN => $IFSRN );
+        write_tm();
+        sleep(1);
+      }
+    }
+  }
+  $sim_file++;
+  processing_file( $sim_file );
+  processing_file( 0 );
+}
+
+#-----------------------------------------------------------------
+# http_request continues to refresh and follow redirections
+# until there are none left. Data for specific URIs are parsed
+# for relevant content. Returns non-zero if a slice was downloaded
+# with the last status report. The $slices argument indicates
+# whether the command is going to generate slices or not.
+# This will be forwarded to parse_brow_stat() which will relay
+# it to processing_file()
+#-----------------------------------------------------------------
+sub http_request {
+  my ( $uri, $slices ) = @_;
+  my $IFSRN = 0;
+  my $final_download = 0;
+  my %err;
+  my %scandata;
+  # $cur_filenum = 0;
+  $first_scan_slice = 0;
+  while ( 1 ) {
+    print LOG "Connecting to $uri\n";
+    my $response = $ua->get( $uri, CONNECTION => 'Keep-Alive' );
+    $IFSRN++;
+    set_tm( IFSRN => $IFSRN );
+    if ( $response->is_success ) {
+      my $ifstime = $response->header('Date');
+      if ( $ifstime ) {
+        my $mytime = time();
+        $ifstime = str2time($ifstime);
+        my $drift = $ifstime - $mytime;
+        set_tm( IFSDT => $drift );
+      }
+      my $delay;
+      my $newURI = '';
+      my $content = $response->content;
+      my $refresh = $response->header('Refresh');
+      if ( ! ( defined($refresh) && $refresh ne '') &&
+           $content =~
+            m/<META\s+HTTP-EQUIV=\"REFRESH\"\s+CONTENT=\"([^"]+)\">/i
+            ) {
+        $refresh = $1;
+      }
+      if ( defined($refresh) &&
+           $refresh =~ m/^(\d+)(?:;\s*URL=(.*))?$/ ) {
+        $delay = $1;
+        $newURI = $2 ? "http://$server/$2" : $uri;
+      }
+      
+      #--------------------------
+      # Logging of response
+      #--------------------------
+      if ( $verbosity ) {
+       $response->scan( \&output_header);
+       print LOG "Success:\n",
+        $response->status_line, "\n",
+        $content, "\n=====================\n\n";
+      }
+
+      #--------------------------
+      # Parse Content
+      #--------------------------
+      if ( $uri =~ m|/brow_stat\.htm| ) {
+        $final_download =
+          parse_brow_stat( $content, \%err, $slices );
+        $newURI = "http://$server/brow_diag.htm" unless $newURI;
+      } elsif ( $uri =~ m|/brow_diag\.htm| ) {
+        parse_brow_diag( $content );
+        $newURI = "http://$server/diag_scan.htm" unless $newURI;
+      } elsif ( $uri =~ m|/diag_scan\.htm| ) {
+        parse_diag_scan( $content, \%scandata );
+        $newURI = "http://$server/DCntrl04.htm" unless $newURI;
+      } elsif ( $uri =~ m|/DCntrl04\.htm| ) {
+        parse_DCntrl04( $content, \%scandata );
+        $newURI = "http://$server/DCntrl03.htm" unless $newURI;
+      } elsif ( $uri =~ m|/DCntrl03\.htm| ) {
+        parse_DCntrl03( $content, \%scandata );
+        if ( $first_scan_slice ) {
+          if ( open( DIAGSCAN, ">scan/b$first_scan_slice.scd" ) ) {
+            print DIAGSCAN
+              map "$_: $scandata{$_}\n",
+              sort keys %scandata;
+            if ( open( RESISTORS, "<resistors.txt" )) {
+              while (<RESISTORS>) {
+                print DIAGSCAN $_;
+              }
+              close RESISTORS;
+            }
+            close DIAGSCAN;
+          } else {
+            print LOG "Unable to write to scan/b$first_scan_slice.scd";
+          }
+          if ( $jpg_url ) {
+            # Webcam URL was: "http://192.168.1.107:8080/netcam.jpg"
+            my $jpgresponse = $ua->get( $jpg_url,
+              ':content_file' => "scan/b$first_scan_slice.jpg" );
+            if ( ! $jpgresponse->is_success ) {
+              print LOG "Failure retrieving jpg: ", $jpgresponse->status_line, "\n";
+            }
+          }
+        }
+      } elsif  ( $uri =~ m|/config/resetpage\.htm| ) {
+        if ( $content =~
+              m|window\.setTimeout\("window\.location\.href = '\.\.'",10000\);| ) {
+          $delay = 60;
+          $newURI = "http://$server/";
+        } else {
+          print LOG "WARNING: Did not find refresh pattern in SW Reset response\n";
+          $delay = 10;
+          $newURI = "http://$server/";
+        }
+      } else {
+        write_tm(); # Record IFSRN & IFSDT
+      }
+      
+      #--------------------------
+      # Check for urgent commands
+      #--------------------------
+      my $cmd = IFSq_dequeue_urgent();
+      my $pcmd = parse_command($cmd);
+      if ( @{$pcmd->{errors}} ) {
+        set_status( 'Error' );
+      } elsif ( $pcmd->{op} eq 'HTTP' ) {
+        IFSretr::line( "#Urgent: $pcmd->{cmd}\n" );
+        set_status($pcmd->{scantype});
+        $newURI = $pcmd->{uri};
+        $delay = 0;
+      }
+      
+      if ( $newURI ) {
+        sleep($delay) if $delay;
+        $uri = $newURI;
+      } else {
+        IFSretr::line( "#Request Completed\n" );
+        last;
+      }
+    } else {
+      IFSq_msg( 2, "Error from IFS125HR: " . $response->status_line . "\n" );
+      set_status( 'Error' );
+      write_tm();
+      print LOG "Non-success:\n",
+        $response->status_line, "\n",
+        $response->content, "\n=====================\n\n";
+      last;
+    }
+  }
+  return $final_download;
+}
+
+sub output_header {
+  my ( $key, $val ) = @_;
+  print LOG "Hdr: $key: $val\n";
+}
+
+sub processing_file {
+  my ( $filenum, $slices ) = @_;
+  set_tm( IFSSlW => $filenum ) if $filenum;
+  if ( $cur_filenum_inplay && ( $filenum == 0 || $filenum > $cur_filenum )) {
+    write_tm();
+    IFSretr::line( "b$cur_filenum.0\n" );
+    $cur_filenum_inplay = 0;
+  }
+  if ( $filenum > $cur_filenum && $slices ) {
+    $first_scan_slice = $filenum unless $first_scan_slice;
+    $cur_filenum_inplay = 1;
+  }
+  $cur_filenum = $filenum if $filenum;
+}
+
+sub parse_brow_stat {
+  my ( $content, $err, $slices ) = @_;
+  if ( $content =~ m|ID=SCAN>(\d+)<| ) { set_tm( IFSSN => $1 ); }
+  if ( $content =~ m|ID=SRSC>(\d+)<| ) { set_tm( IFSSR => $1 ); }
+  else { set_tm( IFSSR => 0 ); }
+  my $IFSTR;
+  if ( $content =~ m|ID=SRTI>(\d+)\.(\d)<| ) { $IFSTR = "$1$2"; }
+  else { $IFSTR = $slices ? 10 : 0; }
+  set_tm( IFSTR => $IFSTR );
+       
+  my $final_download = 0;
+  if ( $content =~ m|Filename</TD><TD>b(\d+)\.0<|xs ) {
+    processing_file( $1, $slices );
+  } elsif ( $content =~
+      m/<A\s+ HREF=\" b(\d+)\.0 \" \s+
+        TITLE=\" Download\sme,\splease!\">/x ) {
+    processing_file( $1, $slices );
+    processing_file( 0, $slices );
+    $final_download = 1;
+  }
+      
+  my $econtent = $content;
+  while ( $econtent =~
+         s,<TD\sID=ERTI> ([^<]*) (?:</TD>)?
+           <TD\sID=ECOD> ([^<]*) (?:</TD>)?
+           <TD\sID=ELVL> ([^<]*) (?:</TD>)?
+           <TD\sID=ESEN> ([^<]*) (?:</TD>)?
+           <TD\sID=ECMD> ([^<]*) (?:</TD>)?
+           <TD\sID=EMSG> ([^<]*) (?:</TD>)? </TR>,,xs ) {
+    my $errmsg = "$1:$2:$3:$4:$5:$6";
+    my $ELVL = $3;
+    my $ESEN = $4;
+    my $ECMD = $5;
+    my $EMSG = $6;
+    if ( (! $err->{$errmsg} ) && ($ELVL !~ m/[AaWwUu]/)) {
+      $err->{$errmsg} = 1;
+      my $ELVLn = ($ELVL =~ m/[Ii]/) ? 1 : 2;
+      if ($ELVLn > 1) {
+        if ($ESEN =~ m/Detector LN-InSb/ && $EMSG =~ m/Detector not ready/) {
+          set_status('InSbNR');
+        } elsif ($ELVL =~ m/f/i && $ECMD =~ m/^(?:SRC|RES|VEL|PHR)/ ) {
+          set_status('CANErr');
+        } else {
+          # 8/8/19: Now matches AP2|APT, dropped from previous pattern
+          # Previously explicitly matched $ECMD =~ m/^(?:DTC|GNS|SG2|HPF|PGN)/
+          set_status('Error');
+        }
+      }
+      IFSq_msg( $ELVLn, $errmsg );
+      sleep(1);
+    }
+  }
+  write_tm();
+  # if ( ! %$err && $final_download && $IFSTR > 0 ) {
+  #   set_status('Stress');
+  # } else {
+  #   write_tm();
+  # }
+  return $final_download;
+}
+
+sub parse_brow_diag {
+  my $content = shift;
+  my $mask = 1;
+  my $IFSDiag = 0;
+  for my $KW ( 'Scanner', 'Detectors', 'Laser', 'IR Source',
+              'Automation Units', 'Instrument Ready' ) {
+    if ( $content =~ m|$KW</A></TD>\s+<TD[^>]*>OK</TD>|ms ) {
+      $IFSDiag |= $mask
+    }
+    $mask <<= 1;
+  }
+  set_tm( IFSDiag => $IFSDiag );
+  write_tm();
+}
+
+sub parse_diag_scan {
+  my ( $body, $data ) = @_;
+
+  my %varpat = (
+    # 'Position \[fringes\]' => 'S_Pos',
+    # 'Drive Power \[%\]' => 'Drv_P',
+    'Laser A Ampl.? \[mV\]' => 'LasAA',
+    'Laser B Ampl.? \[mV\]' => 'LasBA',
+    'Laser A Offs.? \[mV\]' => 'LasAO',
+    'Laser B Offs.? \[mV\]' => 'LasBO' );
+
+  for my $pat ( sort keys %varpat ) {
+    if ( $body =~ m|<TR><TD>$pat</TD><TD[^>]*>([^<]+)</TD>| ) {
+      my $mnc = $varpat{$pat};
+      $data->{"${mnc}F"} = $1;
+      # $data->{"${mnc}P"} = $2;
+      # $data->{"${mnc}C"} = $3;
+    }
+  }
+  if ( $body =~ m|<TD>Scannerblock Temperature \[.C\]</TD><TD>(-?\d+)(\.(\d)\d*)?</TD>| ) {
+    my $dec = $3 || '0';
+    set_tm( ScBlkT => "$1$dec" );
+    $data->{ScBlkl_T} = "$1.$dec";
+  }
+  if ( $body =~ m|<TD>Humidity IF Compartment \[%\]</TD><TD>\s*(\d+)</TD>| ) {
+    $data->{IFHum} = $1;
+  }
+  for my $mnc ( qw(LasAAF LasBAF LasAOF LasBOF IFHum) ) {
+    set_tm( $mnc => $data->{$mnc} ) if defined $data->{$mnc};
+  }
+  write_tm();
+}
+
+sub parse_DCntrl04 {
+  my ( $body, $data ) = @_;
+  if ( $body =~ m|<TD id="pre_spect">(\d+)</TD>| ) {
+    my $IFS_P = $1;
+    set_tm( IFS_P => $IFS_P );
+    if ( length($IFS_P) > 5 ) {
+      $IFS_P =~ s/(\d{5})$/.$1/;
+    } else {
+      $IFS_P = "0." . "0" x (5-length($IFS_P)) . $IFS_P;
+    }
+    $data->{IFS_P} = $IFS_P;
+    write_tm();
+  } else {
+    print LOG "No match for IFS_P\n";
+  }
+}
+
+sub parse_DCntrl03 {
+  my ( $body, $data ) = @_;
+  if ( $body =~ m|<TD id="TEMP">(-?\d+)\.(\d)\d*<| ) {
+    set_tm( IFSSrcT => "$1$2" );
+    $data->{IFSSrcT} = "$1.$2";
+    write_tm();
+  } else {
+    print LOG "No match for IFSSrcT\n";
+  }
+}

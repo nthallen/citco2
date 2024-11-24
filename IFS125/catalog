@@ -1,0 +1,66 @@
+#! /usr/bin/perl -w
+#
+#ifdef __USAGE
+# catalog [-decimate[=<decimal>]] [-scantype=<scantype>] <directory> [...]
+# <decimal> is the fraction of solar scans to include.
+# If -decimate is omitted, all solar scans are included.
+# If -decimate is present without a decimal, 0.1 is used.
+#endif
+
+my $decimate = 1;
+my $scantype = '';
+
+while ( @ARGV && $ARGV[0] =~ m/^-/ ) {
+  if ( $ARGV[0] =~ m/-decimate(?:=(0?\.\d+))?/ ) {
+    shift @ARGV;
+    $decimate = $1 || .1;
+  } elsif ( $ARGV[0] =~ m/^-scantype(?:=(\w+))?$/ ) {
+    if ($1) {
+      $scantype = $1;
+    } else {
+      die "No scantype argument for -scantype options\n"
+        if @ARGV < 2;
+      $scantype = $ARGV[1];
+      shift @ARGV;
+    }
+    shift @ARGV;
+  } else {
+    die "Unrecognized argument: '$ARGV[0]'\n";
+  }
+}
+
+die "No directories specified\n" unless @ARGV;
+
+my $sum = 1;
+for my $file ( @ARGV ) {
+  $file =~ s|/?$|/IFSretr.log| if -d $file;
+  if ( $file =~ m|/(\d\d)(\d\d)(\d\d)\.(\d+)/IFSretr\.log$| ) {
+    my ( $yy, $mm, $dd, $run ) = ( $1+2000, $2+0, $3+0, $4 );
+    open( IF, "<$file" ) || die "Could not read '$file'\n";
+    my $is_scantype = $scantype ne '' ? 0 : 1;
+    while (<IF>) {
+      if ( $scantype ne '' && m|^.*: $scantype\s*$| ) {
+	$is_scantype = 1;
+      } elsif ( m|^.*: Retrieving b(\d+)\.0| ) {
+	my $fno = $1;
+	if ( $is_scantype ) {
+	  if ( $sum < 1 ) {
+	    print ":dec ";
+	  } else {
+	    $sum -= 1;
+	  }
+	  $sum += $decimate;
+	} else {
+          print ":not $scantype ";
+	}
+	print "$yy $mm $dd $run $fno\n";
+	while (<IF>) {
+	  last if m/Request Completed/;
+	}
+        $is_scantype = $scantype ne '' ? 0 : 1;
+      }
+    }
+  } else {
+    die "Could not identify run from path '$file'\n";
+  }
+}
