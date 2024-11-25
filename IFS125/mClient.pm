@@ -40,7 +40,7 @@ sub connect {
 }
 
 sub print {
-  my ($self, $buf) = shift @_;
+  my ($self, $buf) = @_;
   $self->{sock}->syswrite($buf);
 }
 
