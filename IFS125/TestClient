@@ -1,10 +1,13 @@
 #! /usr/bin/perl -w
 use strict;
+use Time::HiRes qw(gettimeofday);
+use POSIX qw(floor);
+
 use mClient;
 
 my $memo;
 
-sub IFSq_msg {
+sub msg {
   my $type = shift;
   $type = 2 unless $type =~ m/^\d$/;
   my $msg = join '', @_;
@@ -21,11 +24,13 @@ sub IFSq_msg {
   } elsif ($type > 3) {
     $hdr = "[INTERNAL] ";
   }
-  my @gmt = gmtime;
-  my $time = sprintf("IFS: %02d:%02d:%02d", $gmt[2], $gmt[1], $gmt[0]);
-  my $buf = "$time $hdr$msg\n";
+  my ($secs, $usecs) = gettimeofday;
+  my @gmt = gmtime($secs);
+  my $time = sprintf("%02d:%02d:%02d.%03d",
+    $gmt[2], $gmt[1], $gmt[0], floor(($usecs+500)/1000);
+  my $buf = "$time IFS: $hdr$msg\n";
   $memo->print($buf);
   exit(1) if $type > 2;
 }
 
-IFSq_msg(0, "This is a test");
+msg(0, "This is a test");
