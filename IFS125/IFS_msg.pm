@@ -1,6 +1,10 @@
-#! /usr/bin/perl -w
+package IFS_msg;
 use strict;
-<<<<<<< Updated upstream
+
+use Exporter 'import';
+our VERSION = '1.00';
+our @EXPORT_OK = qw(msg);
+
 use Time::HiRes qw(gettimeofday);
 use POSIX qw(floor);
 
@@ -28,13 +32,10 @@ sub msg {
   my ($secs, $usecs) = gettimeofday;
   my @gmt = gmtime($secs);
   my $time = sprintf("%02d:%02d:%02d.%03d",
-    $gmt[2], $gmt[1], $gmt[0], floor(($usecs+500)/1000));
+    $gmt[2], $gmt[1], $gmt[0], floor(($usecs+500)/1000);
   my $buf = "$time IFS: $hdr$msg\n";
   $memo->print($buf);
   exit(1) if $type > 2;
 }
-=======
-use IFS_msg qw(msg);
->>>>>>> Stashed changes
 
-msg(0, "This is a test");
+1;
