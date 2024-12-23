@@ -1,0 +1,14 @@
+ModuleDef TMAstat [ TMA= TextWidth=15 ] {
+  Extracts information from the specified TMA file or files
+  and generates TMAstat.tmc and TMAstat.sws to record the
+  current TMA state in selected partitions and allow for
+  realtime screen display.
+}
+
+tmcbase = TMAstat.tmc
+swsbase = TMAstat.sws
+IGNORE = TMAstat.tmc TMAstat.sws
+OBJ = TMAstat.tmc TMAstat.sws
+
+TMAstat.tmc TMAstat.sws : @TMA@
+	@MODDIR@/TMAstatgen -W @TextWidth@ @TMA@

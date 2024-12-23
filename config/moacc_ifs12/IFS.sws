@@ -31,38 +31,3 @@ SW_Variable: <uint8_t,UCHAR> SWStat SW Status
     : Set %d (Enter as RH percentage value) percent { $0 = $2; }
   SW_Variable: <unsigned char,UCHAR> RH_Close_Pct RH Close Threshold
     : Set %d (Enter as RH percentage value) percent { $0 = $2; }
-
-  SW_Variable: <unsigned char,AlgoP1_t> AlgoP1 Algo P1
-    : Set %d { $0 = $2; }
-    : Init { $0 = 1; }
-    : Init_Choice { $0 = 2; }
-    : Init_Decide { $0 = 3; }
-    : Unexpected_Restart { $0 = 4; }
-    : Holding { $0 = 5; }
-    : Holding_with_Lamp_Runs { $0 = 6; }
-    : Failure { $0 = 7; }
-    : Init_Close { $0 = 8; }
-    : ReInit { $0 = 9; }
-    : ReInit_and_Pump_Down { $0 = 10; }
-    : Pump_Down { $0 = 11; }
-    : Sleep { $0 = 12; }
-    : Wake_Up { $0 = 13; }
-    : Ready_To_Play { $0 = 14; }
-    : Init_Set_InSb_Gains { $0 = 15; }
-    : Play { $0 = 16; }
-    : Play_InGaAs { $0 = 17; }
-    : Scanner_Failure { $0 = 18; }
-    : Scanner_CAN_Err { $0 = 19; }
-    : Scanner_InSbNR { $0 = 20; }
-    : Nap { $0 = 21; }
-    : Bedtime { $0 = 22; }
-    : Bedtime_Story { $0 = 23; }
-    : Lights_Out { $0 = 24; }
-    : Quick_Shutdown { $0 = 25; }
-    : Full_Shutdown { $0 = 26; }
-    : Shutdown { $0 = 27; }
-  SW_Variable: <unsigned char,AlgoP3_t> AlgoP3 Algo P3
-    : Set %d { $0 = $2; }
-    : Bad_Weather { $0 = 1; }
-    : Good_Weather { $0 = 2; }
-    : WTX_Failed { $0 = 3; }

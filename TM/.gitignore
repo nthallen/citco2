@@ -2,6 +2,8 @@ SWData.h
 SWData.tmc
 SWData_col.tmc
 SWData.cmd
+TMAstat.tmc
+TMAstat.sws
 freemem.tmc
 TMbase.genui
 TMbase.tbl
@@ -62,6 +64,8 @@ SWData.h
 SWData.tmc
 SWData_col.tmc
 SWData.cmd
+TMAstat.tmc
+TMAstat.sws
 freemem.tmc
 TMbase.genui
 TMbase.tbl

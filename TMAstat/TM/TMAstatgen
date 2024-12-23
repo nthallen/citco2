@@ -1,0 +1,81 @@
+#! /usr/bin/perl -w
+use strict;
+use Getopt::Std;
+use List::Util qw(max);
+
+my %opts = (W => 15);
+getopts('W:', \%opts);
+
+die "TMAstatgen: -W argument must be an integer\n"
+  unless $opts{W} =~ m/^\d+$/;
+
+my @partitions;
+my %partition;
+
+while (my $line = <>) {
+  next unless $line =~ m/^[^#]*>\s_?Algo\s/;
+  if ($line =~ m/^[^#]*>\s_?Algo\s(\w+)\s(\w+)$/i ) {
+    my $partition = $1;
+    my $state = $2;
+    unless (defined($partition{$partition})) {
+      $partition{$partition} = {
+        state_num => {},
+        states => []
+      };
+      push(@partitions, $partition);
+    }
+    my $pref = $partition{$partition};
+    if (defined($pref->{state_num}->{$state})) {
+      warn "$ARGV:$.: $partition:$state redefined\n";
+    } else {
+      my $psref = $pref->{states};
+      push(@$psref, $state);
+      $pref->{state_num}->{$state} = @$psref;
+    }
+  } else {
+    die "$ARGV:$.: Invalid syntax\n";
+  }
+} continue {
+  close ARGV if eof;
+}
+
+my $fmt = "%-$opts{W}.$opts{W}s";
+
+open(my $tmc, ">", "TMAstat.tmc")
+  or die "Can't write to TMAstat.tmc\n";
+open(my $sws, ">", "TMAstat.sws")
+  or die "Can't write to TMAstat.sws\n";
+
+print $tmc "%{\n";
+
+for my $partition (@partitions) {
+  my $pref = $partition{$partition};
+  my $states = $pref->{states};
+  my $nstates = @$states;
+  my $max_width = max(map length($_), @$states);
+  warn "Warning: TMAstatgen: Partition $partition width $max_width exceeds -W $opts{W}\n"
+    if $max_width > $opts{W};
+  print $tmc
+    "  Algo${partition}_text[] = {\n",
+    join( ",\n", map('    "' . sprintf($fmt, $_) . '"', '', @$states)),
+    "\n",
+    "  };\n\n",
+    "  const char *Algo${partition}_textf(uint8_t snum) {\n",
+    "    return AlgoP1_text[snum <= $nstates ? snum : 0];\n",
+    "  }\n";
+  print $sws
+    "SW_Variable: <uint8_t,Algo${partition}_t> Algo$partition Algo $partition\n",
+    map "  : $_->[0] { \$0 = $_->[1]; }\n",
+      map [ $states->[$_-1],$_ ], (1 .. @$states);
+}
+
+print $tmc "%}\n";
+for my $partition (@partitions) {
+  print $tmc "TM typedef uint8_t Algo${partition}_t { text \"%$opts{W}u\" Algo${partition}_textf(); }\n";
+}
+
+close($tmc) || warn "Close error";
+close($sws) || warn "Close error";
+#  print map "$partition " . $states->[$_-1] . " " . $_ . "\n",
+#    (1 .. $nstates);
+#}

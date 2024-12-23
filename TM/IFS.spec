@@ -7,8 +7,8 @@ IGNORE = SWData.h SWData.tmc SWData_col.tmc SWData.cmd
 OBJ = SWData.h SWData.tmc SWData_col.tmc SWData.cmd
 
 tmcbase = base.tmc
-tmcbase = SWStat.tmc
 genuibase = IFS.genui
+Module TMAstat TMA=Config/IFS.tma TextWidth=25
 swsbase = Config/IFS.sws
 cmdbase = Startup.cmd
 Module TMbase mode=ignore SWSnot=

@@ -6,16 +6,26 @@
   #include "location.h"
   #include "nl.h"
 
-  int DayOfYear( time_t now ) {
+  int DayOfYear(long now) {
     struct tm *times = gmtime(&now);
     return times->tm_yday;
   }
 
-  int16_t DayOfWeek( time_t now ) {
+  int16_t DayOfWeek(long now) {
     long dt = (now+(long)(LONGITUDE()*240))/(24L*60*60);
     int16_t DoW = dt%7;
     return DoW;
   }
+  
+  int16_t MinutesFromLocalHour(long now, int16_t local_hour) {
+    int32_t minutes_since_local_epoch =
+      (now/60) + (int32_t)(LONGITUDE())*4;
+    int32_t minutes_from_local_hour =
+      (minutes_since_local_epoch%(24*60)) - local_hour*60;
+    return minutes_from_local_hour;
+  }
+  
+  void SetSchedule(long now) {}
 
   const char *Weather_Reason = "Startup";
 %}
@@ -27,11 +37,24 @@
 State Init {
       > Telemetry Start
       > _Algo P1 Init
-  +1  > Radiance Open Threshold Set 70 percent
+  +1  > Startup Unexpected Set
+      > Radiance Open Threshold Set 70 percent
       > Radiance Close Threshold Set 60 percent
       > RH Open Threshold Set 88 percent
       > RH Close Threshold Set 90 percent
-      Validate Init_Choice;
+  +1  { SetSchedule(itime());
+        Validate Check_Unexpected;
+      }
+}
+
+State Check_Unexpected "Unexpected.tmas" {
+     > _Algo P1 Check_Unexpected
+  +1 Validate Init_Wakeup;
+}
+
+State Init_Wakeup "Wakeup.tmas" {
+     > _Algo P1 Init_Wakeup
+  +1 Validate Init_Choice;
 }
 
 State Init_Choice "Startup.tmas" {
