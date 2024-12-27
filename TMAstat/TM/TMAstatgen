@@ -61,7 +61,7 @@ for my $partition (@partitions) {
     "\n",
     "  };\n\n",
     "  const char *Algo${partition}_textf(uint8_t snum) {\n",
-    "    return AlgoP1_text[snum <= $nstates ? snum : 0];\n",
+    "    return Algo${partition}_text[snum <= $nstates ? snum : 0];\n",
     "  }\n";
   print $sws
     "SW_Variable: <uint8_t,Algo${partition}_t> Algo$partition Algo $partition\n",
