@@ -22,6 +22,9 @@
   void write_unexpected(const char *s) {
     write_startup_file("Unexpected.tmas", s);
   }
+  
+  void write_wakeup(const char *s) {
+  }
 
   #endif /* SERVER */
 %}
@@ -30,4 +33,6 @@
   : Startup Clear * { write_startup(0); }
   : Startup Unexpected Set * { write_unexpected("Validate Unexpected_Restart;"); }
   : Startup Unexpected Clear * { write_unexpected(0); }
+  : Startup Wakeup Set * { write_wakeup("Validate Up_After_Bedtime;"); }
+  : Startup Wakeup Clear * { write_wakeup(0); }
   ;

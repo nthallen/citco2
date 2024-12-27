@@ -1,4 +1,4 @@
-function pcctmd(varargin);
+function pcctmd(varargin)
 % pcctmd( [...] );
 % T Mbase Disk
 h = timeplot({'Disk'}, ...

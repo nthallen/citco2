@@ -1,4 +1,4 @@
-function pccptbstale(varargin);
+function pccptbstale(varargin)
 % pccptbstale( [...] );
 % PTB stale
 h = timeplot({'PTB_dev_stale','PTB_drv_stale'}, ...

@@ -1,4 +1,4 @@
-function fig = gccwtxs(varargin);
+function fig = gccwtxs(varargin)
 % gccwtxs(...)
 % WTX Status
 ffig = ne_group(varargin,'WTX Status','pccwtxsf','pccwtxss');

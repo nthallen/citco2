@@ -1,4 +1,4 @@
-function pccststatus(varargin);
+function pccststatus(varargin)
 % pccststatus( [...] );
 % ST Status
 h = ne_dstat({

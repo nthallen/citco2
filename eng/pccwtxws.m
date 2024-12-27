@@ -1,4 +1,4 @@
-function pccwtxws(varargin);
+function pccwtxws(varargin)
 % pccwtxws( [...] );
 % WTX Wind Speed
 h = timeplot({'WTX_WindSpd'}, ...

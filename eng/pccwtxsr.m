@@ -1,4 +1,4 @@
-function pccwtxsr(varargin);
+function pccwtxsr(varargin)
 % pccwtxsr( [...] );
 % WTX Sol Rad
 h = timeplot({'WTX_SolRad'}, ...

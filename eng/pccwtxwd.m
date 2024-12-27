@@ -1,4 +1,4 @@
-function pccwtxwd(varargin);
+function pccwtxwd(varargin)
 % pccwtxwd( [...] );
 % WTX Wind Dir
 h = timeplot({'WTX_WindDir'}, ...

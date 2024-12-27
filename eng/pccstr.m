@@ -1,4 +1,4 @@
-function pccstr(varargin);
+function pccstr(varargin)
 % pccstr( [...] );
 % ST Radiance
 h = timeplot({'model_intensity','WTX_SolRad'}, ...

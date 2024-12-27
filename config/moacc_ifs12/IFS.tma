@@ -16,7 +16,8 @@
     int16_t DoW = dt%7;
     return DoW;
   }
-  
+
+  /* May be unnecessary */
   int16_t MinutesFromLocalHour(long now, int16_t local_hour) {
     int32_t minutes_since_local_epoch =
       (now/60) + (int32_t)(LONGITUDE())*4;
@@ -24,8 +25,6 @@
       (minutes_since_local_epoch%(24*60)) - local_hour*60;
     return minutes_from_local_hour;
   }
-  
-  void SetSchedule(long now) {}
 
   const char *Weather_Reason = "Startup";
 %}
@@ -37,19 +36,17 @@
 State Init {
       > Telemetry Start
       > _Algo P1 Init
-  +1  > Startup Unexpected Set
-      > Radiance Open Threshold Set 70 percent
+   +1 > Radiance Open Threshold Set 70 percent
       > Radiance Close Threshold Set 60 percent
       > RH Open Threshold Set 88 percent
       > RH Close Threshold Set 90 percent
-  +1  { SetSchedule(itime());
-        Validate Check_Unexpected;
-      }
+   +1 Validate Check_Unexpected;
 }
 
 State Check_Unexpected "Unexpected.tmas" {
      > _Algo P1 Check_Unexpected
-  +1 Validate Init_Wakeup;
+  +1 > Startup Unexpected Set
+     Validate Init_Wakeup;
 }
 
 State Init_Wakeup "Wakeup.tmas" {
@@ -77,36 +74,36 @@ State Init_Choice "Startup.tmas" {
 State Init_Decide {
 #    > IFS Read Status
      > _Algo P1 Init_Decide
-  +2 { if ( Convert(Sol_ele) < 0. ) Validate Init_Close; }
+  +2 { if ( Convert(Sol_ele) <= 0. ) Validate Init_Close; }
   +2 depending on ( Bad_Weather ) { Validate Nap; }
  +10 Validate Ready_To_Play;
 }
 
 State Unexpected_Restart {
+  > Startup Unexpected Set
   > Email Error Message Unexpected Restart, Entering Holding
   Validate Holding;
 }
 
 State Holding {
-  > _Algo P1 Holding
-  Validate Dome_Close;
-  > Startup Define Validate Holding;
-  Hold until (Convert(Sol_ele) > 0.);
-  Hold until (Convert(Sol_ele) < 0.);
-  +1 > Savelog Shutdown from Holding
-  Validate Shutdown;
+      > _Algo P1 Holding
+      Validate Dome_Close;
+      > Startup Define Validate Holding;
+      Hold until valid (Solar_Bedtime);
+   +1 > Savelog Shutdown from Holding
+      > Startup Wakeup Clear
+      Validate Shutdown;
 }
 
 State Holding_with_Lamp_Runs {
-  > _Algo P1 Holding_with_Lamp_Runs
-  Validate Dome_Close;
-# Validate IFS_Status_Update;
-  > Startup Define Validate Holding_with_Lamp_Runs;
-  Hold until (Convert(Sol_ele) > 0.);
-  Hold until (Convert(Sol_ele) < 0.);
-# Validate Pump_Down_Init;
-# Hold until Valid (Pump_Idle);
-  Validate Bedtime_Story;
+      > _Algo P1 Holding_with_Lamp_Runs
+      Validate Dome_Close;
+#     Validate IFS_Status_Update;
+      > Startup Define Validate Holding_with_Lamp_Runs;
+      Hold until valid (Solar_Bedtime);
+   +1 > Savelog Shutdown from Holding_with_Lamp_Runs
+      > Startup Wakeup Set
+      Validate Shutdown;
 }
 
 State Failure {
@@ -117,8 +114,7 @@ State Failure {
 # +1 > IFS IdleScan
 #+60 > Power Pump Off
   +1 > Startup Define Validate Failure;
-     Hold until (Convert(Sol_ele) > 0.);
-     Hold until (Convert(Sol_ele) < 0.);
+     Hold until valid (Solar_Bedtime);
   +1 > Savelog Shutdown from Failure
      Validate Shutdown;
 #  Each Failure Partition sends its own email for help.
@@ -156,6 +152,7 @@ State Pump_Down {
 
 State Sleep {
   depending on ( Watchdog_Error ) { Validate Failure; }
+  depending on ( Solar_Bedtime ) { Validate Bedtime; }
   > _Algo P1 Sleep
   > Sun Tracker Sleep
 # Validate IFS_Status_Update;
@@ -177,12 +174,12 @@ State Wake_Up {
 #   Hold until Valid (Pump_Idle);
     > Email Report Message Container has completed Wake_Up sequence.
     depending on ( Good_Weather ) { Validate Ready_To_Play; }
-    { if ( Convert(Sol_ele) < 0. ) Validate Bedtime; }
+    depending on ( Solar_Bedtime ) { Validate Bedtime; }
 }
 
 State Ready_To_Play {
   depending on ( Watchdog_Error ) { Validate Failure; }
-  { if ( Convert(Sol_ele) < 0. ) Validate Bedtime; }
+  depending on ( Solar_Bedtime ) { Validate Bedtime; }
   depending on ( Bad_Weather) { Validate Nap; }
 
   > _Algo P1 Ready_To_Play
@@ -192,7 +189,6 @@ State Ready_To_Play {
   > Sun Tracker Track by CamTracker
 
   > Email Report Message Enclosure opened in Ready_to_Play
-# +10:00 > Email Report Message Enclosure open conditions for 10 minutes in Ready_to_Play
 
 # Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
 #               IFSCStat == IFS_SCAN_WAIT ) &&
@@ -242,11 +238,10 @@ State Nap {
       Weather_Reason ); }
   > _Algo P1 Nap
   Validate Dome_Close;
-  # > Sun Tracker Sleep
 # Hold Until ( IFSCStat == IFS_SCAN_IDLE || IFSCStat == IFS_SCAN_WAIT ) or 4:00;
 # Validate IFS_Status_Update;
   depending on ( Good_Weather ) { Validate Ready_To_Play; }
-  { if ( Convert(Sol_ele) < 0. ) Validate Bedtime_Story; }
+  depending on ( Solar_Bedtime ) { Validate Lights_Out; }
 }
 
 State Bedtime {
@@ -257,12 +252,20 @@ State Bedtime {
       Validate Dome_Close;
       > Sun Tracker Sleep
       > Email Report Message Enclosure closed for the evening
-  +10 Validate Bedtime_Story;
+  +10 Validate Lights_Out;
 }
 
-State Bedtime_Story {
-      > _Algo P1 Bedtime_Story
-  +10 Validate Lights_Out;
+# Replaces Bedtime_Story
+State Up_After_Bedtime {
+  > _Algo P1 Up_After_Bedtime
+  > Startup Wakeup Clear
+  # Validate Pump_Down_Init;
+  # Hold until Valid (Pump_Idle);
+
+  # Do Cell scans on Monday
+  # Validate Bedtime_Story;
+
+  Validate Init_Choice;
 }
 
 # States for Bedtime Stories
@@ -274,6 +277,7 @@ State Lights_Out {
 # Hold Until ( (IFSCStat == IFS_SCAN_IDLE) ||
 #               (IFSCStat == IFS_SCAN_WAIT) );
   > SaveLog Bedtime Shutdown
+  > Startup Wakeup Set
   Validate Quick_Shutdown;
 }
 
@@ -305,6 +309,7 @@ State Shutdown {
   +1 > Enclosure Exit
   +1 > Sun Tracker Exit
 # +1 > IFS Exit
+  +1 > Startup Unexpected Clear
   +3 > Quit
 }
 
@@ -367,9 +372,92 @@ State WTX_Failed {
 }
 
 Partition
+#----------------------------------------------
+# Partition 4: Solar Partition
+#   Solar_Eval: Figure out which quadrant we're in
+#     Solar_Day_Ascending
+#     Solar_Day_Descending
+#     Solar_Night_Ascending
+#     Solar_Night_Descending
+#   Solar_Bedtime
+#----------------------------------------------
+{
+  ST_elev_t Sol_ele0; Invalidate Sol_ele0;
+  ST_elev_t dEle; Invalidate dEle;
+  { depending on (Sol_ele0) {
+      dEle = Sol_ele - Sol_ele0;
+      Validate dEle;
+    }
+    Sol_ele0 = Sol_ele;
+    Validate Sol_ele0;
+  }
+}
+
+State Solar_Eval {
+      > _Algo P4 Solar_Eval
+   +1 {
+        if (dEle > 0) {
+          if (Sol_ele > 0)
+            Validate Solar_Day_Ascending;
+          else
+            Validate Solar_Night_Ascending;
+        } else if (dEle < 0) {
+          if (Sol_ele > 0)
+            Validate Solar_Day_Descending;
+          else
+            Validate Solar_Night_Descending;
+        }
+      }
+}
+
+State Solar_Night_Descending {
+  > _Algo P4 Solar_Night_Descending
+  { if (dEle > 0) {
+      /* Midnight */
+      Validate Solar_Night_Ascending;
+    }
+  }
+}
+
+State Solar_Night_Ascending {
+  > _Algo P4 Solar_Night_Ascending
+  { if (Sol_ele > 0) {
+      /* Sunrise */
+      Validate Solar_Day_Ascending;
+    } else if (dEle < 0) {
+      /* Midwinter noon: sun reverses direction w/o rising */
+      Validate Solar_Bedtime;
+    }
+  }
+}
+
+State Solar_Day_Ascending {
+  > _Algo P4 Solar_Day_Ascending
+  { if (dEle < 0) {
+      /* Noon */
+      Validate Solar_Day_Descending;
+    }
+  }
+}
+
+State Solar_Day_Descending {
+  > _Algo P4 Solar_Day_Descending
+  { if (Sol_ele <= 0) {
+      /* Sunset */
+      Validate Solar_Bedtime;
+    }
+  }
+}
+
+State Solar_Bedtime {
+  > _Algo P4 Solar_Bedtime
+}
+
+
+Partition
 
 #----------------------------------------------
-# Partition 4: Enclosure Control
+# Partition 5: Enclosure Control
 #----------------------------------------------
 State Dome_Holding {
 }

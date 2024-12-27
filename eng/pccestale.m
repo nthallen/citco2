@@ -1,4 +1,4 @@
-function pccestale(varargin);
+function pccestale(varargin)
 % pccestale( [...] );
 % Enclosure Stale
 h = timeplot({'STEnc_stale'}, ...

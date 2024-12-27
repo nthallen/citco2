@@ -1,4 +1,4 @@
-function pccwtxp(varargin);
+function pccwtxp(varargin)
 % pccwtxp( [...] );
 % WTX P
 h = timeplot({'WTX_AbsAirP'}, ...

@@ -1,4 +1,4 @@
-function pcces(varargin);
+function pcces(varargin)
 % pcces( [...] );
 % Enclosure Status
 h = ne_dstat({

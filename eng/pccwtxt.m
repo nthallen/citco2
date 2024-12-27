@@ -1,4 +1,4 @@
-function pccwtxt(varargin);
+function pccwtxt(varargin)
 % pccwtxt( [...] );
 % WTX Temp
 h = timeplot({'WTX_AirT','WTX_DewPt'}, ...

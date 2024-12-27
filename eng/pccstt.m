@@ -1,4 +1,4 @@
-function pccstt(varargin);
+function pccstt(varargin)
 % pccstt( [...] );
 % ST Tdrift
 h = timeplot({'ST_Tdrift'}, ...

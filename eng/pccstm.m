@@ -1,4 +1,4 @@
-function pccstm(varargin);
+function pccstm(varargin)
 % pccstm( [...] );
 % ST Modus
 h = timeplot({'ST_modus'}, ...

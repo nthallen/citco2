@@ -13,7 +13,8 @@ System {
 Algo {
   HBox { +-; Algorithm; -+ };
   P1: (AlgoP1,25);
-  P3: (AlgoP3,25)
+  P3: (AlgoP3,25);
+  P4: (AlgoP4,25);
 }
 
 MainStack {

@@ -1,4 +1,4 @@
-function pccwtx_precipa(varargin);
+function pccwtx_precipa(varargin)
 % pccwtx_precipa( [...] );
 % WTX Precip Accum
 h = timeplot({'WTX_PrecipAcc'}, ...

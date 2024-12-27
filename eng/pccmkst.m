@@ -1,4 +1,4 @@
-function pccmkst(varargin);
+function pccmkst(varargin)
 % pccmkst( [...] );
 % MKS925 T
 h = timeplot({'MKS_T'}, ...

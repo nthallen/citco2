@@ -1,4 +1,4 @@
-function pccstratio(varargin);
+function pccstratio(varargin)
 % pccstratio( [...] );
 % ST Ratio
 h = timeplot({'radiance_ratio','Rad_Open_Pct','Rad_Close_Pct'}, ...

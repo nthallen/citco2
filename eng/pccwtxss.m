@@ -1,4 +1,4 @@
-function pccwtxss(varargin);
+function pccwtxss(varargin)
 % pccwtxss( [...] );
 % WTX Status Stale
 h = timeplot({'WTX_dev_stale','WTX_drv_stale'}, ...

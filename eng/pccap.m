@@ -1,4 +1,4 @@
-function pccap(varargin);
+function pccap(varargin)
 % pccap( [...] );
 % Algo P1
 h = timeplot({'AlgoP1'}, ...

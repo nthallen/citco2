@@ -1,4 +1,4 @@
-function pccstt_int(varargin);
+function pccstt_int(varargin)
 % pccstt_int( [...] );
 % ST t int
 h = timeplot({'ST_t_int'}, ...

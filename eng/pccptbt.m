@@ -1,4 +1,4 @@
-function pccptbt(varargin);
+function pccptbt(varargin)
 % pccptbt( [...] );
 % PTB T
 h = timeplot({'PTB_T'}, ...

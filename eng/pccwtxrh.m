@@ -1,4 +1,4 @@
-function pccwtxrh(varargin);
+function pccwtxrh(varargin)
 % pccwtxrh( [...] );
 % WTX RH
 h = timeplot({'RH_Open_Pct','RH_Close_Pct','WTX_RH'}, ...

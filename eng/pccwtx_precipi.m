@@ -1,4 +1,4 @@
-function pccwtx_precipi(varargin);
+function pccwtx_precipi(varargin)
 % pccwtx_precipi( [...] );
 % WTX Precip Intensity
 h = timeplot({'WTX_PrecipInt'}, ...

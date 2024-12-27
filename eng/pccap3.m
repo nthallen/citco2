@@ -1,4 +1,4 @@
-function pccap3(varargin);
+function pccap3(varargin)
 % pccap3( [...] );
 % Algo P3
 h = timeplot({'AlgoP3'}, ...

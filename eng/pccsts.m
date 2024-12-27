@@ -1,4 +1,4 @@
-function pccsts(varargin);
+function pccsts(varargin)
 % pccsts( [...] );
 % ST Stale
 h = timeplot({'ST_stale'}, ...

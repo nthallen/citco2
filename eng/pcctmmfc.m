@@ -1,4 +1,4 @@
-function pcctmmfc(varargin);
+function pcctmmfc(varargin)
 % pcctmmfc( [...] );
 % T Mbase MF Ctr
 h = timeplot({'MFCtr'}, ...

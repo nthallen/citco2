@@ -1,4 +1,4 @@
-function pccwtxwq(varargin);
+function pccwtxwq(varargin)
 % pccwtxwq( [...] );
 % WTX Wind Quality
 h = timeplot({'WTX_WindQ'}, ...

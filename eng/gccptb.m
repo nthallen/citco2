@@ -1,4 +1,4 @@
-function fig = gccptb(varargin);
+function fig = gccptb(varargin)
 % gccptb(...)
 % PTB
 ffig = ne_group(varargin,'PTB','pccptbp','pccptbt','pccptbstale');

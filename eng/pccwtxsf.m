@@ -1,4 +1,4 @@
-function pccwtxsf(varargin);
+function pccwtxsf(varargin)
 % pccwtxsf( [...] );
 % WTX Status Fresh
 h = ne_dstat({

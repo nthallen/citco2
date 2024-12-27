@@ -56,7 +56,7 @@ for my $partition (@partitions) {
   warn "Warning: TMAstatgen: Partition $partition width $max_width exceeds -W $opts{W}\n"
     if $max_width > $opts{W};
   print $tmc
-    "  Algo${partition}_text[] = {\n",
+    "  const char *Algo${partition}_text[] = {\n",
     join( ",\n", map('    "' . sprintf($fmt, $_) . '"', '', @$states)),
     "\n",
     "  };\n\n",

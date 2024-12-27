@@ -1,4 +1,4 @@
-function fig = gccwtxw(varargin);
+function fig = gccwtxw(varargin)
 % gccwtxw(...)
 % WTX Wind
 ffig = ne_group(varargin,'WTX Wind','pccwtxwd','pccwtxws','pccwtxwq');

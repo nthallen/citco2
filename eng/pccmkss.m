@@ -1,4 +1,4 @@
-function pccmkss(varargin);
+function pccmkss(varargin)
 % pccmkss( [...] );
 % MKS925 Stale
 h = timeplot({'MKS_stale'}, ...

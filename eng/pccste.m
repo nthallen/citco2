@@ -1,4 +1,4 @@
-function pccste(varargin);
+function pccste(varargin)
 % pccste( [...] );
 % ST Elevation
 h = timeplot({'ST_tpg_ele','Sol_ele'}, ...

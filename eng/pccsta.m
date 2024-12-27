@@ -1,4 +1,4 @@
-function pccsta(varargin);
+function pccsta(varargin)
 % pccsta( [...] );
 % ST Azimuth
 h = timeplot({'ST_tpg_azi'}, ...

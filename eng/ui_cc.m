@@ -23,6 +23,7 @@ f = ne_dialg(f, 'add', 1, 0, 'pcctmd', 'Disk' );
 f = ne_dialg(f, 'add', 0, 1, 'gcca', 'Algo' );
 f = ne_dialg(f, 'add', 1, 0, 'pccap', 'P1' );
 f = ne_dialg(f, 'add', 1, 0, 'pccap3', 'P3' );
+f = ne_dialg(f, 'add', 1, 0, 'pccap4', 'P4' );
 f = ne_dialg(f, 'add', 0, 1, 'gccwtx', 'WTX' );
 f = ne_dialg(f, 'add', 1, 0, 'pccwtxrh', 'RH' );
 f = ne_dialg(f, 'add', 1, 0, 'pccwtxt', 'Temp' );

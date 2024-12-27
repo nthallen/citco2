@@ -1,4 +1,4 @@
-function pcctmram(varargin);
+function pcctmram(varargin)
 % pcctmram( [...] );
 % T Mbase RAM
 h = timeplot({'memused'}, ...

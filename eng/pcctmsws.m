@@ -1,4 +1,4 @@
-function pcctmsws(varargin);
+function pcctmsws(varargin)
 % pcctmsws( [...] );
 % T Mbase SW Stat
 h = timeplot({'SWStat'}, ...
