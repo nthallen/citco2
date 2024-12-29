@@ -6,7 +6,7 @@ use mClient;
 
 sub Init {
   my ($name, $size) = @_;
-  my $svc = mClient::connect("data", $name);
+  my $svc = mClient::connect("tm_gen", "data/$name");
   my $self = { name => $name, size => $size, svc => $svc };
   bless $self;
   return $self;
@@ -14,8 +14,8 @@ sub Init {
 
 sub Send {
   my ($self, $data) = @_;
-  $self->{svc}->print($data);
-  my $rv = syswrite( $self->{fh}, $data, $self->{size} );
+  #$self->{svc}->print($data);
+  my $rv = syswrite( $self->{svc}->{sock}, $data);
   if (!defined($rv)) {
     if ($!{EAGAIN}) {
       warn "ColSend::Send() would block\n";

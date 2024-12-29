@@ -6,4 +6,5 @@
   Launch    tm_gen  basecol
   Launch    cmd     basesrvr -H srvr: -S:
   Launch    -       tmdf -p /home
+  Launch    -       TestClient
   Launch    -TMC-   basealgo

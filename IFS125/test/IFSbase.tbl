@@ -8,11 +8,11 @@ IFSretr {
 
 {
   HBox {
-    +|;
+    |+;
     [IFSretr];
-    +|;
+    |+;
     [TMbaseB];
-    +|;
+    |+;
   };
   -;
 }

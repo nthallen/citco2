@@ -1,5 +1,0 @@
-#! /usr/bin/perl -w
-use strict;
-use IFS_msg qw(msg);
-
-msg(0, "This is a test");

@@ -1,0 +1,52 @@
+#! /usr/bin/perl -w
+use strict;
+# For this test, we need to demonstrate the following:
+#  - msg() connectivity to memo
+#  - ColSend() connectivity to tm_gen
+#  - Reading commands from srvr
+
+use FindBin;
+use lib "$FindBin::RealBin";
+
+use IFS_msg qw(msg);
+use ColSend;
+use IFSq;
+
+msg(0, "TestClient: Starting");
+
+my $TM;
+my $IFSSlR = 1;
+my $IFSRStat = 1;
+
+sub write_tm {
+  my ( $IFSSlR, $IFSRStat ) = @_;
+  my $data = pack( "LS", $IFSSlR, $IFSRStat );
+  $TM = ColSend::Init( "IFSRD", length($data) )
+    unless defined $TM;
+  $TM->Send( $data );
+}
+
+my $req_type = "DQ";
+while (1) {
+  write_tm($IFSSlR, $IFSRStat);
+  sleep(1);
+  ++$IFSSlR;
+  $IFSRStat += 2;
+  my $cmd = IFSq::IFSq_dequeue($req_type);
+# $req_type = "DQ";
+  if ($cmd) {
+    chomp $cmd;
+    $cmd =~ s/^E[QU]//;
+    msg(0, "TestClient: rec'd cmd '$cmd'") if $cmd;
+    last if ($cmd =~ m/^Exit/);
+    if ($cmd =~ m/^Read Status/) {
+      $req_type = "DW";
+    } elsif ($cmd =~ m/^Direct/) {
+      $req_type = "DU";
+    } elsif ($cmd) {
+      $req_type = "DQ";
+    }
+  }
+}
+
+msg(0, "TestClient: Shutting Down");
