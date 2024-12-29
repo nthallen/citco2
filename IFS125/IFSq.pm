@@ -1,6 +1,7 @@
 package IFSq;
 use strict;
 use mClient;
+use IFSmsg qw(msg);
 use Fcntl;
 use Errno;
 
@@ -23,7 +24,7 @@ sub IFSq_read {
 #   $buf = "EQExit\n" if $rv == 0;
 # } else {
 #   return undef if ( $!{EAGAIN} || $!{EWOULDBLOCK} );
-#   IFSq_msg( 3, "sysread returned an error" );
+#   msg( 3, "sysread returned an error" );
 # }
   $buf = "EQExit\n" if defined($buf) && $buf =~ m/^Q?$/;
   return $buf;

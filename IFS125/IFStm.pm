@@ -1,6 +1,7 @@
 package IFSctrl;
 use strict;
 use ColSend;
+use IFSmsg qw(msg);
 our %status;
 
 my %TM = (
@@ -42,7 +43,7 @@ sub write_tm {
 
 sub set_status {
   my $statval = shift;
-  IFSq_msg( 4, "Invalid statval '$statval'" )
+  msg( 4, "Invalid statval '$statval'" )
     unless defined $status{$statval};
   set_tm( IFSCStat => $status{$statval} );
   write_tm();

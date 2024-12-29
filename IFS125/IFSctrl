@@ -10,6 +10,7 @@ BEGIN {
 use lib $ENV{TMBINDIR};
 our ( %options, %directopts, %choices );
 use IFSopts;
+use IFSmsg qw(msg);
 use IFStm;
 use IFSq;
 use IFSretr;
@@ -21,7 +22,7 @@ my %uc_scantype;
 for my $scantype ( keys %choices ) {
   my $lc_cmd = lc($scantype);
   if ( $uc_scantype{$lc_cmd} ) {
-    IFSq_msg( 2,
+    msg( 2,
       "Scantype '$scantype' conflicts with " .
       "'$uc_scantype{$lc_cmd}'" );
   } else {
@@ -36,7 +37,7 @@ for my $statval (
         Stress Abort Reset InSbNR CANErr),
       sort(keys %choices) ) {
   if ( defined $status{$statval} ) {
-    IFSq_msg( 2,
+    msg( 2,
       "Scantype name '$statval' conflicts with status value" );
   } else {
     $status{$statval} = $nstatus++;
@@ -69,7 +70,7 @@ if ( @ARGV ) {
     print_help();
   } elsif ( $cmd eq 'server' ) {
     $server = shift @ARGV ||
-      IFSq_msg( 3, "server option requires argument" );
+      msg( 3, "server option requires argument" );
   } elsif ( $cmd eq 'simulate' ) {
     $simulate = 1;
   }
@@ -79,9 +80,9 @@ if ( @ARGV ) {
       $verbosity = 1; # Dump http data
     } elsif ( $flag eq '-j' ) {
       $jpg_url = shift @ARGV ||
-        IFSq_msg(3, "-j optoin requires argument");
+        msg(3, "-j optoin requires argument");
     } else {
-      IFSq_msg( 3, "Unknown command line option: '$flag'" );
+      msg( 3, "Unknown command line option: '$flag'" );
     }
   }
 }
@@ -97,7 +98,7 @@ my $ua = new LWP::UserAgent(keep_alive => 1);
 #------------------------------------------------
 $| = 1;
 open( LOG, ">>http.log" ) || die "Cannot log\n";
-IFSq_msg( 0, "IFSctrl Initialized" );
+msg( 0, "IFSctrl Initialized" );
 IFSretr::init( "http://$server" );
 
 my $Exit_Req = 0;
@@ -115,7 +116,7 @@ while ( ! $Exit_Req ) {
       last;
     } elsif ( $pcmd->{op} ne 'nop' ) {
       set_status('Error');
-      IFSq_msg( 2, "Assertion failed: Unexpected op" );
+      msg( 2, "Assertion failed: Unexpected op" );
     }
   }
   last if $pcmd->{op} eq 'Exit';
@@ -164,7 +165,7 @@ while ( ! $Exit_Req ) {
   }
 }
 set_status('Terminated');
-IFSq_msg(0, "IFSctrl Shutting Down");
+msg(0, "IFSctrl Shutting Down");
 exit 0;
 
 sub parse_params {
@@ -270,7 +271,7 @@ sub parse_command {
     push @{$pcmd->{errors}}, "Syntax Error: '$cmd'";
   }
   for my $err ( @{$pcmd->{errors}} ) {
-    IFSq_msg( 2, "parse_command: $err" );
+    msg( 2, "parse_command: $err" );
   }
   return $pcmd;
 }
@@ -504,7 +505,7 @@ sub http_request {
         last;
       }
     } else {
-      IFSq_msg( 2, "Error from IFS125HR: " . $response->status_line . "\n" );
+      msg( 2, "Error from IFS125HR: " . $response->status_line . "\n" );
       set_status( 'Error' );
       write_tm();
       print LOG "Non-success:\n",
@@ -584,7 +585,7 @@ sub parse_brow_stat {
           set_status('Error');
         }
       }
-      IFSq_msg( $ELVLn, $errmsg );
+      msg( $ELVLn, $errmsg );
       sleep(1);
     }
   }

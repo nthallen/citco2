@@ -8,7 +8,7 @@ use strict;
 use FindBin;
 use lib "$FindBin::RealBin";
 
-use IFS_msg qw(msg);
+use IFSmsg qw(msg);
 use ColSend;
 use IFSq;
 
