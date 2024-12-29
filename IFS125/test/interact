@@ -1,0 +1,9 @@
+  Launch    memo    memo -o $Experiment.log -l4
+                    [ -z "$launch_err" ] &&
+                      msg "Running script interact"
+  Launch    tm_bfr  bfr -H bfr: -S:
+  Launch    -TMC-   lgr -N $(mlf_find LOG) -n lgr
+  Launch    tm_gen  basecol
+  Launch    cmd     basesrvr -H srvr: -S:
+  Launch    -       tmdf -p /home
+  Launch    -TMC-   basealgo

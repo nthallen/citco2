@@ -2,24 +2,28 @@ package ColSend;
 use strict;
 use Fcntl;
 use Errno;
+use mClient;
 
 sub Init {
   my ($name, $size) = @_;
-  sysopen(my $fh, "/dev/huarp/citco2/DG/data/$name", O_NONBLOCK|O_WRONLY) ||
-    die "Unable to open TM channel for '$name'\n";
-  my $self = { name => $name, size => $size, fh => $fh };
+  my $svc = mClient::connect("data", $name);
+  my $self = { name => $name, size => $size, svc => $svc };
   bless $self;
   return $self;
 }
 
 sub Send {
   my ($self, $data) = @_;
+  $self->{svc}->print($data);
   my $rv = syswrite( $self->{fh}, $data, $self->{size} );
-  if (!defined($rv) && $!{EAGAIN}) {
-    warn "Colsend::Send() would block\n";
+  if (!defined($rv)) {
+    if ($!{EAGAIN}) {
+      warn "ColSend::Send() would block\n";
+    } else {
+      warn "ColSend::Send() returned error $!\n";
+    }
   } elsif ($rv != $self->{size}) {
-    warn "Colsend::Send() incomplete write: $rv not $self->{size}\n"
-      unless $rv == 0;
+    warn "ColSend::Send() incomplete write: $rv not $self->{size}\n";
   }
 }
 

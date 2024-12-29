@@ -1,0 +1,22 @@
+%{
+  typedef struct __attribute__((__packed__)) {
+    uint32_t IFSSlR;
+    uint16_t IFSRStat;
+  } IFSRData;
+  IFSRData IFSRD;
+%}
+TM "Receive" IFSRD 0;
+
+TM typedef uint16_t base_u16 { text "%5u"; }
+TM 1 Hz base_u16 MFCtr, Synch;
+
+TM typedef uint32_t IFSu32_t { text "%8u"; }
+TM typedef uint16_t IFSu16_t { text "%5u"; }
+
+TM 1 Hz IFSu32_t IFSSlR;
+TM 1 Hz IFSu16_t IFSRStat;
+
+Group IFSRD_Data (IFSSlR, IFSRStat) {
+  IFSSlR = IFSRD.IFSSlR;
+  IFSRStat = IFSRD.IFSRStat;
+}

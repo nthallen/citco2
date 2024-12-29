@@ -1,0 +1,18 @@
+Input "TMbase.tbl";
+
+IFSretr {
+  HBox { +-; IFSretr; -+ };
+    >Rd: (IFSSlR,8);
+  Rstat: (IFSRStat,5);
+}
+
+{
+  HBox {
+    +|;
+    [IFSretr];
+    +|;
+    [TMbaseB];
+    +|;
+  };
+  -;
+}

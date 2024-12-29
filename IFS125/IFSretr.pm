@@ -18,7 +18,7 @@ sub init {
 
   -d 'scan' || mkdir('scan') ||
      die "Cannot create scan directory\n";
-  print RETRLOG scalar(localtime), ": IFSretr.pm started, server is $server\n";
+  print RETRLOG scalar(gmtime), ": IFSretr.pm started, server is $server\n";
 }
 
 my $colsend;
@@ -28,7 +28,7 @@ my $slicesize;
 sub line {
   my $line = shift;
   chomp $line;
-  my $now = localtime;
+  my $now = gmtime;
   if ( $line =~ m/^b(\d+)\.0$/ ) {
     my $curfile = $1;
     $nextfile = $curfile if ! defined($nextfile);
@@ -58,7 +58,7 @@ sub line {
 
 END {
   if ( $server ) {
-    print RETRLOG scalar(localtime), ": IFSretr exiting\n\n";
+    print RETRLOG scalar(gmtime), ": IFSretr exiting\n\n";
     close RETRLOG;
   }
 }

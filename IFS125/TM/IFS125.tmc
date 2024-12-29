@@ -1,0 +1,127 @@
+%{
+  /*
+    IFSSlW   Bruker Slice File Number (Long) being Written
+    IFSScan  My Scan Serial Number uint16_t
+    IFSTR    IFS Time Remaining uint16_t %5.1d
+    IFSRN    IFS Request Number (uint16_t)
+    IFSDT    Time Difference between IFS and computer
+    IFSSN    IFS Scan Number uint8_t
+    IFSSR    IFS Scans Remaining uint8_t
+    IFSCStat (Idle, Scanning, Error?) uint8_t
+    IFSDiag - all the diag bits.
+      0 - Scanner
+      1 - Detectors
+      2 - HeNe Laser
+      3 - IR Source
+      4 - Automation Units
+      5 - Instrument Ready
+    LasAAF uint16_t
+    LasAOF int16_t
+    LasBAF uint16_t
+    LasBOF int16_t
+    ScBlkT int16_t (fixed)
+    IFHum  uint16_t
+    IFS_P  uint32_t (/DCntrl04.htm reported in mPascals)
+    IFSSrcT int16_t (/DCntrl03.htm)
+
+    IFSSlR   Last Slice File Read (from IFSretr)
+    IFSRStat IFSretr status
+  */
+  const char *IFSCStat_text( uint8_t s ) {
+    if ( s >= N_IFSCSTAT ) s = N_IFSCSTAT;
+    return _IFSCStat_text[s];
+  }
+  /* These structure definitions must match
+     those in IFSctrl and/or IFSretr */
+  typedef struct __attribute__((__packed__)) {
+    uint32_t IFSSlW;
+    uint32_t IFS_P;
+    uint16_t IFSTR;
+    uint16_t IFSRN;
+    int16_t  IFSDT;
+    uint16_t LasAAF;
+    int16_t  LasAOF;
+    uint16_t LasBAF;
+    int16_t  LasBOF;
+    int16_t  ScBlkT;
+    uint16_t IFHum;
+    int16_t  IFSSrcT;
+    uint8_t  IFSSN;
+    uint8_t  IFSSR;
+    uint8_t  IFSCStat;
+    uint8_t  IFSScan;
+    uint8_t  IFSDiag;
+  } IFSCData;
+  IFSCData IFSCD;
+  typedef struct __attribute__((__packed__)) {
+    uint32_t IFSSlR;
+    uint16_t IFSRStat;
+  } IFSRData;
+  IFSRData IFSRD;
+%}
+TM "Receive" IFSCD 0;
+TM "Receive" IFSRD 0;
+
+TM typedef uint32_t IFSu32_t { text "%8u"; }
+TM typedef uint16_t IFSu16_t { text "%5u"; }
+TM typedef IFSu16_t IFSTime_t { text "%5.1f"; }
+TM typedef uint8_t  IFSu8_t { text "%3u"; }
+TM typedef IFSu8_t  IFSuDig2 { text "%2u"; }
+TM typedef IFSu8_t  IFSuDig { text "%1u"; }
+TM typedef uint8_t  IFSCStat_t { text "%5.1d" IFSCStat_text(); }
+TM typedef int16_t  IFSs16_t { text "%6d"; }
+TM typedef double   IFS_MBAR;
+TM typedef double   IFS_CELCIUS;
+TM typedef uint32_t IFS_P_t { Convert IFS_MBAR; text "%7.2lf"; }
+Calibration (IFS_P_t, IFS_MBAR) { 0, 0, 100000., 1 }
+TM typedef IFSs16_t IFS_T_t { text "%5.1lf"; }
+
+TM 1 Hz IFSu32_t   IFSSlW;
+TM 1 Hz IFSCStat_t IFSCStat;
+TM 1 Hz IFSu16_t   IFSStale;
+TM 1 Hz IFSu8_t    IFSScan;
+TM 1 Hz IFSTime_t  IFSTR;
+TM 1 Hz IFSu16_t   IFSRN;
+TM 1 Hz IFSs16_t   IFSDT;
+TM 1 Hz IFSuDig2   IFSSN;
+TM 1 Hz IFSuDig2   IFSSR;
+TM 1 Hz IFSu8_t    IFSDiag;
+TM 1 Hz IFSu16_t   LasAAF;
+TM 1 Hz IFSs16_t   LasAOF;
+TM 1 Hz IFSu16_t   LasBAF;
+TM 1 Hz IFSs16_t   LasBOF;
+TM 1 Hz IFS_T_t    ScBlkT;
+TM 1 Hz IFSu16_t   IFHum;
+TM 1 Hz IFS_P_t    IFS_P;
+TM 1 Hz IFS_T_t    IFSSrcT;
+
+Group IFSDC_Data (IFSSlW, IFSCStat, IFSStale, IFSScan, IFSTR,
+    IFSRN, IFSDT, IFSSN, IFSSR, IFSDiag, LasAAF, LasAOF, LasBAF,
+    LasBOF, ScBlkT, IFHum, IFS_P, IFSSrcT) {
+  IFSSlW = IFSCD.IFSSlW;
+  IFSCStat = IFSCD.IFSCStat;
+  IFSStale = IFSCD_obj->stale();
+  IFSScan = IFSCD.IFSScan;
+  IFSTR = IFSCD.IFSTR;
+  IFSRN = IFSCD.IFSRN;
+  IFSDT = IFSCD.IFSDT;
+  IFSSN = IFSCD.IFSSN;
+  IFSSR = IFSCD.IFSSR;
+  IFSDiag = IFSCD.IFSDiag; /* all the diag bits. */
+  LasAAF = IFSCD.LasAAF;
+  LasAOF = IFSCD.LasAOF;
+  LasBAF = IFSCD.LasBAF;
+  LasBOF = IFSCD.LasBOF;
+  ScBlkT = IFSCD.ScBlkT;
+  IFHum = IFSCD.IFHum;
+  IFS_P = IFSCD.IFS_P;
+  IFSSrcT = IFSCD.IFSSrcT;
+}
+
+TM 1 Hz IFSu32_t IFSSlR;
+TM 1 Hz IFSu16_t IFSRStat;
+
+Group IFSRD_Data (IFSSlR, IFSRStat) {
+  IFSSlR = IFSRD.IFSSlR;
+  IFSRStat = IFSRD.IFSRStat;
+}

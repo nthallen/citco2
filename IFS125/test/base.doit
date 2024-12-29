@@ -1,0 +1,5 @@
+display basedisp -n disp
+client [SI|RT] baseclt
+# extraction [!SI] basejsonext -n json
+memo
+batchfile interact

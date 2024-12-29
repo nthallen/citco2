@@ -41,7 +41,7 @@ sub connect {
 
 sub print {
   my ($self, $buf) = @_;
-  $self->{sock}->syswrite($buf);
+  return $self->{sock}->syswrite($buf);
 }
 
 sub printf {
