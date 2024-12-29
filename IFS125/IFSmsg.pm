@@ -1,4 +1,4 @@
-package IFS_msg;
+package IFSmsg;
 use strict;
 
 use Exporter 'import';

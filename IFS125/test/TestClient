@@ -35,16 +35,18 @@ while (1) {
   my $cmd = IFSq::IFSq_dequeue($req_type);
 # $req_type = "DQ";
   if ($cmd) {
-    chomp $cmd;
-    $cmd =~ s/^E[QU]//;
-    msg(0, "TestClient: rec'd cmd '$cmd'") if $cmd;
-    last if ($cmd =~ m/^Exit/);
-    if ($cmd =~ m/^Read Status/) {
-      $req_type = "DW";
-    } elsif ($cmd =~ m/^Direct/) {
-      $req_type = "DU";
-    } elsif ($cmd) {
-      $req_type = "DQ";
+    while ($cmd =~ s/^(.*)\n//) {
+      my $cmd1 = $1;
+      $cmd1 =~ s/^E[QU]//;
+      msg(0, "TestClient: rec'd cmd '$cmd1'");
+      last if ($cmd1 =~ m/^Exit/);
+      if ($cmd1 =~ m/^Read Status/) {
+        $req_type = "DW";
+      } elsif ($cmd1 =~ m/^Direct/) {
+        $req_type = "DU";
+      } elsif ($cmd1) {
+        $req_type = "DQ";
+      }
     }
   }
 }
