@@ -58,6 +58,8 @@
     uint16_t IFSRStat;
   } IFSRData;
   IFSRData IFSRD;
+  
+  #define IFS_P_2_MBAR(x) (x*1E-5)
 %}
 TM "Receive" IFSCD 0;
 TM "Receive" IFSRD 0;
@@ -72,8 +74,8 @@ TM typedef uint8_t  IFSCStat_t { text "%5.1d" IFSCStat_text(); }
 TM typedef int16_t  IFSs16_t { text "%6d"; }
 TM typedef double   IFS_MBAR;
 TM typedef double   IFS_CELCIUS;
-TM typedef uint32_t IFS_P_t { Convert IFS_MBAR; text "%7.2lf"; }
-Calibration (IFS_P_t, IFS_MBAR) { 0, 0, 100000., 1 }
+TM typedef uint32_t IFS_P_t { Convert IFS_MBAR IFS_P_2_MBAR(); text "%9.4lf"; }
+/* Calibration (IFS_P_t, IFS_MBAR) { 0, 0, 100000., 1 } */
 TM typedef IFSs16_t IFS_T_t { text "%5.1lf"; }
 
 TM 1 Hz IFSu32_t   IFSSlW;
@@ -100,7 +102,7 @@ Group IFSDC_Data (IFSSlW, IFSCStat, IFSStale, IFSScan, IFSTR,
     LasBOF, ScBlkT, IFHum, IFS_P, IFSSrcT) {
   IFSSlW = IFSCD.IFSSlW;
   IFSCStat = IFSCD.IFSCStat;
-  IFSStale = IFSCD_obj->stale();
+  IFSStale = IFSCD_obj->Stale();
   IFSScan = IFSCD.IFSScan;
   IFSTR = IFSCD.IFSTR;
   IFSRN = IFSCD.IFSRN;

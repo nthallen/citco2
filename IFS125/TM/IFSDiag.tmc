@@ -1,0 +1,17 @@
+%{
+  /* IFSDiag.tmc  */
+  #define OKFail_txt(x) ((x)?"  OK":"Fail")
+%}
+TM typedef unsigned char OKFail { text "%4u" OKFail_txt(); }
+OKFail DiagScanS; Invalidate DiagScanS;
+  { DiagScanS = IFSDiag & 1; Validate DiagScanS; }
+OKFail DiagDetS; Invalidate DiagDetS;
+  { DiagDetS = (IFSDiag >> 1) & 1; Validate DiagDetS; }
+OKFail DiagHeNeS; Invalidate DiagHeNeS;
+  { DiagHeNeS = (IFSDiag >> 2) & 1; Validate DiagHeNeS; }
+OKFail DiagIRSrcS; Invalidate DiagIRSrcS;
+  { DiagIRSrcS = (IFSDiag >> 3) & 1; Validate DiagIRSrcS; }
+OKFail DiagAUS; Invalidate DiagAUS;
+  { DiagAUS = (IFSDiag >> 4) & 1; Validate DiagAUS; }
+OKFail DiagRdyS; Invalidate DiagRdyS;
+  { DiagRdyS = (IFSDiag >> 5) & 1; Validate DiagRdyS; }

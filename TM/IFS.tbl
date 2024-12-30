@@ -4,6 +4,7 @@ Input "WTX530.tbl";
 Input "STEnc.tbl";
 Input "MKS925.tbl";
 Input "TMbase.tbl";
+Input "IFS125.tbl";
 
 System {
   HBox { +-; System; -+ };
@@ -17,32 +18,43 @@ Algo {
   P4: (AlgoP4,25);
 }
 
+IFS_P {
+  HBox { +-; "IFS P"; -+ };
+  IFS_P: (IFS_P,9) hPa;
+  MKS_P: (MKS_P,9) hPa;
+}
+
 MainStack {
-  HBox { +-; IFS; -+ };
+# HBox { +-; IFS; -+ };
   HBox {
     {
-      HBox {
-        {
-          [WTX];
-          [PTB];
-          [WTX_Wind];
-          [WTX_Precip];
-        }; |+;
-        {
-          [SunTracker];
-          [STEnc];
-          [Radiance]
-        };
-      };
+      [IFS];
+      [Algo];
+      [IFS_P]
     };
     |+;
     {
-      [Algo];
-      VGlue 0+1;
-      [MKS];
+      [WTX];
+      [PTB];
+      [WTX_Wind];
+      [WTX_Precip];
+    };
+    |+;
+    {
+      [SunTracker];
+      [STEnc];
+      [Radiance];
       [System]
-    }
-  }
+    };
+#    |+;
+#    {
+#      [Algo];
+#      VGlue 0+1;
+#      [MKS];
+#      [System]
+#    }
+  };
+  HBox { [IFSDiag]; |+; [IFSLaser]; |+; [IFSHT] };
 }
 
 {

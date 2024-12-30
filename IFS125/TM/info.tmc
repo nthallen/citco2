@@ -1,0 +1,325 @@
+/* info.tmc
+   Program to generate info files
+   
+   Condition to mark beginning of a new scan:
+     IFSSN == 0 && IFSSlW > IFSSlW_prev
+   Now start averaging until IFSSN changes, stopping when
+    IFSTR == 0 or
+    IFSSR == 0 or
+    IFSCStat == Idle or Wait or Error or
+    (IFSSN_prev > 0 && IFSSN == 0)
+   
+   Determine first_slice_number
+*/
+
+%{
+  #include <math.h>
+  #include <time.h>
+  #include <stdlib.h>
+  #include <limits.h>
+  #include "nl.h"
+  #include "oui.h"
+  #include "infoext.h"
+  #include "location.h"
+   
+   FILE *slice_fp;
+   long int first_slice_number = 0;
+   long int IFSSlW_prev = 0;
+   int IFSSN_prev = 0;
+   const char *raw_dir;
+   
+   void open_info(long int slice_num, int scan_num ) {
+     char fname[PATH_MAX+1];
+     if ( raw_dir == 0 ) raw_dir = getenv("TMLOGDIR");
+     if ( raw_dir == 0 )
+       msg( 3, "No raw directory specified and TMLOGDIR not defined" );
+     snprintf( fname, PATH_MAX, "%s/scan/b%ld.%d.info",
+       raw_dir, slice_num, scan_num );
+     slice_fp = fopen( fname, "w" );
+     if ( slice_fp ) {
+       struct tm *tm;
+       time_t isecs;
+       fprintf( slice_fp, "Latitude: %.4lf\n", LATITUDE() );
+       fprintf( slice_fp, "Longitude: %.4lf\n", LONGITUDE() );
+       fprintf( slice_fp, "Altitude: %d\n", ALTITUDE() );
+       isecs = itime();
+       tm = gmtime(&isecs);
+       fprintf( slice_fp, "Start_Time: %04d%02d%02d%02d%02d%02d\n",
+         tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday, tm->tm_hour,
+         tm->tm_min, tm->tm_sec );
+       fprintf( slice_fp, "ST_t_int: " );
+     } else {
+       msg( 2, "Unable to write file '%s'", fname );
+     }
+   }
+   
+   void close_info( long int slice_num ) {
+     if ( slice_fp ) {
+       char fname[PATH_MAX+1];
+       FILE *scd_fp;
+       if ( raw_dir == 0 ) msg( 4, "raw_dir is NULL" );
+       snprintf( fname, PATH_MAX, "%s/scan/b%ld.scd", raw_dir, slice_num );
+       scd_fp = fopen( fname, "r" );
+       if ( scd_fp ) {
+         char buf[512];
+         int n;
+         while ( (n = fread(buf, 1, 512, scd_fp)) ) {
+           fwrite( buf, 1, n, slice_fp );
+         }
+         fclose(scd_fp);
+       } else msg( 1, "scd file '%s' not found\n", fname );
+       fclose(slice_fp);
+       slice_fp = 0;
+     }
+   }
+   
+   void Rec_t_int( const char *val ) {
+     if ( slice_fp )
+       fprintf( slice_fp, " %s", val );
+   }
+   
+   void End_t_int( void ) {
+     if ( slice_fp ) {
+       struct tm *tm;
+       time_t isecs;
+       fprintf( slice_fp, "\n" );
+       isecs = itime();
+       tm = gmtime(&isecs);
+       fprintf( slice_fp, "End_Time: %04d%02d%02d%02d%02d%02d\n",
+         tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday, tm->tm_hour,
+         tm->tm_min, tm->tm_sec );
+     }
+   }
+
+   typedef struct {
+     const char *name;
+     int count;
+     double sum;
+     double sum2;
+   } avgstddata;
+   
+   void Rec_avgstd( avgstddata *as, double value ) {
+     as->sum += value;
+     as->sum2 += value * value;
+     as->count++;
+   }
+   
+   void Reset_avgstd( avgstddata *as ) {
+     as->count = 0;
+     as->sum = as->sum2 = 0.;
+   }
+   
+   void Report_avgstd( avgstddata *as ) {
+     if ( slice_fp != 0 && as->count > 0 ) {
+       double mean = as->sum / as->count;
+       double std = sqrt( as->sum2/as->count - mean*mean );
+       fprintf( slice_fp, "%s_avg: %.1lf\n", as->name, mean );
+       fprintf( slice_fp, "%s_std: %.1lf\n", as->name, std );
+     }
+   }
+
+   typedef struct {
+     const char *name;
+     int count;
+     double sum;
+   } avgdata;
+   
+   void Rec_avg( avgdata *as, double value ) {
+     as->sum += value;
+     as->count++;
+   }
+   
+   void Reset_avg( avgdata *as ) {
+     as->count = 0;
+     as->sum = 0.;
+   }
+   
+   void Report_avg( avgdata *as ) {
+     if ( slice_fp != 0 && as->count > 0 ) {
+       double mean = as->sum / as->count;
+       fprintf( slice_fp, "%s_avg: %.1lf\n", as->name, mean );
+     }
+   }
+   
+   typedef struct {
+     const char *name;
+     int is_set;
+     double value;
+   } maxdata;
+   
+   void Rec_max( maxdata *as, double value ) {
+     if ( as->is_set == 0 || value > as->value )
+       as->value = value;
+     as->is_set = 1;
+   }
+   
+   void Reset_max( maxdata *as ) {
+     as->is_set = 0;
+   }
+   
+   void Report_max( maxdata *as ) {
+     if ( slice_fp != 0 && as->is_set ) {
+       fprintf( slice_fp, "%s_max: %.1lf\n", as->name, as->value );
+     }
+   }
+
+  avgstddata ZWS_as = { "Zeno_WindSpeed" };
+  maxdata ZWS_max = { "Zeno_WindSpeed" };
+  avgstddata ZWD_as = { "Zeno_WindDir" };
+  avgdata ZT_avg = { "Zeno_Temp" };
+  avgdata ZRH_avg = { "Zeno_RH" };
+  avgstddata ZSR_as = { "Zeno_SolarRadiance" };
+  avgdata ZP_avg = { "Zeno_Press" };
+  maxdata ZR_max = { "Zeno_Rain" };
+  /*
+  maxdata ZL_max = { "Zeno_Lightning" };
+  avgdata ZVB_avg = { "Zeno_VBatt" };
+  */
+  #define REF(x) &x
+  
+%}
+
+State ( Not_Scanning, Scanning );
+Validate Not_Scanning;
+State ( Report_Idle, Report_Averages );
+
+depending on ( Not_Scanning ) {
+  if ( IFSSN == 0 && IFSTR > 0 &&
+      ( IFSCStat > IFS_SCAN_RESET || IFSCStat == IFS_SCAN_ERROR ) ) {
+    first_slice_number = IFSSlW;
+    open_info(first_slice_number, 0);
+    Validate Scanning;
+  }
+  IFSSlW_prev = IFSSlW;
+}
+
+depending on ( Scanning ) {
+  int EOS;
+  EOS =
+    IFSTR == 0 || IFSSR == 0 ||
+    IFSCStat == IFS_SCAN_IDLE ||
+    IFSCStat == IFS_SCAN_WAIT ||
+    IFSSN < IFSSN_prev;
+  if ( EOS || IFSSN != IFSSN_prev ) {
+    End_t_int();
+    Validate Report_Averages;
+    close_info(first_slice_number);
+    IFSSN_prev = IFSSN;
+    if (EOS) Validate Not_Scanning;
+    else open_info(first_slice_number, IFSSN);
+  }
+  IFSSlW_prev = IFSSlW;
+}
+
+depending on ( Scanning ) { Rec_t_int(text(ST_t_int)); }
+
+depending on ( Scanning ) { Rec_avgstd(REF(ZWS_as), convert(WTX_WindSpd)); }
+depending on ( Report_Averages Once ) { Report_avgstd(REF(ZWS_as)); Reset_avgstd(REF(ZWS_as)); }
+
+depending on ( Scanning ) { Rec_max(REF(ZWS_max), convert(WTX_WindSpd)); }
+depending on ( Report_Averages Once ) { Report_max(REF(ZWS_max)); Reset_max(REF(ZWS_max)); }
+
+depending on ( Scanning ) { Rec_avgstd(REF(ZWD_as), convert(WTX_WindDir)); }
+depending on ( Report_Averages Once ) { Report_avgstd(REF(ZWD_as)); Reset_avgstd(REF(ZWD_as)); }
+
+depending on ( Scanning ) { Rec_avg(REF(ZT_avg), convert(WTX_AirT)); }
+depending on ( Report_Averages Once ) { Report_avg(REF(ZT_avg)); Reset_avg(REF(ZT_avg)); }
+
+depending on ( Scanning ) { Rec_avg(REF(ZRH_avg), convert(WTX_RH)); }
+depending on ( Report_Averages Once ) { Report_avg(REF(ZRH_avg)); Reset_avg(REF(ZRH_avg)); }
+
+depending on ( Scanning ) { Rec_avgstd(REF(ZSR_as), convert(WTX_SolRad)); }
+depending on ( Report_Averages Once ) { Report_avgstd(REF(ZSR_as)); Reset_avgstd(REF(ZSR_as)); }
+
+depending on ( Scanning ) { Rec_avg(REF(ZP_avg), convert(PTB_P)); }
+depending on ( Report_Averages Once ) { Report_avg(REF(ZP_avg)); Reset_avg(REF(ZP_avg)); }
+
+depending on ( Scanning ) { Rec_max(REF(ZR_max), convert(WTX_PrecipInt)); }
+depending on ( Report_Averages Once ) { Report_max(REF(ZR_max)); Reset_max(REF(ZR_max)); }
+
+/*
+depending on ( Scanning ) { Rec_max(REF(ZL_max), convert(Zeno_Lightning)); }
+depending on ( Report_Averages Once ) { Report_max(REF(ZL_max)); Reset_max(REF(ZL_max)); }
+
+depending on ( Scanning ) { Rec_avg(REF(ZVB_avg), convert(Zeno_VBatt)); }
+depending on ( Report_Averages Once ) { Report_avg(REF(ZVB_avg)); Reset_avg(REF(ZVB_avg)); }
+*/
+
+%{
+  /* avgdata DA_avg = { "Dome_azi" }; */
+  maxdata DS_max = { "Dome_Status" };
+%}
+
+/*
+depending on ( Scanning ) { Rec_avg(REF(DA_avg), convert(Dome_azi)); }
+depending on ( Report_Averages Once ) { Report_avg(REF(DA_avg)); Reset_avg(REF(DA_avg)); }
+*/
+
+depending on ( Scanning ) { Rec_max(REF(DS_max), (STEnc_status&3) != 2); }
+depending on ( Report_Averages Once ) { Report_max(REF(DS_max)); Reset_max(REF(DS_max)); }
+
+%{
+  avgdata STA_avg = { "ST_tpg_azi" };
+  avgdata STE_avg = { "ST_tpg_ele" };
+  maxdata STF_max = { "ST_flip" };
+  maxdata STM_max = { "ST_TPS" };
+  avgstddata STQ_as = { "ST_t_int" };
+  /* avgdata STOA_avg = { "ST_off_azi" }; */
+  /* avgdata STOE_avg = { "ST_off_ele" }; */
+  avgdata STD_avg = { "ST_Tdrift" };
+%}
+
+depending on ( Scanning ) { Rec_avg(REF(STA_avg), convert(ST_tpg_azi)); }
+depending on ( Report_Averages Once ) { Report_avg(REF(STA_avg)); Reset_avg(REF(STA_avg)); }
+
+depending on ( Scanning ) { Rec_avg(REF(STE_avg), convert(ST_tpg_ele)); }
+depending on ( Report_Averages Once ) { Report_avg(REF(STE_avg)); Reset_avg(REF(STE_avg)); }
+
+depending on ( Scanning ) { Rec_max(REF(STF_max), ST_flip); }
+depending on ( Report_Averages Once ) { Report_max(REF(STF_max)); Reset_max(REF(STF_max)); }
+
+depending on ( Scanning ) { Rec_max(REF(STM_max), ST_modus != ST_MODE_TMR); }
+depending on ( Report_Averages Once ) { Report_max(REF(STM_max)); Reset_max(REF(STM_max)); }
+
+depending on ( Scanning ) { Rec_avgstd(REF(STQ_as), convert(ST_t_int)); }
+depending on ( Report_Averages Once ) { Report_avgstd(REF(STQ_as)); Reset_avgstd(REF(STQ_as)); }
+
+/*
+depending on ( Scanning ) { Rec_avg(REF(STOA_avg), convert(ST_off_azi)); }
+depending on ( Report_Averages Once ) { Report_avg(REF(STOA_avg)); Reset_avg(REF(STOA_avg)); }
+
+depending on ( Scanning ) { Rec_avg(REF(STOE_avg), convert(ST_off_ele)); }
+depending on ( Report_Averages Once ) { Report_avg(REF(STOE_avg)); Reset_avg(REF(STOE_avg)); }
+*/
+
+depending on ( Scanning ) { Rec_avg(REF(STD_avg), convert(ST_Tdrift)); }
+depending on ( Report_Averages Once ) { Report_avg(REF(STD_avg)); Reset_avg(REF(STD_avg)); }
+
+%{
+  avgdata IFSDT_avg = { "IFSDT" };
+%}
+
+depending on ( Scanning ) { Rec_avg(REF(IFSDT_avg), convert(IFSDT)); }
+depending on ( Report_Averages Once ) { Report_avg(REF(IFSDT_avg)); Reset_avg(REF(IFSDT_avg)); }
+
+%{
+  static const char *ScanType;
+  void Report_String(const char *KW, const char *Val) {
+    if ( slice_fp != 0 && Val != 0 ) {
+      fprintf( slice_fp, "%s: %s\n", KW, Val );
+    }
+  }
+%}
+depending on ( Scanning once ) { ScanType = text(IFSCStat); }
+depending on ( Report_Averages Once ) { Report_String( "ScanType", ScanType ); }
+
+%{
+  static const char *ScanStatus = 0;
+%}
+depending on ( Scanning once ) { ScanStatus = "OK"; }
+depending on ( Scanning ) {
+  if ( IFSCStat == IFS_SCAN_STRESS ) ScanStatus = "Stress";
+  else if ( IFSCStat == IFS_SCAN_ERROR ) ScanStatus = "Error";
+  else if ( IFSCStat == IFS_SCAN_RESET ) ScanStatus = "Reset";
+}
+depending on ( Report_Averages Once ) { Report_String( "ScanStatus", ScanStatus ); }

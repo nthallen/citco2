@@ -8,7 +8,7 @@ OBJ = SWData.h SWData.tmc SWData_col.tmc SWData.cmd
 
 tmcbase = base.tmc
 genuibase = IFS.genui
-Module TMAstat TMA=Config/IFS.tma TextWidth=25
+Module TMAstat TMA=Config/IFS.tma TextWidth=22
 swsbase = Config/IFS.sws
 cmdbase = Startup.cmd
 Module TMbase mode=ignore SWSnot=
@@ -18,6 +18,7 @@ Module PTB330
 Module WTX530
 Module SunTracker
 Module MKS925
+Module IFS125
 
 Module Config/Site
 

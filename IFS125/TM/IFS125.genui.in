@@ -1,0 +1,28 @@
+  1 IFSCStat  IFS CStat %.0lf
+  1 IFSRN     IFS RN
+  1 IFSRStat  IFS RStat
+  1 IFSSN     IFS SN
+  1 IFSSR     IFS SR
+# 1 IFSScan   IFS Scan
+  1 IFSSlR    IFS SlRW
+  1 IFSSlW    IFS SlRW
+  1 IFSSrcT   IFS SrcT
+  1 IFSTR     IFS TR
+  
+  1 LasAAF    IFS Laser
+  1 LasAOF    IFS Laser
+  1 LasBAF    IFS Laser
+  1 LasBOF    IFS Laser
+
+  1 ScBlkT    IFS_HK Temps
+  1 IFS_P     IFS_HK Press
+  1 IFHum     IFS_HK IFHum
+  # 1 IFSDiag
+  1 DiagScanS:IFSDiag:0 IFS_HK Status
+  1 DiagDetS:IFSDiag:1 IFS_HK Status
+  1 DiagHeNeS:IFSDiag:2 IFS_HK Status
+  1 DiagIRSrcS:IFSDiag:3 IFS_HK Status
+  1 DiagAUS:IFSDiag:4 IFS_HK Status
+  1 DiagRdyS:IFSDiag:5 IFS_HK Status
+  1 IFSDT     IFS_HK TDrift
+  1 IFSStale IFS_HK Stale

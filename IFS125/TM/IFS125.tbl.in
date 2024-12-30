@@ -1,0 +1,38 @@
+IFS {
+  HBox { +-; IFS125; -+ };
+  Status:  (IFSCStat,11);
+  { Scan HBox { (IFSSN,2); "/"; (IFSSR,2) } (IFSTR,5) Sec };
+  ReqNum:  (IFSRN,5);
+  Stale:   (IFSStale,5);
+     >Wr:  (IFSSlW,8);
+     >Rd:  (IFSSlR,8);
+  RStat:   (IFSRstat,5);
+  Drift:   (IFSDT,6);
+}
+
+IFSDiag {
+  HBox { +-; "IFS Diagnostics"; -+ };
+  HBox {
+    { Scanner: (DiagScanS,4);
+      Detectors: (DiagDetS,4);
+      HeNe:    (DiagHeNeS,4); }; |;
+    { "IR Src:"  (DiagIRSrcS,4);
+      AUs:     (DiagAUS,4);
+      Ready:   (DiagRdyS,4); }
+  }
+}
+
+IFSLaser {
+  HBox { +-; "IFS Laser"; -+ };
+  ""  >"Amp."    >"Offset";
+  A:  (LasAAF,5) (LasAOF,6);
+  B:  (LasBAF,5) (LasBOF,6);
+}
+
+IFSHT {
+  HBox { +-; "IFS"; -+ };
+  ScBlkT: (ScBlkT,5) C;
+  Src_T:  (IFSSrcT,5) C;
+# IFS_P:  (IFS_P,7) hPa;
+  IFHum:  (IFHum,5) %;
+}

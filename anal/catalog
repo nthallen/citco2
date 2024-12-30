@@ -40,23 +40,23 @@ for my $file ( @ARGV ) {
     my $is_scantype = $scantype ne '' ? 0 : 1;
     while (<IF>) {
       if ( $scantype ne '' && m|^.*: $scantype\s*$| ) {
-	$is_scantype = 1;
+        $is_scantype = 1;
       } elsif ( m|^.*: Retrieving b(\d+)\.0| ) {
-	my $fno = $1;
-	if ( $is_scantype ) {
-	  if ( $sum < 1 ) {
-	    print ":dec ";
-	  } else {
-	    $sum -= 1;
-	  }
-	  $sum += $decimate;
-	} else {
+        my $fno = $1;
+        if ( $is_scantype ) {
+          if ( $sum < 1 ) {
+            print ":dec ";
+          } else {
+            $sum -= 1;
+          }
+          $sum += $decimate;
+        } else {
           print ":not $scantype ";
-	}
-	print "$yy $mm $dd $run $fno\n";
-	while (<IF>) {
-	  last if m/Request Completed/;
-	}
+        }
+        print "$yy $mm $dd $run $fno\n";
+        while (<IF>) {
+          last if m/Request Completed/;
+        }
         $is_scantype = $scantype ne '' ? 0 : 1;
       }
     }

@@ -1,5 +1,12 @@
 /* MKS925.tmc */
-TM typedef float MKS_Torr_t { text "%9.3e"; }
+%{
+  #define MKS_Torr2hPa(x) (x*1013.25/760.)
+%}
+TM typedef double MKS_hPa;
+TM typedef float MKS_Torr_t {
+  convert MKS_hPa MKS_Torr2hPa();
+  text "%9.4f";
+}
 TM typedef float MKS_T_t { text "%5.1f"; }
 TM typedef uint8_t MKS_stale_t { text "%3u"; }
 

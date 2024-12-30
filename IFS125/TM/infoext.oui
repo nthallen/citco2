@@ -1,0 +1,14 @@
+<package> infoext
+<include> "infoext.h"
+<include> msg
+<opts> "d:"
+<sort>
+	-d <dir> Raw data directory
+<switch>
+  case 'd': raw_dir = optarg; break;
+
+<package> appid_default
+<include> "dasio/appid.h"
+<defs>
+  DAS_IO::AppID_t DAS_IO::AppID("infoext",
+    "Information Extraction", "V2.0");
