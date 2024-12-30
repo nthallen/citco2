@@ -13,13 +13,13 @@ our ( %options, %directopts, %choices );
    DEL => "0",           # Delay Before Measurement
    NSS => "2",           # Number of scan
    RES => "1.000000",    # Resolution
-   DTC => "16418",       # Detector Setting
-      # 16416 => LN-InSb DC [Internal Pos.1] 0x4020
-      # 16417 => RT-InGaAs DC [Internal Pos.1] 0x4021
-      # 16418 => LN-InSb DC + RT-InGaAs DC [Internal Pos.1] 0x4022
-      # 16448 => LN-InSb FOV=30 <B0> AC [Internal Pos.2] 0x4040
-      # 16449 => LN-InSb FOV=30 <B0> DC [Internal Pos.2] 0x4041
-      # 16450 => LN-InSb FOV=30 <B0> AC+DC [Internal Pos.2] 0x4042
+   DTC => "0x4042",       # Detector Setting
+      # 0x4020: LN-InSb AC [IP1]
+      # 0x4021: RT-InGaAs AC [IP1]
+      # 0x4022: LN-InSb AC + RT-InGaAs AC [IP1]
+      # 0x4040: LN-InSb DC [IP2]
+      # 0x4041: RT-InGaAs DC [IP2]
+      # 0x4042: LN-InSb DC + RT-InGaAs DC [IP2]
 
    AP2 => "1000", # Aperture at sample compartment 
       # 500 => 0.5 mm
@@ -161,14 +161,14 @@ our ( %options, %directopts, %choices );
   # },
   SolarInGaAs => {
     SFM => 'SolarInGaAs',
-    DTC => "16417",
+    DTC => "0x4041",
     RES => "0.020000",
     APT => "800",
     AP2 => "800"
   },
   SolarInGaAsLR => {
     SFM => 'SolarInGaAsLR',
-    DTC => "16417",
+    DTC => "0x4041",
     RES => "0.490000",
     PHR => '0.490000',
     NSS => '2'
@@ -180,18 +180,18 @@ our ( %options, %directopts, %choices );
     # APT => "500",
     # GNS => "1"
   # },
-  Aerosol => {
-    SFM => 'Aerosol',
-    RES => "0.1",
-    AP2 => "3150",
-    APT => "3150",
-    DTC => "16450",
-    VEL => "10000",
-    LPF => "10000",
-    GNS => "4",
-    SG2 => "4",
-    PHR => "0.4"
-  },
+  # Aerosol => {
+   #  SFM => 'Aerosol',
+   #  RES => "0.1",
+   #  AP2 => "3150",
+   #  APT => "3150",
+   #  DTC => "16450",
+   #  VEL => "10000",
+   #  LPF => "10000",
+   #  GNS => "4",
+   #  SG2 => "4",
+   #  PHR => "0.4"
+  # },
   Cell => {
     SFM => 'Cell',
     RES => "0.012000",
@@ -236,7 +236,7 @@ our ( %options, %directopts, %choices );
   InGaAsCell => {
     SFM => 'InGaAsCell',
     RES => "0.010000",
-    DTC => "0x4021",
+    DTC => "0x4041",
     AP2 => "1000",
     APT => "1000",
     SRC => "104",
@@ -246,7 +246,7 @@ our ( %options, %directopts, %choices );
     SFM => 'InSbCell',
     RES => "0.490000",
     PHR => "0.490000",
-    DTC => "0x4021",
+    DTC => "0x4041",
     AP2 => "1000",
     APT => "1000",
     SRC => "104",
@@ -255,7 +255,7 @@ our ( %options, %directopts, %choices );
   InGaAsCellres02 => {
     SFM => 'InGaAsCell02',
     RES => "0.020000",
-    DTC => "0x4021",
+    DTC => "0x4041",
     AP2 => "1000",
     APT => "1000",
     SRC => "104",
@@ -270,7 +270,7 @@ our ( %options, %directopts, %choices );
   },
   CheckInSbSignal => {
     SFM => 'Check InSb Signal',
-    DTC => '0x4041',
+    DTC => '0x4040',
     RES => '3.020000',
     PHR => '3.150000', # Phase Resolution
     SNM => '',
@@ -294,7 +294,7 @@ our ( %options, %directopts, %choices );
   # },
   InGaAsIdleScan => {
     RES => '3.020000',
-    DTC => "16417",
+    DTC => "0x4041",
     PHR => "3.150000", # Phase Resolution
     SFM => 'Short InGaAs Scan for inactivity',
     SNM => '',
