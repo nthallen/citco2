@@ -156,8 +156,8 @@ our ( %options, %directopts, %choices );
     # VEL => "10000",
     # LPF => "10000",
     # GNS => "1"
-# #    PHR => "1.0",
-# #    HFW => "7898.0000"
+    # PHR => "1.0",
+    # HFW => "7898.0000"
   # },
   SolarInGaAs => {
     SFM => 'SolarInGaAs',
