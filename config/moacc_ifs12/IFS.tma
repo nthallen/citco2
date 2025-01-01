@@ -140,8 +140,8 @@ State ReInit_and_Pump_Down {
 
 State Pump_Down {
       > _Algo P1 Pump_Down
-# Hold Until ( IFSCStat == IFS_SCAN_IDLE ||
-#              IFSCStat == IFS_SCAN_WAIT) OR 4:00;
+  Hold Until ( IFSCStat == IFS_SCAN_IDLE ||
+               IFSCStat == IFS_SCAN_WAIT) OR 4:00;
 # Validate IFS_Status_Update;
 # Validate Pump_Down_Init;
 # Hold until Valid (Pump_Idle);
@@ -166,7 +166,7 @@ State Wake_Up {
 #       ci_sendfcmd(0, "Email Warning Message LN2 Tank depth is %.1lf\n",
 #         convert(LN2Depth));
 #   }
-#+1 Validate IFS_Status_Update;
+ +1 Validate IFS_Status_Update;
 #+1 Validate InSb_Fill;
 #+1 Validate Pump_Down_Init;
 #   Hold until Valid (Pump_Idle);
@@ -236,8 +236,8 @@ State Nap {
       Weather_Reason ); }
   > _Algo P1 Nap
   Validate Dome_Close;
-# Hold Until ( IFSCStat == IFS_SCAN_IDLE || IFSCStat == IFS_SCAN_WAIT ) or 4:00;
-# Validate IFS_Status_Update;
+  Hold Until ( IFSCStat == IFS_SCAN_IDLE || IFSCStat == IFS_SCAN_WAIT ) or 4:00;
+  Validate IFS_Status_Update;
   depending on ( Good_Weather ) { Validate Ready_To_Play; }
   depending on ( Solar_Bedtime ) { Validate Lights_Out; }
 }
@@ -246,7 +246,7 @@ State Bedtime {
   depending on (Watchdog_Error ) { Validate Failure; }
   depending on (Bad_Weather) { Validate Nap; }
       > _Algo P1 Bedtime
-#     Hold Until ( IFSCStat == IFS_SCAN_IDLE || IFSCStat == IFS_SCAN_WAIT ) or 4:00;
+      Hold Until ( IFSCStat == IFS_SCAN_IDLE || IFSCStat == IFS_SCAN_WAIT ) or 4:00;
       Validate Dome_Close;
       > Sun Tracker Sleep
       > Email Report Message Enclosure closed for the evening
@@ -272,8 +272,8 @@ State Lights_Out {
   > _Algo P1 Lights_Out
 # > IFS Direct SRC=0
 # > IFS Set Preamp Gains 3 3
-# Hold Until ( (IFSCStat == IFS_SCAN_IDLE) ||
-#               (IFSCStat == IFS_SCAN_WAIT) );
+  Hold Until ( (IFSCStat == IFS_SCAN_IDLE) ||
+                (IFSCStat == IFS_SCAN_WAIT) );
   > SaveLog Bedtime Shutdown
   > Startup Wakeup Set
   Validate Quick_Shutdown;
@@ -286,7 +286,7 @@ State Lights_Out {
 State Quick_Shutdown {
   > _Algo P1 Quick_Shutdown
   "Waiting for IFS Idle";
-# Hold Until ( IFSCStat == IFS_SCAN_IDLE );
+  Hold Until ( IFSCStat == IFS_SCAN_IDLE );
   Validate Shutdown;
 }
 
@@ -295,7 +295,7 @@ State Quick_Shutdown {
 State Full_Shutdown {
   > _Algo P1 Full_Shutdown
   "Waiting for IFS Idle";
-# Hold Until ( IFSCStat == IFS_SCAN_IDLE ) OR 1:00;
+  Hold Until ( IFSCStat == IFS_SCAN_IDLE ) OR 1:00;
   Validate Dome_Close;
   "Waiting for Enclosure to Close";
   Hold Until Valid ( Dome_Closed ) or 2:00;
@@ -306,7 +306,7 @@ State Shutdown {
      > _Algo P1 Shutdown
   +1 > Enclosure Exit
   +1 > Sun Tracker Exit
-# +1 > IFS Exit
+  +1 > IFS Exit
   +1 > Startup Unexpected Clear
   +3 > Quit
 }
@@ -319,8 +319,8 @@ Partition
 State Watchdog_Okay {
   depending on ( Dome_Failed ) { Validate Watchdog_Error; }
   depending on ( WTX_Failed ) { Validate Watchdog_Error; }
-  #depending on ( Pump_Failed ) { Validate Watchdog_Error; }
   #depending on ( IdleScan_Failed ) { Validate Watchdog_Error; }
+  #depending on ( Pump_Failed ) { Validate Watchdog_Error; }
 }
 
 State Watchdog_Error {
