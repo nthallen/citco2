@@ -11,8 +11,8 @@ SW_Variable: <uint8_t,UCHAR> SWStat SW Status
 # SWS_PUMP_CLEAR_TO_VENT 9 Clear to Vent: Validate Pump_Clear_to_Vent; break;
 # SWS_INSBBEDTIME5 10 InSb Bedtime 5: Validate InSbBedtime5; break;
 # SWS_SUNTRACKER_INIT 11 Sun Tracker Initialize: Validate ST_Initialize; break;
-# SWS_IFS_STATUS_UPDATE 12 IFS Status Update: Validate IFS_Status_Update; break;
-# SWS_IFS_STATUS_IDLE 13 IFS Status Idle: Validate IFS_Status_Idle; break;
+  SWS_IFS_STATUS_UPDATE 12 IFS Status Update: Validate IFS_Status_Update; break;
+  SWS_IFS_STATUS_IDLE 13 IFS Status Idle: Validate IFS_Status_Idle; break;
   SWS_IFS_HOLD_LAMP 14 Hold_with_Lamp_Runs:    Validate Holding_with_Lamp_Runs; break;
   SWS_BEDTIME 15 Bedtime: Validate Bedtime; break;
 

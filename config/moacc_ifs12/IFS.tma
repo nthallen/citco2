@@ -96,7 +96,7 @@ State Holding {
 State Holding_with_Lamp_Runs {
       > _Algo P1 Holding_with_Lamp_Runs
       Validate Dome_Close;
-#     Validate IFS_Status_Update;
+      Validate IFS_Status_Update;
       > Startup Define Validate Holding_with_Lamp_Runs;
       Hold until valid (Solar_Bedtime);
    +1 > Savelog Shutdown from Holding_with_Lamp_Runs
@@ -525,10 +525,24 @@ State Dome_Failed {}
 # Partition 8: Sun Tracker Status
 #----------------------------------------------------------------
 
-#Partition
+Partition
 # -----------------------------------------------------------------------------
 # Partition 9: Collect IFS_Status Information
 # -----------------------------------------------------------------------------
+
+State IFS_Status_Idle {}
+
+State IFS_Status_Update NoLog {
+  Hold Until ( IFSCStat == IFS_SCAN_IDLE  ) or 20
+  else Validate IFS_Status_Failing;
+  > _IFS Read Status
+  +5 Validate IFS_Status_Update;
+}
+
+State IFS_Status_Failing {
+  { msg( 2, "IFS Read Status is responding slowly" ); }
+  +1:00 Validate IFS_Status_Update;
+}
 
 #Partition
 #----------------------------------------------
