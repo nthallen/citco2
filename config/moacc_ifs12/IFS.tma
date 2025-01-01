@@ -17,15 +17,6 @@
     return DoW;
   }
 
-  /* May be unnecessary */
-  int16_t MinutesFromLocalHour(long now, int16_t local_hour) {
-    int32_t minutes_since_local_epoch =
-      (now/60) + (int32_t)(LONGITUDE())*4;
-    int32_t minutes_from_local_hour =
-      (minutes_since_local_epoch%(24*60)) - local_hour*60;
-    return minutes_from_local_hour;
-  }
-
   const char *Weather_Reason = "Startup";
 %}
 
@@ -47,11 +38,17 @@ State Check_Unexpected "Unexpected.tmas" {
      > _Algo P1 Check_Unexpected
   +1 > Startup Unexpected Set
      Validate Init_Wakeup;
+
+   # This will never occur, but will improve visualization
+  +1 Validate Unexpected_Restart;
 }
 
 State Init_Wakeup "Wakeup.tmas" {
      > _Algo P1 Init_Wakeup
   +1 Validate Init_Choice;
+
+   # This will never occur, but will improve visualization
+  +1 Validate Up_After_Bedtime;
 }
 
 State Init_Choice "Startup.tmas" {
@@ -65,9 +62,10 @@ State Init_Choice "Startup.tmas" {
 
   +1 Validate Init_Decide;
 
-   # These two will never occur, but are here
+   # These will never occur, but are here
    # to improve the visualization
   +1 Validate Holding;
+  +1 Validate Holding_with_Lamp_Runs;
   +1 Validate Failure;
 }
 
@@ -141,13 +139,13 @@ State ReInit_and_Pump_Down {
 }
 
 State Pump_Down {
-  > _Algo P1 Pump_Down
+      > _Algo P1 Pump_Down
 # Hold Until ( IFSCStat == IFS_SCAN_IDLE ||
 #              IFSCStat == IFS_SCAN_WAIT) OR 4:00;
 # Validate IFS_Status_Update;
 # Validate Pump_Down_Init;
 # Hold until Valid (Pump_Idle);
-  Validate Init_Choice;
+  +10 Validate Init_Choice;
 }
 
 State Sleep {
@@ -263,7 +261,7 @@ State Up_After_Bedtime {
   # Hold until Valid (Pump_Idle);
 
   # Do Cell scans on Monday
-  # Validate Bedtime_Story;
+  # Validate Midnight_Snack;
 
   Validate Init_Choice;
 }
@@ -327,6 +325,7 @@ State Watchdog_Okay {
 
 State Watchdog_Error {
 }
+
 Partition
 #----------------------------------------------
 # Partition 3: Weather
@@ -455,7 +454,6 @@ State Solar_Bedtime {
 
 
 Partition
-
 #----------------------------------------------
 # Partition 5: Enclosure Control
 #----------------------------------------------
@@ -511,3 +509,58 @@ State Dome_Lost_Contact {
 }
 
 State Dome_Failed {}
+
+#Partition
+#----------------------------------------------
+# Partition 6: Pump Control
+#----------------------------------------------
+
+#Partition
+#----------------------------------------------
+# Partition 7: Idle Scanning
+#----------------------------------------------
+
+#Partition
+#----------------------------------------------------------------
+# Partition 8: Sun Tracker Status
+#----------------------------------------------------------------
+
+#Partition
+# -----------------------------------------------------------------------------
+# Partition 9: Collect IFS_Status Information
+# -----------------------------------------------------------------------------
+
+#Partition
+#----------------------------------------------
+# Partition 10: Air Temperature Monitor
+#----------------------------------------------
+
+#Partition
+#----------------------------------------------
+# Partition 11: IFS125 Temperature Monitor
+#----------------------------------------------
+
+#Partition
+#----------------------------------------------
+# Partition 12: External Power Monitor
+#----------------------------------------------
+
+#Partition
+#----------------------------------------------
+# Partition 13: NorHof InSb Autofill Partition
+#----------------------------------------------
+
+#Partition
+#----------------------------------------------
+# Partition 14: NorHof Monitor
+#----------------------------------------------
+
+#Partition
+#----------------------------------------------
+# Partition 15: O2 Sensor Monitor
+#----------------------------------------------
+
+#Partition
+#----------------------------------------------
+# Partition 16: Sun Tracker Monitor
+#----------------------------------------------

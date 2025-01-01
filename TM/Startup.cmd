@@ -24,6 +24,7 @@
   }
   
   void write_wakeup(const char *s) {
+    write_startup_file("Wakeup.tmas", s);
   }
 
   #endif /* SERVER */
