@@ -11,4 +11,5 @@
   Launch    -       STEnc
   Launch    -       MKS925
   Launch    -       tmdf -p /home
+  Launch    -       IFSctrl server 10.10.0.1:80 -v
   Launch    -TMC-   IFSalgo

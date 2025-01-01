@@ -108,7 +108,7 @@ set_status( 'Idle' );
 while ( ! $Exit_Req ) {
   my $pcmd;
   while (1) {
-    my $cmd = IFSq_dequeue_wait();
+    my $cmd = IFSq::IFSq_dequeue_wait();
     $pcmd = parse_command($cmd);
     if ( @{$pcmd->{errors}} ) {
       set_status( 'Error' );
@@ -141,7 +141,7 @@ while ( ! $Exit_Req ) {
       }
       DQ_CMD:
       while (1) {
-        my $newcmd = IFSq_dequeue();
+        my $newcmd = IFSq::IFSq_dequeue();
         while (1) {
           my $newpcmd = parse_command( $newcmd );
           next DQ_CMD if @{$newpcmd->{errors}};
@@ -486,7 +486,7 @@ sub http_request {
       #--------------------------
       # Check for urgent commands
       #--------------------------
-      my $cmd = IFSq_dequeue_urgent();
+      my $cmd = IFSq::IFSq_dequeue_urgent();
       my $pcmd = parse_command($cmd);
       if ( @{$pcmd->{errors}} ) {
         set_status( 'Error' );

@@ -18,6 +18,7 @@ mode (default) {
   DISTRIB = @MODDIR@/../IFStm.pm
   DISTRIB = @MODDIR@/../ColSend.pm
   DISTRIB = @MODDIR@/../mClient.pm
+  DISTRIB = Config/IFSopts.pm
   CPPFLAGS = -I @MODDIR@
   IGNORE = IFS125.genui IFS125.tbl
   IGNORE = IFSCStat.tmc IFSscan.cmd
