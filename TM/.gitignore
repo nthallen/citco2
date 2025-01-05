@@ -21,6 +21,8 @@ IFS125.genui
 IFS125.tbl
 IFSCStat.tmc
 IFSscan.cmd
+LN2.genui
+LN2.tbl
 STEnc.tbl
 STEnc.genui
 infoext.cc
@@ -92,6 +94,8 @@ IFS125.genui
 IFS125.tbl
 IFSCStat.tmc
 IFSscan.cmd
+LN2.genui
+LN2.tbl
 STEnc.tbl
 STEnc.genui
 infoext

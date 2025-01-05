@@ -1,0 +1,4 @@
+%{
+  #include "LN2.h"
+  LN2_t LN2;
+%}

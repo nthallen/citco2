@@ -19,6 +19,7 @@ Module WTX530
 Module SunTracker
 Module MKS925
 Module IFS125
+Module LN2
 
 Module Config/Site
 

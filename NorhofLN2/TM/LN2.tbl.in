@@ -1,0 +1,28 @@
+LN2_Analog {
+  InSbT: (InSbT,4) C;
+  TankT: (LN2TankT,4) C;
+  LN2P:  (LN2P,4) mbar;
+  Depth: (LN2Depth,4) cm;
+}
+
+LN2_Digital {
+  PStat:  (LN2PStat,7);
+  DStat: (LN2DrvStat,8);
+  Valve: (LN2Valve,3);
+  TMB:   (LN2TMB,3);
+  Stale: (LN2Stale,3);
+}
+
+LN2_HBox {
+  HBox { +-; LN2; -+ };
+  HBox {
+    [LN2_Analog]; |; [LN2_Digital]
+  }
+}
+
+LN2_VBox {
+  HBox { +-; LN2; -+ };
+  [LN2_Analog];
+  { "" - "" };
+  [LN2_Digital]
+}

@@ -1,0 +1,97 @@
+/* These calibrations are based on assumed calibration values
+   that are reported by the device. The driver checks these
+   values, but it is important to make sure the driver
+   and this file agree on those values. */
+
+TM typedef double LN2_CELCIUS;
+TM typedef uint16_t LN2TankT_t {
+  Convert LN2_CELCIUS;
+  text "%4d";
+}
+/* Assumes:
+   CalVal[0] = 237
+   CalVal[1] = 288
+   CalVal[2] = 637
+ */
+Calibration (LN2TankT_t, LN2_CELCIUS) {
+  237, -196,
+  288, -100,
+  637,   30
+}
+
+TM typedef uint16_t InSbT_t {
+  Convert LN2_CELCIUS;
+  text "%4d";
+}
+/* PT100 Thermistor pulled up by 135 Ohms */
+Calibration (InSbT_t, LN2_CELCIUS) {
+   124, -199.81464,
+   148, -190.04013,
+   171, -180.07765,
+   194, -169.48020,
+   217, -158.19152,
+   241, -145.60433,
+   264, -132.69395,
+   287, -118.87221,
+   310, -104.04821,
+   334, -87.39986,
+   357, -70.19501,
+   380, -51.63051,
+   403, -31.55308,
+   427, -8.79563,
+   450, 14.96608,
+   473, 40.90261,
+   496, 69.32911
+}
+
+TM typedef double LN2_MBAR;
+TM typedef uint16_t LN2P_t {
+  Convert LN2_MBAR;
+  text "%4.1lf";
+}
+/* Assumes
+   CalVal[5] = 41
+ */
+Calibration (LN2P_t, LN2_MBAR) {
+  41,       0,
+  42, 0.54288
+}
+
+TM typedef double LN2_CM;
+TM typedef uint16_t LN2Depth_t {
+  Convert LN2_CM;
+  text "%4.1lf";
+}
+/* Assumes
+   CalVal[5] = 41
+   According to .doc, 35 cm of LN2 is 52.09 ADC steps
+ */
+Calibration (LN2Depth_t, LN2_CM) {
+  41,     1,
+  93.09, 36
+}
+TM typedef uint16_t LN2_u16 { text "%5d"; }
+TM typedef uint8_t LN2_DStat { text "%08b"; }
+TM typedef uint8_t LN2_u8 { text "%3u"; }
+
+TM 1 Hz LN2TankT_t LN2TankT;
+TM 1 Hz InSbT_t InSbT;
+TM 1 Hz LN2P_t LN2P;
+TM 1 Hz LN2Depth_t LN2Depth;
+TM 1 Hz LN2_u16 LN2Stat;
+TM 1 Hz LN2_DStat LN2DrvStat;
+TM 1 Hz LN2_u8 LN2Stale;
+
+TM "Receive" LN2 1;
+Group LN2 (LN2TankT, InSbT, LN2P, LN2Depth, LN2Stat,
+    LN2DrvStat, LN2Stale) {
+  LN2TankT = LN2.LN2TankT;
+  InSbT = LN2.InSbT;
+  LN2P = LN2.LN2P;
+  LN2Depth = LN2.LN2Depth;
+  LN2Stat = LN2.LN2Stat;
+  LN2DrvStat = LN2.LN2DrvStat;
+  LN2.LN2DrvStat = LN2.LN2DrvStat & ~LN2_DS_CRNT;
+  LN2Stale = LN2_obj->Stale(255);
+  LN2_obj->synch();
+}

@@ -1,0 +1,37 @@
+/* LN2Stat bits:
+  0: rs_recv  RS232 character received
+  1: Pumping  Pump request
+  2: Valve_on Valve closed
+  3: TMB_on   TMB in heating mode
+  4: Active   Pump status : active
+  5: Sleep    Pump status : sleep
+  6: Warn_on  Pump status : warning
+  7: Alarm_on pump status : alarm
+*/
+
+%{
+  const char *ln2_pump_status_text[5] = {
+    "unknown", " active", "  sleep", "warning", "  alarm" };
+
+  const unsigned char ln2_pump_status_idx[16] = {
+    0, 1, 2, 0, 3, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4 };
+
+  const char *ln2_StBit_text(uint8_t x)
+  {
+    return x ? "On " : "Off";
+  }
+%}
+
+TM typedef uint8_t ln2_pump_status_t { text "%7d" ln2_pump_status_text[]; }
+
+ln2_pump_status_t LN2PStat; Invalidate LN2PStat;
+  { LN2PStat = ln2_pump_status_idx[(LN2Stat>>4) & 0xF]; Validate LN2PStat; }
+
+/* StBit is defined in cmdstat.tmc */
+TM typedef uint8_t ln2_StBit { text "%3u" ln2_StBit_text(); }
+ln2_StBit LN2Pump; Invalidate LN2Pump;
+  { LN2Pump = (LN2Stat>>1) & 1; Validate LN2Pump; }
+ln2_StBit LN2Valve; Invalidate LN2Valve;
+  { LN2Valve = (LN2Stat>>2) & 1; Validate LN2Valve; }
+ln2_StBit LN2TMB; Invalidate LN2TMB;
+  { LN2TMB = (LN2Stat>>3) & 1; Validate LN2TMB; }

@@ -1,0 +1,10 @@
+  1 LN2TankT             @Panel@LN2 Temp
+  1 InSbT                @Panel@LN2 Temp
+  1 LN2P                 @Panel@LN2 P
+  1 LN2Depth             @Panel@LN2 Depth
+  1 LN2Pump:LN2Stat:1    @Panel@LN2 Status
+  1 LN2Valve:LN2Stat:2   @Panel@LN2 Status
+  1 LN2TMB:LN2Stat:3     @Panel@LN2 Status
+  1 LN2Init:LN2DrvStat:0 @Panel@LN2 Status
+  1 LN2PStat             @Panel@LN2 PStat %2.0lf
+  1 LN2Stale             @Panel@LN2 Stale

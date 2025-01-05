@@ -5,6 +5,7 @@ Input "ST.tbl";
 Input "STEnc.tbl";
 Input "MKS925.tbl";
 Input "TMbase.tbl";
+Input "LN2.tbl";
 
 RH_HK {
   HBox { " RH Opn/Cls:"; (RH_Open_Pct,3); "/"; (RH_Close_Pct,3); "%" };
@@ -13,6 +14,7 @@ RH_HK {
 HK_Stack {
   HBox { +-; Housekeeping; -+ };
   HBox {
+    [LN2_VBox]; |+;
     {
       [WTX_HK];
       [PTB_HK];

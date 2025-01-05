@@ -1,0 +1,22 @@
+ModuleDef LN2 [ Panel= ] {
+  Norhof LN2 Pump Driver
+}
+
+tmcbase = LN2.tmc
+colbase = LN2_col.tmc
+cmdbase = LN2.cmd
+extbase = LN2_conv.tmc
+genuibase = LN2.genui:LN2.genui.in
+- : LN2.tbl:LN2.tbl.in
+IGNORE = LN2.genui LN2.tbl
+OBJ = LN2.genui LN2.tbl
+DISTRIB = @MODDIR@/../LN2
+CPPFLAGS = -I @MODDIR@/..
+%%
+.PHONY : clean-LN2 @MODDIR@/../LN2
+all-dist : @MODDIR@/../LN2
+@MODDIR@/../LN2 :
+	$(MAKE) --directory=@MODDIR@/..
+clean-dist : clean-LN2
+clean-LN2 :
+	$(MAKE) --directory=@MODDIR@/.. clean
