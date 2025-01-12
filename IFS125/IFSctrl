@@ -641,7 +641,7 @@ sub parse_diag_scan {
     $data->{IFHum} = $1;
   }
   for my $mnc ( qw(LasAAF LasBAF LasAOF LasBOF IFHum) ) {
-    set_tm( $mnc => $data->{$mnc} ) if defined $data->{$mnc};
+    set_tm( $mnc => $data->{$mnc}*1000 ) if defined $data->{$mnc};
   }
   write_tm();
 }
