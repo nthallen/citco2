@@ -6,13 +6,22 @@
   #include "location.h"
   #include "nl.h"
 
-  int DayOfYear(long now) {
+  int DayOfYear(time_t now) {
     struct tm *times = gmtime(&now);
     return times->tm_yday;
   }
 
-  int16_t DayOfWeek(long now) {
-    long dt = (now+(long)(LONGITUDE()*240))/(24L*60*60);
+  /* This makes a stab at using local standard time based on
+   * longitude. This will work most of the year, but not in
+   * midsummer, when we are starting up after local midnight.
+   * I am going to turn the clock back another 2 hours, to
+   * account for pump down time before the scan. This will
+   * not come close to affecting the midwinter startup
+   * shortly after local noon.
+   */
+  int16_t DayOfWeek(int32_t now) {
+    int32_t dt =
+      (now+(int32_t)(LONGITUDE()*240)-2*3600)/(24L*60*60);
     int16_t DoW = dt%7;
     return DoW;
   }
@@ -261,12 +270,23 @@ State Up_After_Bedtime {
   # Hold until Valid (Pump_Idle);
 
   # Do Cell scans on Monday
-  # Validate Midnight_Snack;
-
-  Validate Init_Choice;
+  Validate IFS_Status_Idle;
+  { /*
+    if (DayOfWeek(itime()) == 4)
+      Validate Midnight_Snack;
+    */
+  }
+  +1  Validate Init_Choice;
 }
 
-# States for Bedtime Stories
+State Midnight_Snack {
+        depending on (Watchdog_Error ) { Validate Failure; }
+        > _Algo P1 Midnight_Snack
+     +1 > IFS Direct SRC=104
+  +1:00 depending on (InSb_Filled) { Validate InSb_Midnight_Snack; }
+        depending on (InSb_Chilled) { Validate InSb_Midnight_Snack; }
+     +1 Validate InGaAs_Midnight_Snack;
+}
 
 State Lights_Out {
   > _Algo P1 Lights_Out
@@ -279,7 +299,72 @@ State Lights_Out {
   Validate Quick_Shutdown;
 }
 
-###
+State InSb_Midnight_Snack {
+  depending on (Watchdog_Error ) { Validate Failure; }
+  { if ( IFSCStat == IFS_SCAN_ERROR ) {
+      Validate Scanner_Failure;
+    } else if (IFSCStat == IFS_SCAN_INSBNR) {
+      Validate Snacktime_InSbNR;
+    } else if (IFSCStat == IFS_SCAN_CANERR) {
+      Validate Snacktime_CAN_Err;
+    }
+  }
+
+      > _Algo P1 InSb_Midnight_Snack
+      > IFS Direct DTC=0x4020
+      > IFS Direct PGN=3
+      > IFS Cellres02
+      Hold Until ((IFSCStat != IFS_SCAN_IDLE) &&
+                  (IFSCStat != IFS_SCAN_WAIT));
+      Hold Until ((IFSCStat == IFS_SCAN_IDLE) ||
+                  (IFSCStat == IFS_SCAN_WAIT) );
+  +1  Validate Init_Choice;
+}
+
+State InGaAs_Midnight_Snack {
+  depending on (Watchdog_Error ) { Validate Failure; }
+  { if ( IFSCStat == IFS_SCAN_ERROR ) {
+      Validate Scanner_Failure;
+    } else if (IFSCStat == IFS_SCAN_INSBNR) {
+      Validate Snacktime_InSbNR;
+    } else if (IFSCStat == IFS_SCAN_CANERR) {
+      Validate Snacktime_CAN_Err;
+    }
+  }
+
+      > _Algo P1 InGaAs_Midnight_Snack
+      > IFS Set Preamp Gains 3 3
+      > IFS InGaAsCellres02
+      Hold Until ((IFSCStat != IFS_SCAN_IDLE) &&
+                  (IFSCStat != IFS_SCAN_WAIT));
+      Hold Until ((IFSCStat == IFS_SCAN_IDLE) ||
+                  (IFSCStat == IFS_SCAN_WAIT));
+   +1 Validate Init_Choice;
+}
+
+State Snacktime_InSbNR {
+  > _Algo P1 Snacktime_InSbNR
+  > Email Warning Message InSb Not Ready during bedtime scan
+  Validate Init_Choice;
+}
+
+State Snacktime_CAN_Err {
+  depending on ( Watchdog_Error ) { Validate Failure; }
+  { if ( IFSCStat == IFS_SCAN_ERROR ) {
+      Validate Scanner_Failure;
+    } else if (IFSCStat == IFS_SCAN_INSBNR) {
+      Validate Snacktime_InSbNR;
+    }
+  }
+  
+  > _Algo P1 Snacktime_CAN_Err
+  > Email Warning Message IFS Reports a CAN Error on AP2|APT|SRC|RES|VEL|PHR (bedtime)
+
+  Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
+                IFSCStat == IFS_SCAN_WAIT ) );
+
+  +1 Validate Init_Choice;
+}
 
 # Just Make sure IFS gets to idle mode, but leave
 # Dome where it is.
@@ -655,15 +740,163 @@ State IFS_Status_Failing {
 # Partition 12: External Power Monitor
 #----------------------------------------------
 
-#Partition
+Partition
 #----------------------------------------------
 # Partition 13: NorHof InSb Autofill Partition
+#   Most of the state transitions are controlled from
+#   the main partition
+#    Transition from Startup => Fill during wakeup (For ETL)
+#    Tranistion from Filled => Chilled is in Init_Decide (after gains are set)
+#
+# ETL algo has been significantly modified from Caltech/Lamont
+#   Larger dewar allows for 24 hour hold. LN2 generator
+#   reduces the marginal cost of LN2, so simply filling
+#   every morning makes the most sense. We also can deal
+#   with having the Norhof in autofill configuration.
+#   When the Norhof is in autofill, it periodically runs the
+#   fill without any commands, leaving the pump status 'active'.
+#   Issuing 'LN2 Pump Off' will change the pump status to 'sleep',
+#   making it possible to then fill under algo control.
+#   As currently configured, this algo will detect a fill
+#   operation, whether initiated by the algo or not, and issue
+#   'LN2 Pump Off' upon completion, essentially defeating the
+#   autofill setup. An earlier configuration demonstrated how
+#   to simply use the autofill without explicit commands.
 #----------------------------------------------
+%{
+  #include "LN2.h"
+  #define INSB_T_LIMIT (-120)
+  #define INSB_T_FULL (-190)
+%}
 
-#Partition
+State InSb_Startup {
+  { if ((LN2DrvStat & LN2_DS_InSbT_CRNT) && (convert(InSbT) < INSB_T_LIMIT))
+      Validate InSb_Filled;
+  }
+  { if ((LN2Stat & 6) == 6) /* LN2Pump && LN2Valve */
+      Validate InSb_Filling; }
+  { if (LN2Stat & 0x80) Validate InSb_Alarm; }
+}
+
+State InSb_Fill {
+    > LN2 Pump On
+    Hold until (((LN2PStat == 1) || LN2Pump) && LN2Valve) or 8
+    else Validate InSb_Pump_not_started;
+    Validate InSb_Filling;
+}
+
+State InSb_Filling {
+      { if (LN2Stat & 0x80) Validate InSb_Alarm; }
+      Hold until ((!LN2Pump && !LN2Valve && (convert(InSbT) < INSB_T_LIMIT)) ||
+                  (convert(InSbT) <= INSB_T_FULL)) or 20:00
+      else Validate InSb_Fill_timeout;
+   +2 > LN2 Pump Off
+   +1 Validate InSb_Filled;
+}
+
+# InSb_Filled means InSb is cold but detector gains may not have been set
+State InSb_Filled {
+  { if ((LN2DrvStat & LN2_DS_InSbT_CRNT) && (convert(InSbT) >= INSB_T_LIMIT))
+      Validate InSb_Startup;
+  }
+  { if ((LN2Stat & 6) == 6) /* LN2Pump && LN2Valve */
+      Validate InSb_Filling; }
+  { if (LN2Stat & 0x80) Validate InSb_Alarm; }
+}
+
+# InSb_Chilled means InSb is cold and detector gains have been set
+State InSb_Chilled NoLog {
+  { if ((LN2Stat & 6) == 6) /* LN2Pump && LN2Valve */
+      Validate InSb_Filling; }
+  { if (LN2Stat & 0x80) Validate InSb_Alarm; }
+  Hold until ((LN2DrvStat & LN2_DS_InSbT_CRNT) && (convert(InSbT) < INSB_T_LIMIT)) or 10
+  else Validate InSb_Not_Chilled;
+  Validate InSb_Chilled;
+}
+
+# InSb_Not_Chilled means we were once cold, but no more
+State InSb_Not_Chilled {
+  { if ((LN2Stat & 6) == 6) /* LN2Pump && LN2Valve */
+      Validate InSb_Filling; }
+  { if (LN2Stat & 0x80) Validate InSb_Alarm; }
+  { if ((LN2DrvStat & LN2_DS_InSbT_CRNT) && (convert(InSbT) < INSB_T_LIMIT))
+      Validate InSb_Chilled;
+  }
+}
+
+State InSb_Pump_not_started {
+  > Email Error Message LN2 Pump did not go active in InSb_Fill
+  { if ((LN2Stat & 6) == 6) /* LN2Pump && LN2Valve */
+      Validate InSb_Filling; }
+  { if (LN2Stat & 0x80) Validate InSb_Alarm; }
+  { if ((LN2DrvStat & LN2_DS_InSbT_CRNT) && (convert(InSbT) < INSB_T_LIMIT)) {
+      ci_sendfcmd(Cmd_Send,
+        "Email Report Message InSbT reports cold (%s) after non-start: continuing\n",
+        text(InSbT));
+      Validate InSb_Filled;
+    }
+  }
+}
+
+State InSb_Fill_timeout {
+  > LN2 Pump Off
+  > Email Error Message LN2 Fill not finished after 20 minutes
+  { if (LN2Stat & 0x80) Validate InSb_Alarm; }
+  { if ((LN2DrvStat & LN2_DS_InSbT_CRNT) && (convert(InSbT) < INSB_T_LIMIT)) {
+      ci_sendfcmd(Cmd_Send,
+        "Email Report Message InSbT reports cold (%s) after fill timeout: continuing\n",
+        text(InSbT));
+      Validate InSb_Filled;
+    }
+  }
+}
+
+State InSb_Alarm {
+  > Email Error Message LN2 alarm is asserted
+  > LN2 Pump Off
+  Validate InSb_Alarm_Watch;
+}
+
+State InSb_Alarm_Watch NoLog {
+  Hold until (!(LN2Stat & 0x80));
+  Hold until (LN2Stat & 0x80) or 10:00
+  else Validate InSb_Alarm_Clear;
+  Validate InSb_Alarm_Watch;
+}
+
+State InSb_Alarm_Clear {
+  > Email Report Message LN2 alarm has cleared
+  Validate InSb_Startup;
+}
+
+Partition
 #----------------------------------------------
-# Partition 14: NorHof Monitor
+# Partition 14: NorHof InSb Driver Monitor
 #----------------------------------------------
+%{
+  int LN2_Drv_Stale = 0;
+%}
+
+State LN2_Watch NoLog {
+  { if (LN2Stale >= 255)
+      Validate LN2_Watch_Failure;
+  }
+  { if (LN2DrvStat & LN2_DS_CRNT)
+      LN2_Drv_Stale = 0;
+    else if (++LN2_Drv_Stale >= 255)
+      Validate LN2_Watch_Failure;
+  }
+}
+
+State LN2_Watch_Failure {
+# > Email Error Message LN2 pump or driver not responding
+  > Log LN2 pump or driver not responding
+  { if (LN2DrvStat & LN2_DS_CRNT) {
+      LN2_Drv_Stale = 0;
+      Validate LN2_Watch;
+    }
+  }
+}
 
 #Partition
 #----------------------------------------------

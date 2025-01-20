@@ -15,6 +15,7 @@ SW_Variable: <uint8_t,UCHAR> SWStat SW Status
   SWS_IFS_STATUS_IDLE 13 IFS Status Idle: Validate IFS_Status_Idle; break;
   SWS_IFS_HOLD_LAMP 14 Hold_with_Lamp_Runs:    Validate Holding_with_Lamp_Runs; break;
   SWS_BEDTIME 15 Bedtime: Validate Bedtime; break;
+  SWS_SNACK 17 Midnight Snack: Validate Midnight_Snack; break;
 
   SWS_SHUTDOWN_QUICKLY 251 Shutdown Quickly: Validate Quick_Shutdown; break;
   SWS_SHUTDOWN 252 Shutdown Completely: Validate Full_Shutdown; break;
