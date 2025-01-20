@@ -77,6 +77,8 @@ TM typedef double   IFS_CELCIUS;
 TM typedef uint32_t IFS_P_t { Convert IFS_MBAR IFS_P_2_MBAR(); text "%9.4lf"; }
 /* Calibration (IFS_P_t, IFS_MBAR) { 0, 0, 100000., 1 } */
 TM typedef IFSs16_t IFS_T_t { text "%5.1lf"; }
+TM typedef IFSu16_t Las_u_mv { text "%6.3lf"; }
+TM typedef IFSs16_t Las_s_mv { text "%6.3lf"; }
 
 TM 1 Hz IFSu32_t   IFSSlW;
 TM 1 Hz IFSCStat_t IFSCStat;
@@ -88,10 +90,10 @@ TM 1 Hz IFSs16_t   IFSDT;
 TM 1 Hz IFSuDig2   IFSSN;
 TM 1 Hz IFSuDig2   IFSSR;
 TM 1 Hz IFSu8_t    IFSDiag;
-TM 1 Hz IFSu16_t   LasAAF;
-TM 1 Hz IFSs16_t   LasAOF;
-TM 1 Hz IFSu16_t   LasBAF;
-TM 1 Hz IFSs16_t   LasBOF;
+TM 1 Hz Las_u_mv   LasAAF;
+TM 1 Hz Las_s_mv   LasAOF;
+TM 1 Hz Las_u_mv   LasBAF;
+TM 1 Hz Las_s_mv   LasBOF;
 TM 1 Hz IFS_T_t    ScBlkT;
 TM 1 Hz IFSu16_t   IFHum;
 TM 1 Hz IFS_P_t    IFS_P;

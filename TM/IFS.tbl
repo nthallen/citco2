@@ -20,8 +20,18 @@ Algo {
 
 IFS_P {
   HBox { +-; "IFS P"; -+ };
-  IFS_P: (IFS_P,9) hPa;
-  MKS_P: (MKS_P,9) hPa;
+  IFS_P:  (IFS_P,9)  hPa;
+  Pump_P: (Pump_P,9) hPa;
+}
+
+WTXPTB {
+  HBox { +-; WTX530; -+ };
+  T:      (WTX_AirT,5)    C;
+  DewPt:  (WTX_DewPt,5)   C;
+  RH:     (WTX_RH,5)      "%";
+  P:      (WTX_AbsAirP,7) hPa;
+  PTB_P:  (PTB_P,7)       hPa;
+  Solar:  (WTX_SolRad,5)  "W/m2";
 }
 
 MainStack {
@@ -34,8 +44,7 @@ MainStack {
     };
     |+;
     {
-      [WTX];
-      [PTB];
+      [WTXPTB];
       [WTX_Wind];
       [WTX_Precip];
     };
