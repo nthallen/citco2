@@ -72,7 +72,7 @@ State Init_Choice "Startup.tmas" {
 State Init_Decide {
 #    > IFS Read Status
      > _Algo P1 Init_Decide
-  +2 { if ( Convert(Sol_ele) <= 0. ) Validate Init_Close; }
+  +2 { if ( convert(Sol_ele) <= 0. ) Validate Init_Close; }
   +2 depending on ( Bad_Weather ) { Validate Nap; }
  +10 Validate Ready_To_Play;
 }
@@ -142,9 +142,9 @@ State Pump_Down {
       > _Algo P1 Pump_Down
   Hold Until ( IFSCStat == IFS_SCAN_IDLE ||
                IFSCStat == IFS_SCAN_WAIT) OR 4:00;
-# Validate IFS_Status_Update;
-# Validate Pump_Down_Init;
-# Hold until Valid (Pump_Idle);
+  Validate IFS_Status_Update;
+  Validate Pump_Down_Init;
+  Hold until Valid (Pump_Idle);
   +10 Validate Init_Choice;
 }
 
@@ -154,7 +154,7 @@ State Sleep {
   > _Algo P1 Sleep
   > Sun Tracker Sleep
 # Validate IFS_Status_Update;
-  Hold Until ( Convert(Sol_ele) > 0. );
+  Hold Until ( convert(Sol_ele) > 0. );
   Validate Wake_Up;
 }
 
@@ -163,7 +163,7 @@ State Wake_Up {
 
     > _Algo P1 Wake_Up
 #+1 { if (convert(LN2Depth) < 15)
-#       ci_sendfcmd(0, "Email Warning Message LN2 Tank depth is %.1lf\n",
+#       ci_sendfcmd(Cmd_Send, "Email Warning Message LN2 Tank depth is %.1lf\n",
 #         convert(LN2Depth));
 #   }
  +1 Validate IFS_Status_Update;
@@ -510,10 +510,106 @@ State Dome_Lost_Contact {
 
 State Dome_Failed {}
 
-#Partition
+Partition
 #----------------------------------------------
 # Partition 6: Pump Control
 #----------------------------------------------
+
+%{
+  int pump_down_abort;
+%}
+
+State Pump_Idle {}
+
+State Pump_Clear_to_Vent {}
+
+State Pump_Down_Init {
+   Validate Watchdog_Okay;
+   { pump_down_abort = 0; }
+#  { if ( convert( Pump_MtrT ) >= 50.0 ||
+#         convert( Pump_BdyT ) >= 50.0 ) {
+#      ci_sendfcmd(Cmd_Send,
+#        "Email Error Message Pump Over Temperature during init: Mtr %.1lf C Bdy %.1lf C\n",
+#        convert(Pump_MtrT), convert(Pump_BdyT));
+#      Validate Power_Pump_Off;
+#    }
+#  }
+#  > Power Pump On
+     Hold Until ( convert(Pump_P) < 0.1 || pump_down_abort ) or 8:00
+     else > Email Warning Message Pump Down Init is slow
+     Hold Until ( convert(Pump_P) < 0.1 || pump_down_abort ) or 30:00;
+     Hold Until ( convert(Pump_P) < 0.5 || pump_down_abort ) or 30:00;
+     Hold Until ( convert(Pump_P) < 0.8 || pump_down_abort ) or 30:00
+     else Validate Pump_Init_Failed;
+   Hold Until (pump_down_abort) or 2
+   else Validate Pump_Evacuate;
+   Validate Power_Pump_Off;
+}
+
+State Pump_Evacuate {
+#   { if ( !PumpPwrS ) Validate Pump_Evac_Failed; }
+#   { if ( convert( Pump_MtrT ) >= 50.0 ||
+#          convert( Pump_BdyT ) >= 50.0 ) {
+#       ci_sendfcmd(Cmd_Send,
+#         "Email Error Message Pump Over Temperature during Evac: Mtr %.1lf C Bdy %.1lf C\n",
+#         convert(Pump_MtrT), convert(Pump_BdyT));
+#       Validate Pump_OTevac;
+#     }
+#   }
+      > IFS direct VAC=1
+      Hold Until ( convert(IFS_P) < 0.5 || pump_down_abort ) or 5:00
+      else > Email Warning Message Pump Down of IFS is slow
+      Hold Until ( convert(IFS_P) < 0.5 || pump_down_abort ) or 40:00;
+      Hold Until ( convert(IFS_P) < 0.9 || pump_down_abort ) or 30
+      else Validate Pump_Evac_Failed;
+  +10 > IFS direct VAC=0
+        Hold Until ( convert(Pump_P) < 0.8 ) or 2:00
+        else Validate Pump_Evac_Failed;
+      Hold Until (pump_down_abort) or 60;
+        Hold Until ( convert(Pump_P) < 0.5 && convert(IFS_P) < 0.6 ) or 10
+        else Validate Pump_Warn;
+      Validate Power_Pump_Off;
+}
+
+State Pump_OTevac {
+     > IFS direct VAC=0
+    +2 Hold until (convert(Pump_P) < 0.1) or 1:00;
+     Validate Power_Pump_Off;
+}
+
+State Pump_Warn {
+     { /*
+       ci_sendfcmd(Cmd_Send,
+         "Email Warning Message Pump down results are marginal:"
+         " IFS_P = %.2lf Pump_P = %.2lf\n",
+         convert(IFS_P), convert(Pump_P)); */
+       Validate Power_Pump_Off;
+     }
+}
+
+State Power_Pump_Off {
+#     > Power Pump Off
+  +10 Validate Pump_Idle;
+}
+
+State Pump_Init_Failed {
+   +1 {
+        ci_sendfcmd(Cmd_Send,
+         "Email Error Message Pump Init Failed: IFS_P = %.2lf Pump_P = %.2lf\n",
+         convert(IFS_P), convert(Pump_P));
+      }
+   +2 Validate Power_Pump_Off;
+}
+
+State Pump_Evac_Failed {
+     > IFS direct VAC=0
+     { ci_sendfcmd(Cmd_Send,
+         "Email Error Message IFS Evacuation Failed: IFS_P = %.2lf Pump_P = %.2lf\n",
+         convert(IFS_P), convert(Pump_P));
+     }
+  +2 Hold until (convert(Pump_P) < 0.1) or 3:00;
+     Validate Power_Pump_Off;
+}
 
 #Partition
 #----------------------------------------------

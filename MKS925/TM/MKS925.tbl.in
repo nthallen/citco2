@@ -4,12 +4,12 @@ MKS_stale {
 
 MKS_HK {
   HBox { +-; MKS925; -+ };
-  P: (MKS_P,9) Torr;
+  P: (Pump_P,9) Torr;
   T: (MKS_T,5) C;
   [MKS_stale];
 }
 
 MKS {
   HBox { +-; MKS925; -+ };
-  P: (MKS_P,9) Torr;
+  P: (Pump_P,9) Torr;
 }
