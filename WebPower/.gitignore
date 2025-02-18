@@ -1,0 +1,5 @@
+*.o
+webpower
+*.exe
+webpoweroui.cc
+

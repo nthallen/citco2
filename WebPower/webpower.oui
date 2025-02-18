@@ -1,0 +1,10 @@
+<package> webpower
+<include> "webpower_drv.h"
+<include> msg oui
+<follow> msg oui
+
+<package> appid_default
+<include> "dasio/appid.h"
+<defs>
+  DAS_IO::AppID_t DAS_IO::AppID("WebPower",
+    "WebPower Switch Driver", "V1.0");
