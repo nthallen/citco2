@@ -86,10 +86,10 @@ class LN2 : public Serial {
     LN2(const char *port, LN2_t *data);
     ~LN2();
     void LN2Command(LN2Request *cmd);
-    bool app_input();
   protected:
-    bool tm_sync();
-    bool protocol_timeout();
+    bool tm_sync() override;
+    bool protocol_input() override;
+    bool protocol_timeout() override;
   private:
     void next_request();
     LN2_t *TMdata;

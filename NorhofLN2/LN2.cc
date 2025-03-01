@@ -97,7 +97,7 @@ LN2::LN2(const char *port, LN2_t *data)
     CurReq(0)
 {
   Req = Reqs.end();
-  setup(19200, 8, 'n', 1, -1, 0); // canonical mode
+  setup(19200, 8, 'n', 1, -1, '\r'); // canonical mode
   // Vessel = big tank. Main = InSb Dewar
   InitReqs.push_back(LN2Request("re 010 2\r", &CalValRpt[0])); // Vessel cold (-196)
   InitReqs.push_back(LN2Request("re 018 2\r", &CalValRpt[1])); // Vessel room (-100)
@@ -125,7 +125,7 @@ void LN2::LN2Command(LN2Request *cmd) {
   CmdReq = cmd;
 }
 
-bool LN2::app_input() {
+bool LN2::protocol_input() {
   while (cp < nc && isspace(buf[cp])) ++cp;
   if (CurReq == 0) {
     if (cp < nc)
