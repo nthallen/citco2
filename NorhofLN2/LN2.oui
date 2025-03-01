@@ -1,5 +1,5 @@
 <package> LN2
-<include> msg
+<include> msg oui
 <include> "LN2.h"
 
 <opts> "p:"
