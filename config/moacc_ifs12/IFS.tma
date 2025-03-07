@@ -197,18 +197,18 @@ State Ready_To_Play {
 
   > Email Report Message Enclosure opened in Ready_to_Play
 
-# Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
-#               IFSCStat == IFS_SCAN_WAIT ) &&
-#              ST_modus == ST_MODE_TTM );
+  Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
+                IFSCStat == IFS_SCAN_WAIT ) &&
+               ST_modus == ST_MODE_TTM );
 
-#   > Email Report Message Scanning
-#  #We do this on wakeup at ETL:
-#  #depending on (InSb_Startup) { Validate InSb_Fill; }
-#+1 Validate IFS_Status_Idle;
+    > Email Report Message Scanning
+   #We do this on wakeup at ETL:
+   #depending on (InSb_Startup) { Validate InSb_Fill; }
+ +1 Validate IFS_Status_Idle;
 #   depending on (InSb_Filled) { Validate Init_Set_InSb_Gains; }
 #   depending on (InSb_Chilled) { Validate Play; }
-#+1 > Email Warning Message Starting in Play_InGaAs: !InSb_Chilled
-#+1 Validate Play_InGaAs;
+ +1 > Email Warning Message Starting in Play_InGaAs: !InSb_Chilled
+ +1 Validate Play_InGaAs;
 }
 
 # State Init_Set_InSb_Gains {
@@ -219,9 +219,45 @@ State Ready_To_Play {
 #   > _Algo P1 Play
 # }
 
-# State Play_InGaAs NoLog {
-#   > _Algo P1 Play_InGaAs
-# }
+State Play_InGaAs NoLog {
+    > _Algo P1 Play_InGaAs
+  depending on ( Watchdog_Error ) { Validate Failure; }
+  { if ( Convert(Sol_ele) < 0. ) Validate Bedtime; }
+  depending on ( Bad_Weather) { Validate Nap; }
+  { if ( IFSCStat == IFS_SCAN_ERROR ) {
+      Validate Scanner_Failure;
+    } else if (IFSCStat == IFS_SCAN_INSBNR) {
+      Validate Scanner_InSbNR;
+    } else if (IFSCStat == IFS_SCAN_CANERR) {
+      Validate Scanner_CAN_Err;
+    }
+  }
+  
+  > IFS SolarInGaAs
+  Hold Until ((IFSCStat != IFS_SCAN_IDLE) &&
+              (IFSCStat != IFS_SCAN_WAIT));
+  Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
+                IFSCStat == IFS_SCAN_WAIT ) &&
+               ST_modus == ST_MODE_TTM);
+  > IFS SolarInGaAsLR
+# depending on (Refill_Ready) { Validate Refill_Now; }
+  +1
+    Hold Until ((IFSCStat != IFS_SCAN_IDLE) &&
+                (IFSCStat != IFS_SCAN_WAIT));
+    Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
+                  IFSCStat == IFS_SCAN_WAIT ) &&
+                 ST_modus == ST_MODE_TTM);
+  > IFS SolarInGaAsLR
+    Hold Until ((IFSCStat != IFS_SCAN_IDLE) &&
+                (IFSCStat != IFS_SCAN_WAIT));
+    Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
+                  IFSCStat == IFS_SCAN_WAIT ) &&
+                 ST_modus == ST_MODE_TTM);
+
+#+1  depending on (InSb_Filled) { Validate Init_Set_InSb_Gains; }
+#    depending on (InSb_Chilled) { Validate Play; }
+ +1  Validate Play_InGaAs;
+}
 
 State Scanner_Failure {
    > _Algo P1 Scanner_Failure
@@ -229,13 +265,13 @@ State Scanner_Failure {
    Validate Failure;
 }
 
-# State Scanner_CAN_Err {
-#   > _Algo P1 Scanner_CAN_Err
-# }
+State Scanner_CAN_Err {
+  > _Algo P1 Scanner_CAN_Err
+}
 
-# State Scanner_InSbNR {
-#   > _Algo P1 Scanner_InSbNR
-# }
+State Scanner_InSbNR {
+  > _Algo P1 Scanner_InSbNR
+}
 
 State Nap {
   depending on ( Watchdog_Error ) { Validate Failure; }
