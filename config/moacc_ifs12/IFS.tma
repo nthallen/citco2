@@ -199,7 +199,7 @@ State Ready_To_Play {
 
   Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
                 IFSCStat == IFS_SCAN_WAIT ) &&
-               ST_modus == ST_MODE_TTM );
+               ST_modus == ST_MODE_TMR );
 
     > Email Report Message Scanning
    #We do this on wakeup at ETL:
@@ -238,7 +238,7 @@ State Play_InGaAs NoLog {
               (IFSCStat != IFS_SCAN_WAIT));
   Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
                 IFSCStat == IFS_SCAN_WAIT ) &&
-               ST_modus == ST_MODE_TTM);
+               ST_modus == ST_MODE_TMR);
   > IFS SolarInGaAsLR
 # depending on (Refill_Ready) { Validate Refill_Now; }
   +1
@@ -246,13 +246,13 @@ State Play_InGaAs NoLog {
                 (IFSCStat != IFS_SCAN_WAIT));
     Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
                   IFSCStat == IFS_SCAN_WAIT ) &&
-                 ST_modus == ST_MODE_TTM);
+                 ST_modus == ST_MODE_TMR);
   > IFS SolarInGaAsLR
     Hold Until ((IFSCStat != IFS_SCAN_IDLE) &&
                 (IFSCStat != IFS_SCAN_WAIT));
     Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
                   IFSCStat == IFS_SCAN_WAIT ) &&
-                 ST_modus == ST_MODE_TTM);
+                 ST_modus == ST_MODE_TMR);
 
 #+1  depending on (InSb_Filled) { Validate Init_Set_InSb_Gains; }
 #    depending on (InSb_Chilled) { Validate Play; }
