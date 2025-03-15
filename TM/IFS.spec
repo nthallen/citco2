@@ -20,6 +20,7 @@ Module SunTracker
 Module MKS925
 Module IFS125
 Module LN2
+Module webpower
 
 Module Config/Site
 

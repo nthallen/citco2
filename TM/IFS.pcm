@@ -6,9 +6,9 @@ Effective Frame Dimensions:
   2 Rows 70 Columns
   2 rows/sec
   1120 bits/sec
-  Data:  1048 bits/sec  94 %
+  Data:  1056 bits/sec  94 %
   Synch: 64 bits/sec  6 %
-  Empty: 8 bits/sec  1 %
+  Empty: 0 bits/sec  0 %
 -------End of Frame Statistics-----
 
 
@@ -93,5 +93,6 @@ Effective Frame Dimensions:
 1/1 Hz 1 bytes Datum RH_Close_Pct (2,1,64,1)
 1/1 Hz 1 bytes Datum RH_Open_Pct (2,1,65,1)
 1/1 Hz 1 bytes Datum SWStat (2,1,66,1)
+1/1 Hz 1 bytes Datum webpower_status (2,1,67,1)
 -------End of PCM Definition-------
 

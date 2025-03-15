@@ -1,0 +1,4 @@
+%{
+  #include "webpower.h"
+  webpower_t webpower;
+%}

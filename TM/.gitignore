@@ -23,6 +23,8 @@ IFSCStat.tmc
 IFSscan.cmd
 LN2.genui
 LN2.tbl
+webpower.genui
+webpower.tbl
 STEnc.tbl
 STEnc.genui
 infoext.cc
@@ -96,6 +98,8 @@ IFSCStat.tmc
 IFSscan.cmd
 LN2.genui
 LN2.tbl
+webpower.genui
+webpower.tbl
 STEnc.tbl
 STEnc.genui
 infoext

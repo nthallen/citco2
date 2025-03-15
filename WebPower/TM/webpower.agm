@@ -1,0 +1,24 @@
+ModuleDef webpower [ Panel= ] {
+  WebPower web-based power switch
+}
+
+tmcbase = webpower.tmc
+extbase = webpower_conv.tmc
+colbase = webpower_col.tmc
+cmdbase = webpower.cmd
+genuibase = webpower.genui:webpower.genui.in
+- : webpower.tbl:webpower.tbl.in
+
+DISTRIB = @MODDIR@/../webpower
+CPPFLAGS = -I @MODDIR@/.. -I @MODDIR@
+IGNORE = webpower.genui webpower.tbl
+OBJ = webpower.genui webpower.tbl
+%%
+.PHONY : @MODDIR@/../webpower
+@MODDIR@/../webpower :
+	$(MAKE) --directory=@MODDIR@/..
+
+.PHONY : clean-webpower
+clean-dist : clean-webpower
+clean-webpower :
+	$(MAKE) --directory=@MODDIR@/.. clean

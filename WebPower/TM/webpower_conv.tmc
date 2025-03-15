@@ -1,0 +1,30 @@
+%{
+  #include "webpower.h"
+  const char *webpower_onoff_text(uint8_t x) {
+    return x ? "On " : "Off";
+  }
+%}
+
+TM typedef uint8_t webpower_onoff {
+  text "%3d" webpower_onoff_text();
+}
+
+webpower_onoff WP_Pump_S; Invalidate WP_Pump_S;
+{ WP_Pump_S = webpower_status & WP_PUMP;
+  Validate WP_Pump_S;
+}
+
+webpower_onoff WP_PDISO8_S; Invalidate WP_PDISO8_S;
+{ WP_PDISO8_S = webpower_status & WP_PDISO8;
+  Validate WP_PDISO8_S;
+}
+
+webpower_onoff WP_MKS925_S; Invalidate WP_MKS925_S;
+{ WP_MKS925_S = webpower_status & WP_MKS925;
+  Validate WP_MKS925_S;
+}
+
+webpower_onoff WP_AXIS_P1378_S; Invalidate WP_AXIS_P1378_S;
+{ WP_AXIS_P1378_S = webpower_status & WP_AXIS_P1378;
+  Validate WP_AXIS_P1378_S;
+}
