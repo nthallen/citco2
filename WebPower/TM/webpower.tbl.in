@@ -1,7 +1,8 @@
 webpower {
   HBox { +-; Power; -+ };
-  Pump:   (WP_Pump_S);
-  PDISO8: (WP_PDISO8_S);
-  MKS925: (WP_MKS925_S);
-  WebCam: (WP_AXIS_P1378_S);
+  Pump:   (WP_Pump_S,3);
+  PDISO8: (WP_PDISO8_S,3);
+  MKS925: (WP_MKS925_S,3);
+  WebCam: (WP_AXIS_P1378_S,3);
+  Stale:  (webpower_stale,3);
 }

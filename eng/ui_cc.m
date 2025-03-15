@@ -88,6 +88,7 @@ f = ne_dialg(f, 'add', 1, 0, 'pcclnps', 'P Stat' );
 f = ne_dialg(f, 'add', 1, 0, 'pcclnstale', 'Stale' );
 f = ne_dialg(f, 'add', 0, 1, 'gccp', 'Power' );
 f = ne_dialg(f, 'add', 1, 0, 'pccps', 'Status' );
+f = ne_dialg(f, 'add', 1, 0, 'pccpstale', 'Stale' );
 f = ne_dialg(f, 'add', 0, 1, 'gcce', 'Enclosure' );
 f = ne_dialg(f, 'add', 1, 0, 'pcces', 'Status' );
 f = ne_dialg(f, 'add', 1, 0, 'pccestale', 'Stale' );

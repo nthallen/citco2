@@ -1,4 +1,9 @@
 TM "Receive" webpower 1;
 TM typedef uint8_t webpower_status_t { text "%3u"; }
 TM 1 Hz webpower_status_t webpower_status;
-collect webpower_status = webpower.status;
+TM 1 Hz webpower_status_t webpower_stale;
+
+group webpower (webpower_status, webpower_stale) {
+  webpower_status = webpower.status;
+  webpower_stale = webpower_obj->Stale(255);
+}
