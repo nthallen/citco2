@@ -115,11 +115,11 @@ State Holding_with_Lamp_Runs {
 
 State Failure {
      > _Algo P1 Failure
-#    > IFS Direct SRC=0
-#    > IFS Direct VAC=0
+     > IFS Direct SRC=0
+     > IFS Direct VAC=0
   +1 > Enclosure Close
-# +1 > IFS IdleScan
-#+60 > Power Pump Off
+  +1 > IFS IdleScan
+ +60 > Power Pump Off
   +1 > Startup Define Validate Failure;
      Hold until valid (Solar_Bedtime);
   +1 > Savelog Shutdown from Failure
@@ -266,11 +266,41 @@ State Scanner_Failure {
 }
 
 State Scanner_CAN_Err {
+  depending on ( Watchdog_Error ) { Validate Failure; }
+  { if ( Convert(Sol_ele) < 0. ) Validate Bedtime; }
+  depending on ( Bad_Weather) { Validate Nap; }
+  { if ( IFSCStat == IFS_SCAN_ERROR ) {
+      Validate Scanner_Failure;
+    } else if (IFSCStat == IFS_SCAN_INSBNR) {
+      Validate Scanner_InSbNR;
+    }
+  }
+  
   > _Algo P1 Scanner_CAN_Err
+  > Email Warning Message IFS Reports a CAN Error on AP2|APT|SRC|RES|VEL|PHR
+
+  Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
+                IFSCStat == IFS_SCAN_WAIT ) &&
+               ST_modus == ST_MODE_TMR );
+
+#   depending on (InSb_Chilled) { Validate Play; }
+ +1 Validate Play_InGaAs;
 }
 
 State Scanner_InSbNR {
+  depending on ( Watchdog_Error ) { Validate Failure; }
+  { if ( Convert(Sol_ele) < 0. ) Validate Bedtime; }
+  depending on ( Bad_Weather) { Validate Nap; }
+
   > _Algo P1 Scanner_InSbNR
+  > Email Warning Message Unexpected InSb Not Ready Error. Reverting to InGaAs
+  Validate InSb_Not_Chilled;
+
+  Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
+               IFSCStat == IFS_SCAN_WAIT ) &&
+              ST_modus == ST_MODE_TMR );
+                  
+   +1 Validate Play_InGaAs;
 }
 
 State Nap {
@@ -655,7 +685,7 @@ State Pump_Down_Init {
 #      Validate Power_Pump_Off;
 #    }
 #  }
-#  > Power Pump On
+   > Power Pump On
      Hold Until ( convert(Pump_P) < 0.1 || pump_down_abort ) or 8:00
      else > Email Warning Message Pump Down Init is slow
      Hold Until ( convert(Pump_P) < 0.1 || pump_down_abort ) or 30:00;
@@ -736,6 +766,54 @@ State Pump_Evac_Failed {
 #----------------------------------------------
 # Partition 7: Idle Scanning
 #----------------------------------------------
+
+%{
+  int scan_count = 0;
+  unsigned long int last_IFSSlR = 0;
+%}
+State IdleScan_Wait NoLog {
+  { if ( IFSCStat == IFS_SCAN_IDLE || IFSSlR != last_IFSSlR ) {
+          scan_count = 0;
+          last_IFSSlR = IFSSlR;
+        } else if (++scan_count >= 300 ) {
+          scan_count = 0;
+          Validate IdleScan_Reset;
+        }
+  }
+  Hold Until ( IFSCStat == IFS_SCAN_WAIT );
+  Hold Until ( IFSCStat != IFS_SCAN_WAIT ) or 8
+  else Validate IdleScan;
+  Validate IdleScan_Wait;
+}
+
+State IdleScan NoLog {
+  depending on (InSb_Chilled) { Validate InSbIdleScan; }
+  +1 > IFS InGaAsIdleScan
+     Validate IdleScan_Wait;
+}
+
+State InSbIdleScan NoLog {
+  > IFS IdleScan
+  Validate IdleScan_Wait;
+}
+
+State IdleScan_Reset {
+  > IFS Reset SW
+  { msg (0, "IFS SOFTWARE RESET" ); }
+  > Email Report Message IFS125 has been reset in software.
+  +10
+  Hold Until ( IFSCStat == IFS_SCAN_WAIT || IFSCStat == IFS_SCAN_IDLE ) or 4:00 
+  else Validate IdleScan_Failed;
+  Validate IdleScan_Wait;
+}
+
+State IdleScan_Failed {
+  { msg (0, "IFS125 failure.  Indicated by failure to recover after software reset." ); }
+  > Email Error Message IFS125 failure. Indicated by failure to recover after software reset.
+  +1:00 { if (IFSCStat == IFS_SCAN_WAIT || IFSCStat == IFS_SCAN_IDLE)
+            Validate IdleScan_Wait;
+        }
+}
 
 #Partition
 #----------------------------------------------------------------

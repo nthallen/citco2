@@ -247,6 +247,7 @@ bool webpower_dev::issue_command(const char *cmd)
   {
     werr_reported = false;
   }
+  TO.Set(2, 0);
   return !werr_reported;
 }
 
