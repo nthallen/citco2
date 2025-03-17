@@ -152,9 +152,11 @@ bool webpower_dev::protocol_input()
   switch (state) {
     case s_cmd:
       cmd_is_pending = false;
+      msg(MSG_DEBUG, "%s: cmd not pending", iname);
       break;
     case s_status:
       status_is_pending = false;
+      msg(MSG_DEBUG, "%s: status not pending", iname);
       break;
     case s_idle:
       break;
@@ -199,8 +201,12 @@ bool webpower_dev::protocol_timeout()
 
 bool webpower_dev::tm_sync() {
   status_pending = "S:0,1,2,3\n";
-  status_is_pending = true;
-  process_commands();
+  if (state != s_status) {
+    status_is_pending = true;
+    process_commands();
+  } else {
+    msg(MSG_DEBUG, "%s: suppressed status request");
+  }
   return false;
 }
 
