@@ -21,7 +21,7 @@ Algo {
 IFS_P {
   HBox { +-; "IFS P"; -+ };
   IFS_P:  (IFS_P,9)  hPa;
-  Pump_P: (Pump_P,9) hPa;
+  Pump_P: (Pump_P,9) hPa (WP_Pump_S,3);
 }
 
 WTXPTB {
