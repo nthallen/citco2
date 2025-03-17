@@ -13,4 +13,5 @@
   Launch    -       LN2 -p /dev/ttyS2
   Launch    -       tmdf -p /home
   Launch    -       IFSctrl server 10.10.0.1:80 -v
+  Launch    -       webpower
   Launch    -TMC-   IFSalgo

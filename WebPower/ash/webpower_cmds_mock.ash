@@ -6,7 +6,7 @@
 #root@Web-Power-switch:~# uom set relay/outlets/0/transient_state true
 #root@Web-Power-switch:~# uom set relay/outlets/0/transient_state false
 #root@Web-Power-switch:~# uom get relay/outlets/0/state
-stty -echo
+#stty -echo
 
 Stat0=false
 Stat1=false

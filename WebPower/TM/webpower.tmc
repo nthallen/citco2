@@ -6,4 +6,5 @@ TM 1 Hz webpower_status_t webpower_stale;
 group webpower (webpower_status, webpower_stale) {
   webpower_status = webpower.status;
   webpower_stale = webpower_obj->Stale(255);
+  webpower_obj->synch();
 }

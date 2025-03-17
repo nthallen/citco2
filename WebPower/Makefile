@@ -18,5 +18,10 @@ webpoweroui.o : webpoweroui.cc
 webpoweroui.cc : webpower.oui
 	oui -o webpoweroui.cc $<
 
+ALTTESTOBJ = alt_test.o webpoweroui.o
+OBJ += alt_test
+alt_test : $(ALTTESTOBJ) $(AG_LIBDIR)/libdasio.a
+	$(CXX) -o alt_test $(CXXFLAGS) $(ALTTESTOBJ) $(LDFLAGS)
+
 clean :
 	rm -f $(OBJ)

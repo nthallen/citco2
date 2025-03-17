@@ -9,6 +9,7 @@
 #include "dasio/loop.h"
 #include "dasio/tm_data_sndr.h"
 #include "dasio/appid.h"
+#include "dasio/msg.h"
 
 extern char **environ;
 
@@ -17,7 +18,7 @@ using namespace DAS_IO;
 webpower_t webpower;
 
 webpower_dev::webpower_dev()
-  : Interface("webpwr", 10),
+  : Interface("webpwr", 80),
     w_fd(0),
     cmd_is_pending(false),
     status_pending(0),
@@ -26,13 +27,14 @@ webpower_dev::webpower_dev()
     state(s_idle)
 {
   flags |= gflag(0); // for tm_sync()
+  set_qerr_threshold(-1);
 }
 
 // webpower_dev::~webpower_dev();
 
 void webpower_dev::connect()
 {
-   const char * argv[5] = {
+  const char * argv[5] = {
     "/usr/bin/ssh",
     "-t",
     "webpower",
@@ -92,8 +94,10 @@ bool webpower_dev::protocol_input()
       context = "while state was invalid";
       break;
   }
+  msg(MSG_DEBUG,"%s: %s: Input is '%s'", iname, context, buf);
   if (not_alt("OK", "NOK", matched, context)) {
-    matched=matched; // bad response already reported
+    if (matched==0) return false;
+    // bad response already reported
   } else {
     switch (matched) {
       case 0:
@@ -119,17 +123,14 @@ bool webpower_dev::protocol_input()
             webpower.status = 0;
             for (int i = 0, bit = 1; i < 4; ++i, bit <<= 1) {
               if (not_spaces() || not_alt("true", "false", matched2, "status")) {
-                break;
-              } else if (matched2 == 0) {
+                if (matched2 == 0) return false;
                 break;
               } else {
                 switch (matched2) {
                   case 1:
                     webpower.status |= bit;
-                    cp += 4;
                     break;
                   case 2:
-                    cp += 5;
                     break;
                 }
               }
@@ -155,7 +156,7 @@ bool webpower_dev::protocol_input()
       status_is_pending = false;
       break;
     case s_idle:
-      nl_assert(false);
+      break;
   }
   state = s_idle;
   consume(nc);
@@ -220,6 +221,7 @@ bool webpower_dev::queue_command(const char *cmd, int len) {
 bool webpower_dev::issue_command(const char *cmd)
 {
   int len = strlen(cmd);
+  msg(MSG_DEBUG, "%s: Sending '%s'", iname, cmd);
   int rv = ::write(w_fd, cmd, len);
   pending = cmd;
   if (rv != len)
@@ -334,6 +336,7 @@ int main(int argc, char **argv) {
     ELoop.add_child(wp);
 
     webpower_cmd *wpcmd = new webpower_cmd(wp);
+    wpcmd->connect();
     ELoop.add_child(wpcmd);
 
     AppID.report_startup();
