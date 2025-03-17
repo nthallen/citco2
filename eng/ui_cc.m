@@ -37,6 +37,7 @@ f = ne_dialg(f, 'newcol');
 f = ne_dialg(f, 'add', 0, 1, 'gccwtxw', 'WTX Wind' );
 f = ne_dialg(f, 'add', 1, 0, 'pccwtxwd', 'Dir' );
 f = ne_dialg(f, 'add', 1, 0, 'pccwtxws', 'Speed' );
+f = ne_dialg(f, 'add', 1, 0, 'pccwtxwstatus', 'Status' );
 f = ne_dialg(f, 'add', 1, 0, 'pccwtxwq', 'Quality' );
 f = ne_dialg(f, 'add', 0, 1, 'gccwtx_precip', 'WTX Precip' );
 f = ne_dialg(f, 'add', 1, 0, 'pccwtx_precipt', 'Type' );

@@ -7,6 +7,7 @@ IGNORE = SWData.h SWData.tmc SWData_col.tmc SWData.cmd
 OBJ = SWData.h SWData.tmc SWData_col.tmc SWData.cmd
 
 tmcbase = base.tmc
+extbase = WindSpeed.tmc
 genuibase = IFS.genui
 Module TMAstat TMA=Config/IFS.tma TextWidth=22
 swsbase = Config/IFS.sws

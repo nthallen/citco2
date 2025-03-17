@@ -1,0 +1,102 @@
+%{
+  /*
+   * WindSpeed.tmc: Calculation of wind speed filter values
+   * min_fast is the rolloff period in minutes for the fast filter
+   * min_slow is the rolloff period in minutes for the slow filter
+   * ws_fast is the windspeed limit in m/s for mean+3std on the fast filter
+   * ws_slow is the windspeed limit in m/s for mean+3std on the slow filter
+   * I use 'mean' and 'std' for their intuitive value, but I am actually
+   * using a digital low-pass filter with a rolloff frequency of 1/period
+   * for the mean:
+   * mean_fast(x) = filter(min_fast, x);
+   * std_fast(x) = filter(min_fast, abs(x-mean_fast(x)));
+   */
+  #include "location.h"
+  #ifndef min_fast
+    #define min_fast 2
+  #endif
+  #ifndef min_slow
+    #define min_slow 20
+  #endif
+  #ifndef ws_fast
+    #define ws_fast 15
+  #endif
+  #ifndef ws_slow
+    #define ws_slow 10
+  #endif
+  #define a1(minutes) (1+60*minutes/3.14159)
+  #define a2(minutes) (1-60*minutes/3.14159)
+  double a1_slow = a1(min_slow);
+  double a2_slow = a2(min_slow);
+  double a1_fast = a1(min_fast);
+  double a2_fast = a2(min_fast);
+  /* 0 suffixes denote values calculated on the previous second
+   * 1 suffixes are the current second
+   * ws stands for "WindSpeed"
+   * wsf stands for "WindSpeed filtered"
+   * wsad stands for "WindSpeed absolute difference"
+   * wsadf stands for wsad filtered
+   */
+  double ws0 = -1;
+  double ws1;
+  double wsf0_fast = 0;
+  double wsf1_fast;
+  double wsad0_fast = 0;
+  double wsad1_fast = 0;
+  double wsadf0_fast = 0;
+  double wsadf1_fast = 0;
+  // double wslimit_fast;
+  double wsf0_slow = 0;
+  double wsf1_slow;
+  double wsad0_slow = 0;
+  double wsad1_slow = 0;
+  double wsadf0_slow = 0;
+  double wsadf1_slow = 0;
+  // double wslimit_slow;
+  const char *wsok_text(uint8_t x) {
+    return x ? " ok" : "!ok"; 
+  }
+  const char *wsnok_text(uint8_t x) {
+    return x ? "!ok" : " ok"; 
+  }
+%}
+TM typedef double WindSpeed_t { text "%6.2lf"; }
+WindSpeed_t wslimit_fast; invalidate wslimit_fast;
+WindSpeed_t wslimit_slow; invalidate wslimit_slow;
+TM typedef uint8_t WSOK_t { text "%3u" wsok_text(); }
+TM typedef uint8_t WSNOK_t { text "%3u" wsnok_text(); }
+WSNOK_t ws_high; invalidate ws_high;
+WSOK_t ws_low; invalidate ws_low;
+
+{ ws1 = convert(WTX_WindSpd);
+  if (ws1 < 60.) {
+    if (ws0 < 0) {
+      ws0 = wsf0_slow = wsf0_fast = ws1;
+      wsad0_fast = wsad0_slow = wsadf0_fast = wsadf0_slow = 0.;
+    }
+    wsf1_fast = (ws1+ws0-a2_fast*wsf0_fast)/a1_fast;
+    wsad1_fast = fabs(ws1-wsf1_fast);
+    wsadf1_fast = (wsad1_fast + wsad0_fast -a2_fast*wsadf0_fast)/a1_fast;
+    wslimit_fast = wsf1_fast + 3*wsadf1_fast;
+
+    wsf1_slow = (ws1+ws0-a2_slow*wsf0_slow)/a1_slow;
+    wsad1_slow = fabs(ws1-wsf1_slow);
+    wsadf1_slow = (wsad1_slow + wsad0_slow -a2_slow*wsadf0_slow)/a1_slow;
+    wslimit_slow = wsf1_slow + 3*wsadf1_slow;
+    
+    ws_high = wslimit_fast >= ws_fast && wslimit_slow >= ws_slow;
+    ws_low = wslimit_fast < ws_fast && wslimit_slow < ws_slow;
+    
+    wsf0_fast = wsf1_fast;
+    wsad0_fast = wsad1_fast;
+    wsadf0_fast = wsadf1_fast;
+    wsf0_slow = wsf1_slow;
+    wsad0_slow = wsad1_slow;
+    wsadf0_slow = wsadf1_slow;
+    ws0 = ws1;
+  }
+  validate ws_high;
+  validate ws_low;
+  validate wslimit_fast;
+  validate wslimit_slow;
+}
