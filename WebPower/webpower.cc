@@ -264,15 +264,15 @@ void webpower_dev::process_commands()
 {
   if (state == s_idle)
   {
-    if (status_is_pending)
-    {
-      if (issue_command(status_pending))
-        state = s_status;
-    }
-    else if (cmd_is_pending)
+    if (cmd_is_pending)
     {
       if (issue_command(cmd_pending))
         state = s_cmd;
+    }
+    else if (status_is_pending)
+    {
+      if (issue_command(status_pending))
+        state = s_status;
     }
   }
 }
