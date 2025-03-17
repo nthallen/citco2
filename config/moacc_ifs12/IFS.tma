@@ -739,7 +739,7 @@ State Pump_Warn {
 }
 
 State Power_Pump_Off {
-#     > Power Pump Off
+      > Power Pump Off
   +10 Validate Pump_Idle;
 }
 
