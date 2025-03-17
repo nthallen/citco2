@@ -148,6 +148,7 @@ bool webpower_dev::protocol_input()
   }
   // Assume any response resolves a request,
   // for better or worse.
+  TO.Clear();
   switch (state) {
     case s_cmd:
       cmd_is_pending = false;
@@ -191,6 +192,7 @@ bool webpower_dev::protocol_timeout()
       msg(MSG_ERROR, "%s: Invalid state: %d", iname, state);
       break;
   }
+  TO.Clear();
   process_commands();
   return false; 
 }
@@ -248,6 +250,7 @@ bool webpower_dev::issue_command(const char *cmd)
     werr_reported = false;
   }
   TO.Set(2, 0);
+  flags |= Fl_Timeout;
   return !werr_reported;
 }
 
