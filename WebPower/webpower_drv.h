@@ -38,7 +38,7 @@ class webpower_dev : public Interface {
     bool cmd_is_pending;
     const char *status_pending;
     bool status_is_pending;
-    const char *pending; //< pending command
+    char pending[20]; //< pending command
     enum { s_idle, s_cmd, s_status } state;
 };
 

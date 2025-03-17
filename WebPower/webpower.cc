@@ -23,9 +23,9 @@ webpower_dev::webpower_dev()
     cmd_is_pending(false),
     status_pending(0),
     status_is_pending(false),
-    pending(0),
     state(s_idle)
 {
+  pending[0] = '\0';
   flags |= gflag(0); // for tm_sync()
   set_qerr_threshold(-1);
 }
@@ -223,9 +223,9 @@ bool webpower_dev::queue_command(const char *cmd, int len) {
 bool webpower_dev::issue_command(const char *cmd)
 {
   int len = strlen(cmd);
-  msg(MSG_DEBUG, "%s: Sending '%s'", iname, cmd);
-  int rv = ::write(w_fd, cmd, len);
-  pending = cmd;
+  strncpy(pending, cmd, 20);
+  msg(MSG_DEBUG, "%s: Sending '%s'", iname, pending);
+  int rv = ::write(w_fd, pending, len);
   if (rv != len)
   {
     if (!werr_reported)
