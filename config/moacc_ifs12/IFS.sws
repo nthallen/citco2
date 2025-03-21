@@ -6,9 +6,9 @@ SW_Variable: <uint8_t,UCHAR> SWStat SW Status
   SWS_REINIT 5 ReInit: Validate ReInit; break;
   SWS_REINIT_AND_PUMP_DOWN 16 Clear Startup Condition and Pump Down:    Validate ReInit_and_Pump_Down; break;
   SWS_PUMP_DOWN 6 Pump Down: Validate Pump_Down; break;
-# SWS_INSB_FILL 7 InSb Fill: Validate InSb_Fill; break;
-# SWS_PUMP_DOWN_ABORT 8 Abort Pump Down: pump_down_abort = 1; break;
-# SWS_PUMP_CLEAR_TO_VENT 9 Clear to Vent: Validate Pump_Clear_to_Vent; break;
+  SWS_INSB_FILL 7 InSb Fill: Validate InSb_Fill; break;
+  SWS_PUMP_DOWN_ABORT 8 Abort Pump Down: pump_down_abort = 1; break;
+  SWS_PUMP_CLEAR_TO_VENT 9 Clear to Vent: Validate Pump_Clear_to_Vent; break;
 # SWS_INSBBEDTIME5 10 InSb Bedtime 5: Validate InSbBedtime5; break;
 # SWS_SUNTRACKER_INIT 11 Sun Tracker Initialize: Validate ST_Initialize; break;
   SWS_IFS_STATUS_UPDATE 12 IFS Status Update: Validate IFS_Status_Update; break;
@@ -16,6 +16,7 @@ SW_Variable: <uint8_t,UCHAR> SWStat SW Status
   SWS_IFS_HOLD_LAMP 14 Hold_with_Lamp_Runs:    Validate Holding_with_Lamp_Runs; break;
   SWS_BEDTIME 15 Bedtime: Validate Bedtime; break;
   SWS_SNACK 17 Midnight Snack: Validate Midnight_Snack; break;
+  SWS_PUMP_IFS 18 Pump IFS Continuously: Validate Pump_IFS_Prep; break;
 
   SWS_SHUTDOWN_QUICKLY 251 Shutdown Quickly: Validate Quick_Shutdown; break;
   SWS_SHUTDOWN 252 Shutdown Completely: Validate Full_Shutdown; break;

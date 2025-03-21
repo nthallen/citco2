@@ -190,6 +190,7 @@ State Ready_To_Play {
   depending on ( Bad_Weather) { Validate Nap; }
 
   > _Algo P1 Ready_To_Play
+  Validate Pump_IFS_Prep;
   Validate Dome_Open;
   > Sun Tracker Track To Programmed Sun Position
   Hold Until Valid ( Dome_Opened ) or 2:00;
@@ -675,8 +676,6 @@ State Pump_Idle {}
 State Pump_Clear_to_Vent {}
 
 State Pump_Down_Init {
-   Validate Watchdog_Okay;
-   { pump_down_abort = 0; }
 #  { if ( convert( Pump_MtrT ) >= 50.0 ||
 #         convert( Pump_BdyT ) >= 50.0 ) {
 #      ci_sendfcmd(Cmd_Send,
@@ -685,6 +684,8 @@ State Pump_Down_Init {
 #      Validate Power_Pump_Off;
 #    }
 #  }
+   Validate Watchdog_Okay;
+   { pump_down_abort = 0; }
    > Power Pump On
      Hold Until ( WP_Pump_S ) or 10
      else Validate Pump_Init_Failed;
@@ -715,13 +716,17 @@ State Pump_Evacuate {
       Hold Until ( convert(IFS_P) < 0.5 || pump_down_abort ) or 40:00;
       Hold Until ( convert(IFS_P) < 0.9 || pump_down_abort ) or 30
       else Validate Pump_Evac_Failed;
-  +10 > IFS direct VAC=0
-        Hold Until ( convert(Pump_P) < 0.8 ) or 2:00
-        else Validate Pump_Evac_Failed;
-      Hold Until (pump_down_abort) or 60;
-        Hold Until ( convert(Pump_P) < 0.5 && convert(IFS_P) < 0.6 ) or 10
-        else Validate Pump_Warn;
-      Validate Power_Pump_Off;
+  +10 Validate Pump_Evac_End;
+}
+
+State Pump_Evac_End {
+    > IFS direct VAC=0
+      Hold Until ( convert(Pump_P) < 0.8 ) or 2:00
+      else Validate Pump_Evac_Failed;
+    Hold Until (pump_down_abort) or 60;
+      Hold Until ( convert(Pump_P) < 0.5 && convert(IFS_P) < 0.6 ) or 10
+      else Validate Pump_Warn;
+    Validate Power_Pump_Off;
 }
 
 State Pump_OTevac {
@@ -764,7 +769,44 @@ State Pump_Evac_Failed {
      Validate Power_Pump_Off;
 }
 
-#Partition
+State Pump_IFS_Prep {
+   { pump_down_abort = 0; }
+   > Power Pump On
+     Hold Until ( WP_Pump_S ) or 10
+     else Validate Pump_Init_Failed;
+     Hold Until ( convert(Pump_P) < 0.1 || pump_down_abort ) or 8:00
+     else Validate Pump_Init_Failed;
+     Validate Pump_IFS_Constantly;
+   Hold Until (pump_down_abort) or 2
+   else Validate Pump_IFS_Constantly;
+   Validate Power_Pump_Off;
+}
+
+State Pump_IFS_Constantly {
+    # Combine pump_down_abort check with WP_Pump_S, since
+    # pump_down_abort does not have a time dependency.
+    { if ( !WP_Pump_S ) {
+        Validate Pump_Evac_Failed;
+      } else if (pump_down_abort) {
+        Validate Pump_Evac_End;
+      }
+    }
+#   { if ( convert( Pump_MtrT ) >= 50.0 ||
+#          convert( Pump_BdyT ) >= 50.0 ) {
+#       ci_sendfcmd(Cmd_Send,
+#         "Email Error Message Pump Over Temperature during Evac: Mtr %.1lf C Bdy %.1lf C\n",
+#         convert(Pump_MtrT), convert(Pump_BdyT));
+#       Validate Pump_OTevac;
+#     }
+#   }
+      > IFS direct VAC=1
+      Hold Until ( convert(IFS_P) < 0.5 || pump_down_abort ) or 5:00
+      else > Email Warning Message Pump Down of IFS is slow
+      { if (convert(IFS_P) > 5.0) Validate Pump_Evac_Failed; }
+}
+
+
+Partition
 #----------------------------------------------
 # Partition 7: Idle Scanning
 #----------------------------------------------
