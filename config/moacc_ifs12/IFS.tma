@@ -115,8 +115,8 @@ State Holding_with_Lamp_Runs {
 
 State Failure {
      > _Algo P1 Failure
-     > IFS Direct SRC=0
      > IFS Direct VAC=0
+  +2 > IFS Direct SRC=0
   +1 > Enclosure Close
   +1 > IFS IdleScan
  +60 > Power Pump Off
@@ -162,7 +162,7 @@ State Sleep {
   depending on ( Solar_Bedtime ) { Validate Bedtime; }
   > _Algo P1 Sleep
   > Sun Tracker Sleep
-# Validate IFS_Status_Update;
+  Validate IFS_Status_Update;
   Hold Until ( convert(Sol_ele) > 0. );
   Validate Wake_Up;
 }
