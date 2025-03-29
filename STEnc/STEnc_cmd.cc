@@ -43,13 +43,15 @@ bool STEnc_cmd::app_input()
       }
       switch(cmd) {
         case 0:
-          relay_cmd = (relay_cmd & ~STEnc::RELAY_MASK) | STEnc::RELAY_CLOSE;
+          relay_cmd = (relay_cmd & ~STEnc::RELAY_ENC_MASK)
+            | STEnc::RELAY_CLOSE;
           break;
         case 1:
-          relay_cmd = (relay_cmd & ~STEnc::RELAY_MASK) | STEnc::RELAY_OPEN;
+          relay_cmd = (relay_cmd & ~STEnc::RELAY_ENC_MASK)
+            | STEnc::RELAY_OPEN;
           break;
         case 2: relay_cmd = STEnc::RELAY_NONE; break;
-          relay_cmd = (relay_cmd & ~STEnc::RELAY_MASK);
+          relay_cmd = (relay_cmd & ~STEnc::RELAY_ENC_MASK);
           break;
         case 5: /* Manual On */
           relay_cmd = (relay_cmd & ~STEnc::RELAY_ASE_DS_2C_MASK)
