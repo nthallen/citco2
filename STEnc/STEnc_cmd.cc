@@ -8,7 +8,8 @@
 
 STEnc_cmd::STEnc_cmd(STEnc *STE)
     : Cmd_reader("cmd", 20, "STEnc"),
-      STE(STE)
+      STE(STE),
+      relay_cmd(0)
 {
   flags |= gflag(0);
 }
@@ -23,10 +24,10 @@ STEnc_cmd::~STEnc_cmd()
  *   H\n Goto Home: Not supported
  *   Q\n Quit
  *   S:[012]\n Close/Open/Neither
+ *   S:[567]\n Man On/Standby On/Neither
  */
 bool STEnc_cmd::app_input()
 {
-  int relay_cmd;
   uint8_t cmd;
   switch (buf[cp]) {
     case 'A':
@@ -41,9 +42,25 @@ bool STEnc_cmd::app_input()
         return false;
       }
       switch(cmd) {
-        case 0: relay_cmd = STEnc::RELAY_CLOSE; break;
-        case 1: relay_cmd = STEnc::RELAY_OPEN; break;
+        case 0:
+          relay_cmd = (relay_cmd & ~STEnc::RELAY_MASK) | STEnc::RELAY_CLOSE;
+          break;
+        case 1:
+          relay_cmd = (relay_cmd & ~STEnc::RELAY_MASK) | STEnc::RELAY_OPEN;
+          break;
         case 2: relay_cmd = STEnc::RELAY_NONE; break;
+          relay_cmd = (relay_cmd & ~STEnc::RELAY_MASK);
+          break;
+        case 5: /* Manual On */
+          relay_cmd = (relay_cmd & ~STEnc::RELAY_ASE_DS_2C_MASK)
+            | STEnc::RELAY_ASE_DS_2C_MAN;
+          break;
+        case 6: /* Standby On */
+          relay_cmd = (relay_cmd & ~STEnc::RELAY_ASE_DS_2C_MASK)
+            | STEnc::RELAY_ASE_DS_2C_STBY;
+          break;
+        case 7: /* Standby/Manual Off */
+          relay_cmd = (relay_cmd & ~STEnc::RELAY_ASE_DS_2C_MASK);
         default:
           report_err("%s: S command value out of range: '%d'",
             iname, cmd);

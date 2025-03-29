@@ -28,6 +28,11 @@
         static const uint8_t RELAY_OPEN = 2;
         static const uint8_t RELAY_CLOSE = 1;
         static const uint8_t RELAY_NONE = 0;
+        static const uint8_t RELAY_ENC_MASK = 3;
+        static const uint8_t RELAY_ASE_DS_2C_MAN = 0x20;
+        static const uint8_t RELAY_ASE_DS_2C_STBY = 0x40;
+        static const uint8_t RELAY_ASE_DS_2C_NONE = 0x00;
+        static const uint8_t RELAY_ASE_DS_2C_MASK = 0x60;
         // Status bit definitions for telemetry:
         static const uint16_t S_OPEN_LIMIT = 1;
         static const uint16_t S_CLOSE_LIMIT = 2;
@@ -66,6 +71,7 @@
         bool tm_sync() override;
       private:
         STEnc *STE;
+        uint8_t relay_cmd;
     };
 
   #endif // __cplusplus

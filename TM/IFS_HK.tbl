@@ -27,6 +27,7 @@ HK_Stack {
     }; |+;
     {
       [MKS_HK];
+      [STEnc_HK];
       [TMbaseB]
     }
   }
