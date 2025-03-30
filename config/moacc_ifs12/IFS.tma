@@ -194,6 +194,7 @@ State Ready_To_Play {
   Validate Dome_Open;
   > Sun Tracker Track To Programmed Sun Position
   Hold Until Valid ( Dome_Opened ) or 2:00;
+  Hold Until Valid ( Pump_IFS_Constantly ) or 1:00;
   > Sun Tracker Track by CamTracker
 
   > Email Report Message Enclosure opened in Ready_to_Play
@@ -688,14 +689,14 @@ State Pump_Down_Init {
    Validate Watchdog_Okay;
    { pump_down_abort = 0; }
    > Power Pump On
-     Hold Until ( WP_Pump_S ) or 10
-     else Validate Pump_Init_Failed;
-     Hold Until ( convert(Pump_P) < 0.1 || pump_down_abort ) or 8:00
-     else > Email Warning Message Pump Down Init is slow
-     Hold Until ( convert(Pump_P) < 0.1 || pump_down_abort ) or 30:00;
-     Hold Until ( convert(Pump_P) < 0.5 || pump_down_abort ) or 30:00;
-     Hold Until ( convert(Pump_P) < 0.8 || pump_down_abort ) or 30:00
-     else Validate Pump_Init_Failed;
+   Hold Until ( WP_Pump_S ) or 10
+   else Validate Pump_Init_Failed;
+   Hold Until ( convert(Pump_P) < 0.1 || pump_down_abort ) or 8:00
+   else > Email Warning Message Pump Down Init is slow
+   Hold Until ( convert(Pump_P) < 0.1 || pump_down_abort ) or 30:00;
+   Hold Until ( convert(Pump_P) < 0.5 || pump_down_abort ) or 30:00;
+   Hold Until ( convert(Pump_P) < 0.8 || pump_down_abort ) or 30:00
+   else Validate Pump_Init_Failed;
    Hold Until (pump_down_abort) or 2
    else Validate Pump_Evacuate;
    Validate Power_Pump_Off;
@@ -773,20 +774,32 @@ State Pump_Evac_Failed {
 State Pump_IFS_Prep {
    { pump_down_abort = 0; }
    > Power Pump On
-     Hold Until ( WP_Pump_S ) or 10
-     else Validate Pump_Init_Failed;
-     Hold Until ( convert(Pump_P) < 0.1 || pump_down_abort ) or 8:00
-     else Validate Pump_Init_Failed;
-     Validate Pump_IFS_Constantly;
-   Hold Until (pump_down_abort) or 2
-   else Validate Pump_IFS_Constantly;
-   Validate Power_Pump_Off;
+   Hold Until ( WP_Pump_S ) or 10
+   else Validate Pump_Init_Failed;
+   Validate IFS_Status_Idle; # so as not to interfere with VAC=1
+   Validate Pump_IFS_Prep2;
+}
+
+State Pump_IFS_Prep2 {
+    { if ( !WP_Pump_S ) {
+        Validate Pump_Evac_Failed;
+      } else if (pump_down_abort) {
+        Validate Pump_Evac_End;
+      }
+    }
+
+    Hold Until (convert(Pump_P) < 0.1) or 8:00
+    else Validate Pump_Init_Failed;
+ +1 > IFS direct VAC=1
+ +2 Validate IFS_Status_Update;
+    Hold Until (convert(IFS_P) < 4.8) or 5:00;
+    Validate Pump_IFS_Constantly;
 }
 
 State Pump_IFS_Constantly {
     # Combine pump_down_abort check with WP_Pump_S, since
     # pump_down_abort does not have a time dependency.
-    { if ( !WP_Pump_S ) {
+    { if ( !WP_Pump_S || convert(IFS_P) > 5.0) {
         Validate Pump_Evac_Failed;
       } else if (pump_down_abort) {
         Validate Pump_Evac_End;
@@ -800,10 +813,10 @@ State Pump_IFS_Constantly {
 #       Validate Pump_OTevac;
 #     }
 #   }
-      > IFS direct VAC=1
-      Hold Until ( convert(IFS_P) < 0.5 || pump_down_abort ) or 5:00
-      else > Email Warning Message Pump Down of IFS is slow
-      { if (convert(IFS_P) > 5.0) Validate Pump_Evac_Failed; }
+    # This now assumes we are either in IFS_Status_Update or
+    # scanning.
+    Hold Until ( convert(IFS_P) < 0.5) or 5:00
+    else > Email Warning Message Pump Down of IFS is slow
 }
 
 
