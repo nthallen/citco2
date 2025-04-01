@@ -193,8 +193,8 @@ State Ready_To_Play {
   Validate Pump_IFS_Prep;
   Validate Dome_Open;
   > Sun Tracker Track To Programmed Sun Position
+  Hold Until Valid ( Pump_IFS_Constantly ) or 8:00;
   Hold Until Valid ( Dome_Opened ) or 2:00;
-  Hold Until Valid ( Pump_IFS_Constantly ) or 1:00;
   > Sun Tracker Track by CamTracker
 
   > Email Report Message Enclosure opened in Ready_to_Play
