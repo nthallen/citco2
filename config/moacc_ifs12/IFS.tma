@@ -772,12 +772,13 @@ State Pump_Evac_Failed {
 }
 
 State Pump_IFS_Prep {
-   { pump_down_abort = 0; }
-   > Power Pump On
-   Hold Until ( WP_Pump_S ) or 10
-   else Validate Pump_Init_Failed;
-   Validate IFS_Status_Idle; # so as not to interfere with VAC=1
-   Validate Pump_IFS_Prep2;
+     { pump_down_abort = 0; }
+     Validate IFS_Status_Idle; # so as not to interfere with VAC=1
+ +2  > IFS direct VAC=0
+     > Power Pump On
+     Hold Until ( WP_Pump_S ) or 10
+     else Validate Pump_Init_Failed;
+     Validate Pump_IFS_Prep2;
 }
 
 State Pump_IFS_Prep2 {
