@@ -63,9 +63,11 @@ bool STEnc_cmd::app_input()
           break;
         case 7: /* Standby/Manual Off */
           relay_cmd = (relay_cmd & ~STEnc::RELAY_ASE_DS_2C_MASK);
+          break;
         default:
           report_err("%s: S command value out of range: '%d'",
             iname, cmd);
+          consume(nc);
           return false;
       }
       msg(MSG_DEBUG, "Sending relay command %d", relay_cmd);

@@ -30,9 +30,9 @@
         static const uint8_t RELAY_NONE = 0;
         static const uint8_t RELAY_ENC_MASK = 3;
         static const uint8_t RELAY_ASE_DS_2C_MAN = 0x20;
-        static const uint8_t RELAY_ASE_DS_2C_STBY = 0x40;
+        static const uint8_t RELAY_ASE_DS_2C_STBY = 0x10;
         static const uint8_t RELAY_ASE_DS_2C_NONE = 0x00;
-        static const uint8_t RELAY_ASE_DS_2C_MASK = 0x60;
+        static const uint8_t RELAY_ASE_DS_2C_MASK = 0x30;
         // Status bit definitions for telemetry:
         static const uint16_t S_OPEN_LIMIT = 1;
         static const uint16_t S_CLOSE_LIMIT = 2;
