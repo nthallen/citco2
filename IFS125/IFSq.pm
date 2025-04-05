@@ -11,9 +11,9 @@ sub IFSq_init {
   my $channel = shift;
   my $clt = mClient::connect("cmd", $channel);
   my $self = {
-    queue = [],
-    clt = $clt
-  }
+    queue => [],
+    clt => $clt
+  };
   return $self;
 }
 
@@ -23,8 +23,9 @@ sub IFSq_init {
 sub IFSq_read {
   my $self = shift;
   my $buf;
-  if ($self->{queue}) {
+  if (@{$self->{queue}}) {
     $buf = pop(@{$self->{queue}});
+    msg(0, "IFSq: dequeued '$buf'");
   } else {
     $buf = $self->{clt}->read(500);
   }
