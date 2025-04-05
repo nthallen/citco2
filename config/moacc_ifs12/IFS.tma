@@ -190,14 +190,22 @@ State Ready_To_Play {
   depending on ( Bad_Weather) { Validate Nap; }
 
   > _Algo P1 Ready_To_Play
+  depending on (Pump_IFS_Constantly) {
+    Validate Ready_To_Play2;
+  }
   Validate Pump_IFS_Prep;
+  Hold Until Valid ( Pump_IFS_Constantly );
+  Validate Ready_To_Play2;
+}
+
+State Ready_To_Play2 {
+  > _Algo P1 Ready_To_Play2
   Validate Dome_Open;
   > Sun Tracker Track To Programmed Sun Position
-  Hold Until Valid ( Pump_IFS_Constantly ) or 8:00;
   Hold Until Valid ( Dome_Opened ) or 2:00;
   > Sun Tracker Track by CamTracker
 
-  > Email Report Message Enclosure opened in Ready_to_Play
+  > Email Report Message Enclosure opened in Ready_to_Play2
 
   Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
                 IFSCStat == IFS_SCAN_WAIT ) &&
@@ -793,7 +801,7 @@ State Pump_IFS_Prep2 {
     else Validate Pump_Init_Failed;
  +1 > IFS direct VAC=1
  +2 Validate IFS_Status_Update;
-    Hold Until (convert(IFS_P) < 4.8) or 5:00;
+    Hold Until (convert(IFS_P) < 1.0) or 8:00;
     Validate Pump_IFS_Constantly;
 }
 

@@ -10,15 +10,28 @@ my $IFSU_clt;
 sub IFSq_init {
   my $channel = shift;
   my $clt = mClient::connect("cmd", $channel);
-  return $clt;
+  my $self = {
+    queue = [],
+    clt = $clt
+  }
+  return $self;
 }
 
 # non-blocking read. Actually the non-blocking part is
 # handled on open.
 # returns undef if there is nothing to read
 sub IFSq_read {
-  my $clt = shift;
-  my $buf = $clt->read(500);
+  my $self = shift;
+  my $buf;
+  if ($self->{queue}) {
+    $buf = pop(@{$self->{queue}});
+  } else {
+    $buf = $self->{clt}->read(500);
+  }
+  if (defined($buf) && $buf =~ s/^(.*\n)// ) {
+    unshift(@{$self->{queue}}, $buf) if (length($buf));
+    $buf = $1;
+  }
 # my $rv = sysread($fh,$buf,500);
 # if ( defined $rv ) {
 #   $buf = "EQExit\n" if $rv == 0;
@@ -45,8 +58,8 @@ sub IFSq_dequeue {
   } elsif ($req eq "DU") {
     $cmd = IFSq_read($IFSU_clt);
   } elsif ($req eq "DW") {
-    my $IFS_fn = fileno($IFS_clt->{sock});
-    my $IFSU_fn = fileno($IFSU_clt->{sock});
+    my $IFS_fn = fileno($IFS_clt->{clt}->{sock});
+    my $IFSU_fn = fileno($IFSU_clt->{clt}->{sock});
     my $rin = '';
     vec($rin,$IFS_fn,1) = 1;
     vec($rin,$IFSU_fn,1) = 1;
