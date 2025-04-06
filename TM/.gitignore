@@ -94,6 +94,7 @@ MKS925.genui
 MKS925.tbl
 IFS125.genui
 IFS125.tbl
+IFSUAconfig.pm
 IFSCStat.tmc
 IFSscan.cmd
 LN2.genui

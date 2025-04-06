@@ -11,6 +11,7 @@ mode (default) {
   genuibase = IFS125.genui:IFS125.genui.in
   infoext : info.tmc infoext.oui
   - : IFS125.tbl:IFS125.tbl.in
+  - : IFSUAconfig.pm:IFSUAconfig.pm.tmpl
   DISTRIB = @MODDIR@/../IFSctrl
   DISTRIB = @MODDIR@/../IFSmsg.pm
   DISTRIB = @MODDIR@/../IFSq.pm
@@ -18,9 +19,11 @@ mode (default) {
   DISTRIB = @MODDIR@/../IFStm.pm
   DISTRIB = @MODDIR@/../ColSend.pm
   DISTRIB = @MODDIR@/../mClient.pm
+  DISTRIB = @MODDIR@/../IFSUserAgent.pm
+  DISTRIB = IFSUAconfig.pm
   DISTRIB = Config/IFSopts.pm
   CPPFLAGS = -I @MODDIR@
-  IGNORE = IFS125.genui IFS125.tbl
+  IGNORE = IFS125.genui IFS125.tbl IFSUAconfig.pm
   IGNORE = IFSCStat.tmc IFSscan.cmd
   OBJ = IFS125.genui IFS125.tbl
   OBJ = IFSCStat.tmc IFSscan.cmd
