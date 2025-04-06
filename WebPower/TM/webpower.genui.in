@@ -1,5 +1,5 @@
- 1 WP_Pump_S:webpower_status:1 Power Status
+ 1 WP_Pump_S:webpower_status:0 Power Status
  1 WP_PDISO8_S:webpower_status:1 Power Status
- 1 WP_MKS925_S:webpower_status:1 Power Status
- 1 WP_AXIS_P1378_S:webpower_status:1 Power Status
+ 1 WP_MKS925_S:webpower_status:2 Power Status
+ 1 WP_AXIS_P1378_S:webpower_status:3 Power Status
  1 webpower_stale Power Stale
