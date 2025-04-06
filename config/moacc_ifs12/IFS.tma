@@ -65,7 +65,7 @@ State Init_Choice "Startup.tmas" {
      Hold until ( SWStat == SWS_TIME_WARP ) or 2:00;
 
 ## Uncomment IFS commands
-# +1 > IFS Time Synch
+  +1 > IFS Time Synch
 #    > IFS Set Preamp Gains 3 3
 # Don't set InSb preamp gain until after filling.
 
