@@ -1,9 +1,10 @@
 #! /usr/bin/perl -w
 package IFSctrl;
 use strict;
-use LWP::UserAgent;
 use URI::Escape;
 use HTTP::Date;
+use IO::Socket::SSL;
+
 BEGIN {
   $ENV{TMBINDIR} = '.' unless $ENV{TMBINDIR};
 }
@@ -14,6 +15,7 @@ use IFSmsg qw(msg);
 use IFStm;
 use IFSq;
 use IFSretr;
+use IFSUserAgent;
 
 #### Initializations
 
@@ -90,8 +92,9 @@ if ( @ARGV ) {
 my $cur_filenum = 0;
 my $cur_filenum_inplay = 0;
 my $first_scan_slice = 0;
-#my $ua = new LWP::UserAgent(keep_alive => 1, timeout => 5);
-my $ua = new LWP::UserAgent(keep_alive => 1);
+my $ua = new LWP::UserAgent(keep_alive => 1,
+          ssl_opts => { verify_hostname => 0,
+              SSL_verify_mode => SSL_VERIFY_NONE });
 
 #------------------------------------------------
 # Initialize log file and connection to IFSretr
@@ -461,7 +464,6 @@ sub http_request {
             print LOG "Unable to write to scan/b$first_scan_slice.scd";
           }
           if ( $jpg_url ) {
-            # Webcam URL was: "http://192.168.1.107:8080/netcam.jpg"
             my $jpgresponse = $ua->get( $jpg_url,
               ':content_file' => "scan/b$first_scan_slice.jpg" );
             if ( ! $jpgresponse->is_success ) {
