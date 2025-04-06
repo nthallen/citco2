@@ -781,8 +781,8 @@ State Pump_Evac_Failed {
 
 State Pump_IFS_Prep {
      { pump_down_abort = 0; }
-     Validate IFS_Status_Idle; # so as not to interfere with VAC=1
  +2  > IFS direct VAC=0
+     Validate IFS_Status_Update;
      > Power Pump On
      Hold Until ( WP_Pump_S ) or 10
      else Validate Pump_Init_Failed;
@@ -800,7 +800,6 @@ State Pump_IFS_Prep2 {
     Hold Until (convert(Pump_P) < 0.1) or 8:00
     else Validate Pump_Init_Failed;
  +1 > IFS direct VAC=1
- +2 Validate IFS_Status_Update;
     Hold Until (convert(IFS_P) < 1.0) or 8:00;
     Validate Pump_IFS_Constantly;
 }
@@ -822,10 +821,6 @@ State Pump_IFS_Constantly {
 #       Validate Pump_OTevac;
 #     }
 #   }
-    # This now assumes we are either in IFS_Status_Update or
-    # scanning.
-    Hold Until ( convert(IFS_P) < 0.5) or 5:00
-    else > Email Warning Message Pump Down of IFS is slow
 }
 
 

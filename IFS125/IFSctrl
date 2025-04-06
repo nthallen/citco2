@@ -92,7 +92,7 @@ if ( @ARGV ) {
 my $cur_filenum = 0;
 my $cur_filenum_inplay = 0;
 my $first_scan_slice = 0;
-my $ua = new LWP::UserAgent(keep_alive => 1,
+my $ua = new IFSUserAgent(keep_alive => 1,
           ssl_opts => { verify_hostname => 0,
               SSL_verify_mode => SSL_VERIFY_NONE });
 

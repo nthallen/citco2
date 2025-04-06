@@ -1,3 +1,5 @@
+jpg=https://webcam/axis-cgi/jpg/image.cgi
+
   Launch    memo    memo -o $Experiment.log -l4
 		    [ -z "$launch_err" ] &&
 		      msg "Running script interact"
@@ -12,6 +14,6 @@
   Launch    -       MKS925
   Launch    -       LN2 -p /dev/ttyS2
   Launch    -       tmdf -p /home
-  Launch    -       IFSctrl server 10.10.0.1:80 -j "https://webcam/axis-cgi/jpg/image.cgi" -v
+  Launch    -       IFSctrl server 10.10.0.1:80 -j $jpg
   Launch    -       webpower
   Launch    -TMC-   IFSalgo
