@@ -66,7 +66,7 @@ State Init_Choice "Startup.tmas" {
 
 ## Uncomment IFS commands
   +1 > IFS Time Synch
-#    > IFS Set Preamp Gains 3 3
+#    > IFS Set Preamp Gains 0 0
 # Don't set InSb preamp gain until after filling.
 
   +1 Validate Init_Decide;
@@ -224,7 +224,7 @@ State Ready_To_Play2 {
 State Init_Set_InSb_Gains {
   > _Algo P1 Init_Set_InSb_Gains
   > IFS Direct DTC=0x4040
-  > IFS Direct PGN=3
+  > IFS Direct PGN=0
   Validate InSb_Chilled;
   Validate Play;
 }
@@ -394,7 +394,7 @@ State Midnight_Snack {
 State Lights_Out {
   > _Algo P1 Lights_Out
 # > IFS Direct SRC=0
-# > IFS Set Preamp Gains 3 3
+# > IFS Set Preamp Gains 0 0
   Hold Until ( (IFSCStat == IFS_SCAN_IDLE) ||
                 (IFSCStat == IFS_SCAN_WAIT) );
   > SaveLog Bedtime Shutdown
@@ -415,7 +415,7 @@ State InSb_Midnight_Snack {
 
       > _Algo P1 InSb_Midnight_Snack
       > IFS Direct DTC=0x4020
-      > IFS Direct PGN=3
+      > IFS Direct PGN=0
       > IFS Cellres02
       Hold Until ((IFSCStat != IFS_SCAN_IDLE) &&
                   (IFSCStat != IFS_SCAN_WAIT));
@@ -436,7 +436,7 @@ State InGaAs_Midnight_Snack {
   }
 
       > _Algo P1 InGaAs_Midnight_Snack
-      > IFS Set Preamp Gains 3 3
+      > IFS Set Preamp Gains 0 0
       > IFS InGaAsCellres02
       Hold Until ((IFSCStat != IFS_SCAN_IDLE) &&
                   (IFSCStat != IFS_SCAN_WAIT));
