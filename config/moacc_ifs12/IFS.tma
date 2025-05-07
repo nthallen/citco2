@@ -81,7 +81,7 @@ State Init_Choice "Startup.tmas" {
 State Init_Decide {
 #    > IFS Read Status
      > _Algo P1 Init_Decide
-  +2 { if ( convert(Sol_ele) <= 0. ) Validate Init_Close; }
+  +2 depending on (Solar_Bedtime) { Validate Init_Close; }
   +2 depending on ( Bad_Weather ) { Validate Nap; }
  +10 Validate Ready_To_Play;
 }
@@ -163,7 +163,7 @@ State Sleep {
   > _Algo P1 Sleep
   > Sun Tracker Sleep
   Validate IFS_Status_Update;
-  Hold Until ( convert(Sol_ele) > 0. );
+  Hold Until Valid (Solar_Day_Ascending);
   Validate Wake_Up;
 }
 
@@ -215,23 +215,49 @@ State Ready_To_Play2 {
    #We do this on wakeup at ETL:
    #depending on (InSb_Startup) { Validate InSb_Fill; }
  +1 Validate IFS_Status_Idle;
-#   depending on (InSb_Filled) { Validate Init_Set_InSb_Gains; }
-#   depending on (InSb_Chilled) { Validate Play; }
+    depending on (InSb_Filled) { Validate Init_Set_InSb_Gains; }
+    depending on (InSb_Chilled) { Validate Play; }
  +1 > Email Warning Message Starting in Play_InGaAs: !InSb_Chilled
  +1 Validate Play_InGaAs;
 }
 
-# State Init_Set_InSb_Gains {
-#   > _Algo P1 Init_Set_InSb_Gains
-# }
+State Init_Set_InSb_Gains {
+  > _Algo P1 Init_Set_InSb_Gains
+  > IFS Direct DTC=0x4040
+  > IFS Direct PGN=3
+  Validate InSb_Chilled;
+  Validate Play;
+}
 
-# State Play NoLog {
-#   > _Algo P1 Play
-# }
+State Play NoLog {
+    > _Algo P1 Play
+    depending on ( Watchdog_Error ) { Validate Failure; }
+    depending on (Solar_Bedtime) { Validate Bedtime; }
+    depending on ( Bad_Weather) { Validate Nap; }
+    { if ( IFSCStat == IFS_SCAN_ERROR ) {
+        Validate Scanner_Failure;
+      } else if (IFSCStat == IFS_SCAN_INSBNR) {
+        Validate Scanner_InSbNR;
+      } else if (IFSCStat == IFS_SCAN_CANERR) {
+        Validate Scanner_CAN_Err;
+      }
+    }
+
+    > IFS Solar
+    Hold Until ((IFSCStat != IFS_SCAN_IDLE) &&
+                (IFSCStat != IFS_SCAN_WAIT));
+    Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
+                  IFSCStat == IFS_SCAN_WAIT ) &&
+                 ST_modus == ST_MODE_TMR);
+
+    depending on (InSb_Chilled) { Validate Play; }
+ +1 > Email Warning Message Heading to Play_InGaAs: !InSb_Chilled
+    Validate Play_InGaAs;
+}
 
 State Play_InGaAs NoLog {
   depending on ( Watchdog_Error ) { Validate Failure; }
-  { if ( Convert(Sol_ele) < 0. ) Validate Bedtime; }
+  depending on (Solar_Bedtime) { Validate Bedtime; }
   depending on ( Bad_Weather) { Validate Nap; }
   { if ( IFSCStat == IFS_SCAN_ERROR ) {
       Validate Scanner_Failure;
@@ -264,8 +290,8 @@ State Play_InGaAs NoLog {
                   IFSCStat == IFS_SCAN_WAIT ) &&
                  ST_modus == ST_MODE_TMR);
 
-#+1  depending on (InSb_Filled) { Validate Init_Set_InSb_Gains; }
-#    depending on (InSb_Chilled) { Validate Play; }
+ +1  depending on (InSb_Filled) { Validate Init_Set_InSb_Gains; }
+     depending on (InSb_Chilled) { Validate Play; }
  +1  Validate Play_InGaAs;
 }
 
@@ -277,7 +303,7 @@ State Scanner_Failure {
 
 State Scanner_CAN_Err {
   depending on ( Watchdog_Error ) { Validate Failure; }
-  { if ( Convert(Sol_ele) < 0. ) Validate Bedtime; }
+  depending on (Solar_Bedtime) { Validate Bedtime; }
   depending on ( Bad_Weather) { Validate Nap; }
   { if ( IFSCStat == IFS_SCAN_ERROR ) {
       Validate Scanner_Failure;
@@ -299,7 +325,7 @@ State Scanner_CAN_Err {
 
 State Scanner_InSbNR {
   depending on ( Watchdog_Error ) { Validate Failure; }
-  { if ( Convert(Sol_ele) < 0. ) Validate Bedtime; }
+  depending on (Solar_Bedtime) { Validate Bedtime; }
   depending on ( Bad_Weather) { Validate Nap; }
 
   > _Algo P1 Scanner_InSbNR

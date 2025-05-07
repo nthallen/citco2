@@ -43,6 +43,7 @@ f = ne_dialg(f, 'add', 0, 1, 'gccwtx_precip', 'WTX Precip' );
 f = ne_dialg(f, 'add', 1, 0, 'pccwtx_precipt', 'Type' );
 f = ne_dialg(f, 'add', 1, 0, 'pccwtx_precipa', 'Accum' );
 f = ne_dialg(f, 'add', 1, 0, 'pccwtx_precipi', 'Intensity' );
+f = ne_dialg(f, 'add', 1, 0, 'pccwtx_precipdsc', 'DS 2C' );
 f = ne_dialg(f, 'add', 0, 1, 'gccwtxs', 'WTX Status' );
 f = ne_dialg(f, 'add', 1, 0, 'pccwtxsf', 'Fresh' );
 f = ne_dialg(f, 'add', 1, 0, 'pccwtxss', 'Stale' );
