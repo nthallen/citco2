@@ -8,6 +8,13 @@
 #include "oui.h"
 
 const char *ln2_port = "/dev/ser1";
+/* CalVal[0] Vessel cold (-196)
+   CalVal[1] Vessel room (-100)
+   CalVal[2] Vessel empty (30)
+   CalVal[3] Main cold (-196)
+   CalVal[4] Main +30
+   CalVal[5] Pressure zero
+*/
 const uint16_t LN2::CalVal[6] =
   // { 0xed, 0x1a0, 0x27d, 0x8f, 0x1dd, 0x23 };
   { 237, 288, 637, 137, 769, 41 };

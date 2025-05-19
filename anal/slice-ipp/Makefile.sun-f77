@@ -1,0 +1,20 @@
+FFLAGS=-u -C
+OPTLVL=
+
+include local.mk
+
+$(PGM) : $(SRCS)
+	sed "s/integer\*1/byte/" opus-comn/get_opus_xx.f > patched_get_opus_xx.f
+	sed "s/integer\*1/byte/" opus-comn/save_to_file.f > patched_save_to_file.f
+	sed "s/integer\*1/byte/" comn/xxrev.f > patched_xxrev.f
+	sed -e "s;opus-comn/get_opus_xx.f;patched_get_opus_xx.f;" \
+            -e "s;opus-comn/save_to_file.f;patched_save_to_file.f;" \
+            -e "s;comn/xxrev.f;patched_xxrev.f;" $(PGM).f > patched_$(PGM).f
+	f77 -I$(IDIR) -O$(OPTLVL) -o $(PGM) $(FFLAGS) patched_$(PGM).f
+
+clean :
+	rm -f $(PGM) patched_*
+
+mrproper : clean
+	cat .cvsignore | grep -v '^Makefile$$' | xargs rm -f
+	rm -f .cvsignore~ *~

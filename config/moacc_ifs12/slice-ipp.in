@@ -1,0 +1,14 @@
+: This input file is used to trigger a special mode of slice-ipp
+: in which it generates the 'resistors.h' header file used in
+: the compilation of the real-time recording system.
+:
+: The 'resistors.h' file holds the list of resistor values that 
+: are inside the two detector pre-amplifiers and set the conversion
+: factors of the transimpedance input stage.
+:
+: The keyword "Resistors" is used to indicate this special mode.
+: The numerical value after the keyword indicates which revision
+: on the resistor values we are requesting.  This revision number
+: starts at 1.
+
+Resistors 4

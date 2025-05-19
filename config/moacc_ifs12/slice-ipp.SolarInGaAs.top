@@ -1,0 +1,170 @@
+
+: Comment lines start with a colon.  Use them extensively  :-)
+
+: slice-ipp.SolarInGaAs.top: The first two parameters are commented out
+: here for inclusion by /home/citco2/bin/anal/exam.ksh
+
+: Parameter #1 gives the directory path to the IFS125HR slice files.
+: A trailing path separator is required.
+
+: /data/citco2/raw/flight/
+
+: Parameter #2 gives the directory path for the spectral files.
+: A trailing path separator is required.
+
+: /data/spectra/
+
+: Parameters #3 and #4 control the saving of de-sliced interferograms
+: and give the directory path for the interferogram files, respectively.
+: Values for parameter #3 are:
+:   0 = don't save de-sliced interferograms
+:   1 = save raw de-sliced interferograms
+:   2 = save de-sliced interferograms after de-glitching.
+: A trailing path separator is required for parameter #4.
+
+0
+./
+
+: Parameter #5 specifies the range of channels to be processed.
+: For example, the current IFS125HR supports the following combinations:
+:   1 2 = InGaAs and InSb
+:   1 1 = InGaAs only for dual-channel data
+:   2 2 = InGaAs only  /  InSb only for dual-channel data
+
+2 2
+
+: Parameter #6 points to a file containing the frequency limits of
+: spectral windows to be saved in the output files.
+
+./flimit.ipp
+
+: Parameter #7 gives a pattern for the CIT file-naming convention.
+: Most characters will be transcribed unchanged.  A sequence of Y's
+: will be replaced by the year using the same number of characters as
+: the number of Y's.  The sequence of M's and D's will be similarly
+: replaced by the month and day, respectively.  The letter S gives the
+: location of the light source indicator, and the letter C specifies
+: the location of the channel indicator.  The run number will take the
+: space occupied by the sequence of R's.
+
+:etYYYYMMDDS0eeaC.RRR   : ETL IFS125 #11 when HCl cell is NOT in place
+etYYYYMMDDShffaC.RRR   : ETL IFS125 #11 when sapphire HCl cell is in place
+
+: Parameter #8 lists the possible values for the light source indicator S.
+: The slice file header is used to select one of these for the external
+: port (solar scans), the internal source (lamp runs), or the all off
+: case (noise runs).
+
+sln
+
+: Parameters #9 and #10 list the possible values for the channel
+: indicator C.  Parameter #9 applies to interferogram files, whereas
+: parameter #10 is for the spectrum files.  In these strings, there is
+: one character per data channel.
+
+AA
+aa
+
+: Parameter #11 selects the format of the output files:
+:   0 = no output
+:   1 = ASCII file
+:   2 = straight binary file without header, little-endian
+:   3 = OPUS format
+
+3
+
+: Parameters #12 and #13 apply only in the case of ASCII output files.
+: Parameter #12 is the field separator used between X and Y values:
+: it must be guarded by double quotes to allow the space character to
+: be used as field separator.
+: Parameter #13 gives the number of min-max pairs in the output. Min-max
+: output is used for plotting: for example, at 1200 DPI, 10000 points
+: should be enough for a 8"-wide plot.  Setting this parameter to zero
+: disables the min-max feature and each data sample results in a single
+: output point.
+
+" "
+10000
+
+: Parameter #14 controls the data quality check based on the suntracker
+: total intensity.  The first number is the maximum standard deviation
+: of the solar intensity scaled to the average value.  The second number
+: is the minimum value of the average suntracker intensity.  Setting a
+: threshold to zero eliminates that particular check.
+
+0.05 20.0
+
+: Parameter #15 checks the igram data validity based on the extreme values
+: MNY and MXY reported in the OPUS header.  For an igram to be valid, and
+: therefore processed, both of the following must be true:
+:   MNY > MN_thresh
+:   MXY < MX_thresh
+: There must be two entries (MN_thresh, MX_thresh) per data channel.
+: For all-positive DC scans, MX_thresh detects saturation,
+:                            MN_thresh detects dark scans.
+: For all-negative DC scans, MN_thresh detects saturation,
+:                            MX_thresh detects dark scans.
+: For AC scans both limits can be used to detect saturation, but dark scans
+: cannot be rejected.  With AC scans, no one knows which way is up anyway.
+
+0.01 0.99 0.01 0.99 : Slave (MN_thresh, MX_thresh) Master (MN_thresh, MX_thresh)
+
+: Parameter #16 controls the data quality check based on the minimum
+: value of the cross-correlation between runs.  There must be one entry
+: per data channel.
+: Setting a threshold to zero eliminates that particular check.
+: THIS CHECK IS NOT YET IMPLEMENTED, BUT THE PARAMETER MUST BE PRESENT.
+
+0.8 0.8
+
+: Parameter #17 sets the maximum number of scans analyzed in a single
+: execution of the program.  The only use of this feature is to limit
+: the execution time for the diagnostic checks performed during the
+: night.
+: Setting the count to zero eliminates this limit.
+
+55
+
+: Parameter #18 sets the maximum log-base-2 of the number of interferogram
+: points used to set the spectral resolution.  A value greater than 22
+: ensures that we use all points produced by the current IFS125HR.
+: There must be one entry per data channel.
+
+23 23
+
+: Parameter #19 limits the amount of processing performed by the program.
+: This is useful in checking the early stages of the processing.
+: The following levels are currently supported:
+:   0 = perform no processing, just parse the input file
+:   1 = read all run parameters from the IFS125 slices
+:   2 = as 1, plus read all information contained in the ".info" files
+:   3 = as 2, plus read the interferogram data from the IFS125 slices
+:   4 = as 3, plus compute the spectrum
+: If file saving is turned on, level 3 saves the de-sliced interferogram,
+: and level 4 also saves the resulting spectrum.
+
+4
+
+: Parameter #20 controls the verbosity of the program.
+: Currently the following levels are defined:
+:   1 = display program name and error messages
+:   2 = adds display of warnings
+:   3 = adds display of information messages
+:   4 = adds display of debugging messages
+:   5 = adds display of more debugging messages
+
+3
+
+: The last parameter points to the starting slice for each run.
+: Since the real-time acquisition system saves the slice files
+: in separate directories for each day, we need to know the
+: date (year, month, day) and the save set number, in addition
+: to the number of the first slice of each run.
+: An IFS125 "run" contains a number of scans (parameter NSS)
+: which will be separated out by slice-ipp.
+: The program can handle several runs in one execution by simply
+: giving as many starting slice numbers as needed.
+: One can comment out old runs by placing a ':' in front of them.
+: Below is an example entry:
+: 2004 3 19 1 101192
+

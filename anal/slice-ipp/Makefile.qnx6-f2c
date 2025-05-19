@@ -1,0 +1,21 @@
+CPPFLAGS=-I/usr/pkg/include
+LDFLAGS=-L/usr/pkg/lib -lf2c -lm -Wl,-rpath -Wl,/usr/pkg/lib
+TGTDIR=/home/citco2/ipp
+include local.mk
+DISTFILES=$(PGM)
+
+$(PGM) : $(PGM).c
+	gcc $(CPPFLAGS) $(LDFLAGS) $(PGM).c -o $(PGM)
+
+$(PGM).c : $(SRCS)
+	f2c -Nc40 $(PGM).f
+
+distribution : $(DISTFILES)
+	distribute $(TGTDIR) $(DISTFILES)
+
+clean :
+	rm -f $(PGM).c $(PGM)
+
+mrproper : clean
+	cat .cvsignore | grep -v '^Makefile$$' | xargs rm -f
+	rm -f .cvsignore~ *~

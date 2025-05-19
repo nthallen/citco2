@@ -1,0 +1,18 @@
+STYLE=all,no-construct-name,no-structured-end
+PORTA=all
+MISC=-f90 -f95 -declare -quiet
+
+include local.mk
+
+check :
+	ftnchek -style=$(STYLE) -portability=$(PORTA) $(MISC) $(PGM).f
+
+htmldoc :
+	ftnchek -nocheck -calltree -mkhtml $(PGM).f
+
+clean :
+	rm -f $(PGM).html CallTree.html
+
+mrproper : clean
+	cat .cvsignore | grep -v '^Makefile$$' | xargs rm -f
+	rm -f .cvsignore~ *~

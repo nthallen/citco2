@@ -1,0 +1,17 @@
+FC=g77
+FFLAGS=-pedantic -Wimplicit -Wunused -Wuninitialized -Wsurprising -W
+XTFLAGS=
+LDFLAGS=
+OPTLVL=
+
+include local.mk
+
+$(PGM) : $(SRCS)
+	$(FC) -I$(IDIR) -O$(OPTLVL) -o $(PGM) $(FFLAGS) $(LDFLAGS) $(PGM).f
+
+clean :
+	rm -f $(PGM)
+
+mrproper : clean
+	cat .cvsignore | grep -v '^Makefile$$' | xargs rm -f
+	rm -f .cvsignore~ *~

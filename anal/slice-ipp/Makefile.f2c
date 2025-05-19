@@ -1,0 +1,21 @@
+FC=f2c
+CC=cc
+FFLAGS=-R -r -Nc40
+XTFLAGS=-C -u -ext -trapuv
+LDFLAGS=-lf2c -lm
+OPTLVL=
+
+include local.mk
+
+$(PGM) : $(PGM).c
+	$(CC) -O$(OPTLVL) $(PGM).c $(LDFLAGS) -o $(PGM)
+
+$(PGM).c : $(SRCS)
+	$(FC) $(FFLAGS) $(PGM).f
+
+clean :
+	rm -f $(PGM).c $(PGM)
+
+mrproper : clean
+	cat .cvsignore | grep -v '^Makefile$$' | xargs rm -f
+	rm -f .cvsignore~ *~

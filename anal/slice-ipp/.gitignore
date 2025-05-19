@@ -1,0 +1,11 @@
+slice-ipp.exe
+slice-ipp.c
+slice-ipp.o
+slice-ipp
+slice-ipp.in
+Makefile
+ChangeLog
+patched_get_opus_xx.f
+patched_save_to_file.f
+patched_xxrev.f
+patched_slice-ipp.f

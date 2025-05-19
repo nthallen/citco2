@@ -1,0 +1,26 @@
+FC=gfortran
+FFLAGS=-Waliasing -Wline-truncation -Wsurprising \
+       -Wunderflow -Wuninitialized -fimplicit-none \
+       -Wconversion -Wunused -Wunreachable-code
+XTFLAGS=-Wextra -Wall -fbounds-check -Wunused-label -W
+UNFLAGS=-Wimplicit-interface -pedantic
+NWFLAGS=-Wampersand -Wcharacter-truncation -Wno-tabs -frange-check
+LDFLAGS=
+OPTLVL=
+
+TGTDIR=/home/citco2/bin/ipp
+include local.mk
+DISTFILES=$(PGM)
+
+$(PGM) : $(SRCS)
+	$(FC) -I$(IDIR) -O$(OPTLVL) -o $(PGM) $(FFLAGS) $(LDFLAGS) $(PGM).f
+
+distribution : $(DISTFILES)
+	distribute $(TGTDIR) $(DISTFILES)
+
+clean :
+	rm -f $(PGM)
+
+mrproper : clean
+	cat .cvsignore | grep -v '^Makefile$$' | xargs rm -f
+	rm -f .cvsignore~ *~

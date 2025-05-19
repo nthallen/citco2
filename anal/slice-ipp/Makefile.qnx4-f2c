@@ -1,0 +1,20 @@
+LDFLAGS=-lf2c -Wl,"f /usr/local/lib/f2c3r.lib(main)"
+TGTDIR=/home/citco2/ipp
+include local.mk
+DISTFILES=$(PGM)
+
+$(PGM) : $(PGM).c
+	cc $(LDFLAGS) $(PGM).c -o $(PGM)
+
+$(PGM).c : $(SRCS)
+	f2c -Nc40 $(PGM).f
+
+distribution : $(DISTFILES)
+	distribute $(TGTDIR) $(DISTFILES)
+
+clean :
+	rm -f $(PGM).c $(PGM).o $(PGM)
+
+mrproper : clean
+	cat .cvsignore | grep -v '^Makefile$$' | xargs rm -f
+	rm -f .cvsignore~ *~

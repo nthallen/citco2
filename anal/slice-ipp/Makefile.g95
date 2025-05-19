@@ -1,0 +1,19 @@
+FC=g95
+FFLAGS=-Wline-truncation -Wuninitialized -pedantic -Wall
+XTFLAGS=-fbounds-check -finteger=-2147483648 -freal=nan -Wobsolescent
+UNFLAGS=-Wimplicit-interface -Wmissing-intent -Wunused-parameter \
+       	-Wunreachable-code -Wextra
+LDFLAGS=
+OPTLVL=
+
+include local.mk
+
+$(PGM) : $(SRCS)
+	$(FC) -I$(IDIR) -O$(OPTLVL) -o $(PGM) $(FFLAGS) $(LDFLAGS) $(PGM).f
+
+clean :
+	rm -f $(PGM)
+
+mrproper : clean
+	cat .cvsignore | grep -v '^Makefile$$' | xargs rm -f
+	rm -f .cvsignore~ *~

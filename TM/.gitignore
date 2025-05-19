@@ -2,6 +2,7 @@ SWData.h
 SWData.tmc
 SWData_col.tmc
 SWData.cmd
+resistors.h
 TMAstat.tmc
 TMAstat.sws
 freemem.tmc
@@ -76,6 +77,7 @@ SWData.h
 SWData.tmc
 SWData_col.tmc
 SWData.cmd
+resistors.h
 TMAstat.tmc
 TMAstat.sws
 freemem.tmc
