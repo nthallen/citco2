@@ -36,10 +36,10 @@
 State Init {
       > Telemetry Start
       > _Algo P1 Init
-   +1 > Radiance Open Threshold Set 70 percent
-      > Radiance Close Threshold Set 60 percent
-      > RH Open Threshold Set 88 percent
-      > RH Close Threshold Set 90 percent
+   +1 > Radiance Open Threshold Set 85 percent
+      > Radiance Close Threshold Set 70 percent
+      > RH Open Threshold Set 98 percent
+      > RH Close Threshold Set 100 percent
    +1 Validate Check_Unexpected;
 }
 
