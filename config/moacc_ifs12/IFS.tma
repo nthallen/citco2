@@ -632,6 +632,9 @@ State Solar_Day_Descending {
   { if (Sol_ele <= 0) {
       /* Sunset */
       Validate Solar_Bedtime;
+    } else if (dEle > 0) {
+      /* Midsummer midnight: sun reverses direction w/o setting */
+      Validate Solar_Bedtime;
     }
   }
 }
