@@ -38,8 +38,8 @@ State Init {
       > _Algo P1 Init
    +1 > Radiance Open Threshold Set 85 percent
       > Radiance Close Threshold Set 70 percent
-      > RH Open Threshold Set 98 percent
-      > RH Close Threshold Set 100 percent
+      > RH Open Threshold Set 103 percent
+      > RH Close Threshold Set 105 percent
    +1 Validate Check_Unexpected;
 }
 
