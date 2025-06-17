@@ -6,12 +6,17 @@
   const char *STEnc_cmd_text[] = {
     "   none", "  Close", "   Open", "***Both"
   };
+  const char *STEnc_off_on_text(uint8_t x)
+  {
+    return x ? " on" : "off";
+  }
 %}
 
 TM typedef uint8_t STEnc_pos_t { text "%7d" STEnc_pos_text[]; }
 TM typedef uint8_t STEnc_cmd_t { text "%7d" STEnc_cmd_text[]; }
 TM typedef uint8_t STEnc_bits_t { text "%02X"; }
 TM typedef uint8_t STEnc_cmds_t { text "%02X"; }
+TM typedef uint8_t STEnc_off_on_t { text "%3u" STEnc_off_on_text(); }
 
 STEnc_pos_t STEnc_pos; Invalidate STEnc_pos;
 { STEnc_pos = STEnc_status & 3; Validate STEnc_pos; }
@@ -24,3 +29,15 @@ STEnc_bits_t STEnc_bits; Invalidate STEnc_bits;
 
 STEnc_cmds_t STEnc_cmds; Invalidate STEnc_cmds;
 { STEnc_cmds = (STEnc_status>>8) & 0xFF; Validate STEnc_cmds; }
+
+STEnc_off_on_t STEnc_DS_2C; Invalidate STEnc_DS_2C;
+{ STEnc_DS_2C = (STEnc_status>>6) & 1; Validate STEnc_DS_2C; }
+
+STEnc_off_on_t STEnc_DS_2C_Man; Invalidate STEnc_DS_2C_Man;
+{ STEnc_DS_2C_Man = (STEnc_status>>12) & 1; Validate STEnc_DS_2C_Man; }
+
+STEnc_off_on_t STEnc_DS_2C_Stby; Invalidate STEnc_DS_2C_Stby;
+{ STEnc_DS_2C_Stby = (STEnc_status>>13) & 1; Validate STEnc_DS_2C_Stby; }
+
+STEnc_off_on_t STEnc_Power; Invalidate STEnc_Power;
+{ STEnc_Power = (STEnc_status>>4) & 1; Validate STEnc_Power; }

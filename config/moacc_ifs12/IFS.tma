@@ -176,10 +176,13 @@ State Wake_Up {
 #         convert(LN2Depth));
 #   }
  +1 Validate IFS_Status_Update;
+
+# These have been moved into Up_After_Bedtime at Cambridge Bay
 #+1 Validate InSb_Fill;
 #+1 Validate Pump_Down_Init;
 #   Hold until Valid (Pump_Idle);
-    > Email Report Message Container has completed Wake_Up sequence.
+
+#   > Email Report Message Container has completed Wake_Up sequence.
     depending on ( Good_Weather ) { Validate Ready_To_Play; }
     depending on ( Solar_Bedtime ) { Validate Bedtime; }
 }
@@ -369,6 +372,7 @@ State Bedtime {
 State Up_After_Bedtime {
   > _Algo P1 Up_After_Bedtime
   > Startup Wakeup Clear
+  Validate InSb_Fill;
   Validate Pump_Down_Init;
   Hold until Valid (Pump_Idle);
 
@@ -379,6 +383,7 @@ State Up_After_Bedtime {
       Validate Midnight_Snack;
     */
   }
+  > Email Report Message Container has completed Up_After_Bedtime sequence.
   +1  Validate Init_Choice;
 }
 
@@ -522,8 +527,8 @@ Partition
 State Bad_Weather {
   { if (WTX_drv_stale == 255 || WTX_dev_stale == 255)
       Validate WTX_Failed; } 
-  { if ( (convert(WTX_PrecipInt) == 0) &&
-         convert(WTX_RH) < RH_Open_Pct /* && ws_low */ &&
+  { if ( (convert(WTX_PrecipInt) == 0) && (!STEnc_DS_2C) &&
+         convert(WTX_RH) < RH_Open_Pct && ws_low &&
          ok_to_open )
       Validate Good_Weather;
   }
@@ -533,8 +538,13 @@ State Bad_Weather {
 State Good_Weather {
   { if (WTX_drv_stale == 255 || WTX_dev_stale == 255)
       Validate WTX_Failed; } 
-  { if (convert(WTX_PrecipInt) > 0 || convert(WTX_RH) > RH_Close_Pct) {
-      Weather_Reason = "Rain";
+  { if (convert(WTX_PrecipInt) > 0 || STEnc_DS_2C) {
+      Weather_Reason = "Precipitation";
+      Validate Bad_Weather;
+    }
+  }
+  { if (convert(WTX_RH) > RH_Close_Pct) {
+      Weather_Reason = "Relative Humidity";
       Validate Bad_Weather;
     }
   }
@@ -543,11 +553,11 @@ State Good_Weather {
       Validate Bad_Weather;
     }
   }
-# { if ( ws_high ) {
-#     Weather_Reason = "High Winds";
-#     Validate Bad_Weather;
-#   }
-# }
+  { if ( ws_high ) {
+      Weather_Reason = "High Winds";
+      Validate Bad_Weather;
+    }
+  }
   > _Algo P3 Good_Weather
 }
 
@@ -971,7 +981,7 @@ Partition
 #----------------------------------------------
 %{
   #include "LN2.h"
-  #define INSB_T_LIMIT (-120)
+  #define INSB_T_LIMIT (-25)
   #define INSB_T_FULL (-190)
 %}
 

@@ -32,4 +32,10 @@
    Rad_Close_Pct.
 */
 
+/* Change these as necessary
+   15/10 are standard.
+*/
+#define ws_fast 15
+#define ws_slow 10
+
 #endif
