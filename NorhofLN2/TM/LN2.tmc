@@ -8,13 +8,13 @@ TM typedef uint16_t LN2TankT_t {
   Convert LN2_CELCIUS;
   text "%4d";
 }
-/* Assumes:
-   CalVal[0] = 237
+/* Assumes: (Cambridge Bay, 2025)
+   CalVal[0] = 238
    CalVal[1] = 288
    CalVal[2] = 637
  */
 Calibration (LN2TankT_t, LN2_CELCIUS) {
-  237, -196,
+  238, -196,
   288, -100,
   637,   30
 }
@@ -49,12 +49,12 @@ TM typedef uint16_t LN2P_t {
   Convert LN2_MBAR;
   text "%4.1lf";
 }
-/* Assumes
-   CalVal[5] = 41
+/* Assumes (Cambridge Bay 2025)
+   CalVal[5] = 43
  */
 Calibration (LN2P_t, LN2_MBAR) {
-  41,       0,
-  42, 0.54288
+  43,       0,
+  44, 0.54288
 }
 
 TM typedef double LN2_CM;
@@ -62,13 +62,13 @@ TM typedef uint16_t LN2Depth_t {
   Convert LN2_CM;
   text "%4.1lf";
 }
-/* Assumes
-   CalVal[5] = 41
+/* Assumes (Cambridge Bay 2025)
+   CalVal[5] = 43
    According to .doc, 35 cm of LN2 is 52.09 ADC steps
  */
 Calibration (LN2Depth_t, LN2_CM) {
-  41,     1,
-  93.09, 36
+  43,     1,
+  95.09, 36
 }
 TM typedef uint16_t LN2_u16 { text "%5d"; }
 TM typedef uint8_t LN2_DStat { text "%08b"; }
