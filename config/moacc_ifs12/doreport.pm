@@ -7,7 +7,7 @@ our %default_msg = (
           'Erin McGee <e.mcgee@mail.utoronto.ca>',
           'jblavier <jblavier@caesar.jpl.nasa.gov>'
         ],
-  From => 'moacc_ifs12 <tccon.cambridgebay@huarp.harvard.edu>',
+  From => 'moacc_ifs12 <tccon.cambridgebay@fastmail.ca>',
   Subject => 'moacc_ifs12',
   Message => 'stuff',
   Message_ID_Template => 'moacc-ifs13-%d-%d-%d@huarp.harvard.edu'
