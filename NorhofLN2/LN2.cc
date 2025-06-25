@@ -18,7 +18,7 @@ const char *ln2_port = "/dev/ser1";
 const uint16_t LN2::CalVal[6] =
   // { 0xed, 0x1a0, 0x27d, 0x8f, 0x1dd, 0x23 };
   // { 237, 288, 637, 137, 769, 41 };
-  { 238, 288, 637, 137, 769, 43 };
+  { 238, 288, 637, 145, 1, 43 };
 
 LN2Request::LN2Request(const char *cmd) {
   cmdtxt = cmd;

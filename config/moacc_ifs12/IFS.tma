@@ -26,6 +26,8 @@
     return DoW;
   }
 
+  int pump_down_abort;
+
   const char *Weather_Reason = "Startup";
 %}
 
@@ -95,6 +97,7 @@ State Unexpected_Restart {
 State Holding {
       > _Algo P1 Holding
       Validate Dome_Close;
+      Validate IFS_Status_Idle;
       > Startup Define Validate Holding;
       Hold until valid (Solar_Bedtime);
    +1 > Savelog Shutdown from Holding
@@ -354,6 +357,7 @@ State Nap {
   # Wait specifically for IDLE before starting IFS_Status_Update
   Hold Until ( IFSCStat == IFS_SCAN_IDLE) or 4:00;
   Validate IFS_Status_Update;
+  { pump_down_abort = 1; }
   depending on ( Solar_Bedtime ) { Validate Lights_Out; }
 }
 
@@ -373,6 +377,7 @@ State Up_After_Bedtime {
   > _Algo P1 Up_After_Bedtime
   > Startup Wakeup Clear
   Validate InSb_Fill;
+  Validate IFS_Status_Update;
   Validate Pump_Down_Init;
   Hold until Valid (Pump_Idle);
 
@@ -712,10 +717,6 @@ Partition
 #----------------------------------------------
 # Partition 6: Pump Control
 #----------------------------------------------
-
-%{
-  int pump_down_abort;
-%}
 
 State Pump_Idle {}
 
