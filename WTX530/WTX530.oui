@@ -5,7 +5,7 @@
 
 <opts> "p:"
 <sort>
-        -p <port> Specify RS485/Modbus RTU port (default: /dev/ttyS1)
+        -p <port> Specify RS485/Modbus RTU port (default: /dev/ttyS0)
 
 <switch>
   case 'p':
