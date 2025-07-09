@@ -119,6 +119,7 @@ LN2::LN2(const char *port, LN2_t *data)
   Reqs.push_back(LN2Request("rm 088 2\r", &TMdata->LN2P, LN2_DS_LN2P_CRNT));
   Reqs.push_back(LN2Request("rm 0ce 2\r", &TMdata->LN2Depth, LN2_DS_LN2Depth_CRNT));
   Reqs.push_back(LN2Request("rm 019\r",   &TMdata->LN2Stat, LN2_DS_LN2Stat_CRNT));
+  Reqs.push_back(LN2Request("rm 019\r",   &TMdata->LN2AlarmStat, LN2_DS_LN2AlarmStat_CRNT));
   Req = Reqs.end();
   flush_input();
   flags = Fl_Read | Fl_Timeout | gflag(0);

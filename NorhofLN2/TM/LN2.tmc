@@ -80,6 +80,7 @@ TM 1 Hz LN2P_t LN2P;
 TM 1 Hz LN2Depth_t LN2Depth;
 TM 1 Hz LN2_u16 LN2Stat;
 TM 1 Hz LN2_DStat LN2DrvStat;
+TM 1 Hz LN2_DStat LN2AlarmStat;
 TM 1 Hz LN2_u8 LN2Stale;
 
 TM "Receive" LN2 1;

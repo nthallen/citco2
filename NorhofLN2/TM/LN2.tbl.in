@@ -8,6 +8,7 @@ LN2_Analog {
 LN2_Digital {
   PStat:  (LN2PStat,7);
   DStat: (LN2DrvStat,8);
+  AStat: (LN2AlarmStat,8);
   Valve: (LN2Valve,3);
   TMB:   (LN2TMB,3);
   Stale: (LN2Stale,3);

@@ -978,7 +978,7 @@ Partition
 #----------------------------------------------
 %{
   #include "LN2.h"
-  #define INSB_T_LIMIT (-25)
+  #define INSB_T_LIMIT (-15)
   #define INSB_T_FULL (-190)
 %}
 

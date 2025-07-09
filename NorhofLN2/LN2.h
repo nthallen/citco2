@@ -9,6 +9,7 @@ typedef struct {
   uint16_t LN2Depth;
   uint8_t  LN2Stat;
   uint8_t  LN2DrvStat;
+  uint8_t  LN2AlarmStat;
 } LN2_t;
 
 /* LN2Stat bits:
@@ -20,16 +21,28 @@ typedef struct {
   5: Sleeep   Pump status : sleep
   6: Warn_on  Pump status : warning
   7: Alarm_on pump status : alarm
+  
+  LN2AlarmStat bits:
+  0: HOT_AL: Vessel too warm (ROOM TEMP) ,dewar empty
+  1: VES_AL: Vessel sensor alarm flag (ALARM_CHECK)
+  2: TMB_AL: TMB sensor broken flag (ALARM_CHECK)
+  3: EX1_AL: extra sensor broken flag (ALARM_CHECK)
+  4: EX2_AL: main sensor broken flag (ALARM_CHECK)
+  5: FROZ_AL: rise pipe frozen alarm
+  6:   container warmer than -140 (#605 pump only)
+  7:   605 filling too long       (#605 pump only)
+
 */
 
 #define LN2_DS_INIT 1 // Set after calibration values have been queried
 #define LN2_DS_POWER 2 // Not implemented
-#define LN2_DS_CRNT 0x7C
+#define LN2_DS_CRNT 0xFC
 #define LN2_DS_TankT_CRNT 4
 #define LN2_DS_InSbT_CRNT 8
 #define LN2_DS_LN2P_CRNT 0x10
 #define LN2_DS_LN2Depth_CRNT 0x20
 #define LN2_DS_LN2Stat_CRNT 0x40
+#define LN2_DS_LN2AlarmStat_CRNT 0x80
 
 extern const char *ln2_port;
 
