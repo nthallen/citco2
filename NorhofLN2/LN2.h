@@ -10,6 +10,7 @@ typedef struct {
   uint8_t  LN2Stat;
   uint8_t  LN2DrvStat;
   uint8_t  LN2AlarmStat;
+  uint8_t  LN2AlarmStat2;
 } LN2_t;
 
 /* LN2Stat bits:
@@ -23,26 +24,30 @@ typedef struct {
   7: Alarm_on pump status : alarm
   
   LN2AlarmStat bits:
-  0: HOT_AL: Vessel too warm (ROOM TEMP) ,dewar empty
   1: VES_AL: Vessel sensor alarm flag (ALARM_CHECK)
   2: TMB_AL: TMB sensor broken flag (ALARM_CHECK)
-  3: EX1_AL: extra sensor broken flag (ALARM_CHECK)
-  4: EX2_AL: main sensor broken flag (ALARM_CHECK)
-  5: FROZ_AL: rise pipe frozen alarm
+  3: EXS_AL: extra sensor broken flag (ALARM_CHECK)
+  4: MNS_AL: main sensor broken flag (ALARM_CHECK)
+  5: BLK_AL: blockage alarm
   6:   container warmer than -140 (#605 pump only)
   7:   605 filling too long       (#605 pump only)
+  
+  LN2AlarmStat2 Values:
+  0x03: Frozen pressure tube
+  0x04: No pressure alarm
+  0x01: Pump not cold
 
 */
 
-#define LN2_DS_INIT 1 // Set after calibration values have been queried
-#define LN2_DS_POWER 2 // Not implemented
-#define LN2_DS_CRNT 0xFC
-#define LN2_DS_TankT_CRNT 4
-#define LN2_DS_InSbT_CRNT 8
-#define LN2_DS_LN2P_CRNT 0x10
-#define LN2_DS_LN2Depth_CRNT 0x20
-#define LN2_DS_LN2Stat_CRNT 0x40
-#define LN2_DS_LN2AlarmStat_CRNT 0x80
+#define LN2_DS_INIT 0x01 // Set after calibration values have been queried
+#define LN2_DS_CRNT 0xFE
+#define LN2_DS_TankT_CRNT 0x02
+#define LN2_DS_InSbT_CRNT 0x04
+#define LN2_DS_LN2P_CRNT 0x08
+#define LN2_DS_LN2Depth_CRNT 0x10
+#define LN2_DS_LN2Stat_CRNT 0x20
+#define LN2_DS_LN2AlarmStat_CRNT 0x40
+#define LN2_DS_LN2AlarmStat2_CRNT 0x80
 
 extern const char *ln2_port;
 

@@ -5,8 +5,15 @@
   1 LN2Pump:LN2Stat:1    @Panel@LN2 Status
   1 LN2Valve:LN2Stat:2   @Panel@LN2 Status
   1 LN2TMB:LN2Stat:3     @Panel@LN2 Status
-  1 LN2Alarm:LN2Stat:7   @Panel@LN2 Status
   1 LN2Init:LN2DrvStat:0 @Panel@LN2 Status %3.0lf
   1 LN2PStat             @Panel@LN2 PStat %2.0lf
-  1 LN2AlarmStat         @Panel@LN2 AStat %3.0lf
+  1 LN2Alarm:LN2Stat:7         @Panel@LN2 AStat
+  1 LN2_VES_AL:LN2AlarmStat:1  @Panel@LN2 AStat %3.0lf
+  1 LN2_TMB_AL:LN2AlarmStat:2  @Panel@LN2 AStat
+  1 LN2_EXS_AL:LN2AlarmStat:3  @Panel@LN2 AStat
+  1 LN2_MNS_AL:LN2AlarmStat:4  @Panel@LN2 AStat
+  1 LN2_BLK_AL:LN2AlarmStat:5  @Panel@LN2 AStat
+  1 LN2_HOT_AL:LN2AlarmStat:8  @Panel@LN2 AStat
+  1 LN2_FRZ_AL:LN2AlarmStat:9  @Panel@LN2 AStat
+  1 LN2_NOP_AL:LN2AlarmStat:10 @Panel@LN2 AStat
   1 LN2Stale             @Panel@LN2 Stale

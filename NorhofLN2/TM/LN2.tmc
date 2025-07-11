@@ -71,6 +71,40 @@ Calibration (LN2Depth_t, LN2_CM) {
   95.09, 36
 }
 TM typedef uint16_t LN2_u16 { text "%5d"; }
+%{
+  
+  bool AStat_check(uint16_t &val, uint16_t bit, char *dest, const char *s)
+  {
+    if (val & bit) {
+      val &= ~bit;
+      strcpy(dest, s);
+      return true;
+    }
+    return false;
+  }
+  
+  const char *alarm_status_text(uint16_t AStat)
+  {
+    static char dest[16];
+    strcpy(dest, "               ");
+    if (AStat_check(AStat, 0x02, dest, " Vessel Sensor ") ||
+        AStat_check(AStat, 0x04, dest, " TMB Sensor    ") ||
+        AStat_check(AStat, 0x08, dest, " Extra Sensor  ") ||
+        AStat_check(AStat, 0x10, dest, " Main Sensor   ") ||
+        AStat_check(AStat, 0x20, dest, " Blockage      ") ||
+        AStat_check(AStat, 0x0200, dest, " Froz pres tube") ||
+        AStat_check(AStat, 0x0100, dest, " Pump not cold ") ||
+        AStat_check(AStat, 0x0400, dest, " No pressure   "))
+    {
+      if (AStat)
+        dest[0] = '+';
+    } else
+      strcpy(dest, "               ");
+    return dest;
+  }
+
+%}
+TM typedef uint16_t LN2_AStat { text "%15d" alarm_status_text(); }
 TM typedef uint8_t LN2_DStat { text "%08b"; }
 TM typedef uint8_t LN2_u8 { text "%3u"; }
 
@@ -79,13 +113,13 @@ TM 1 Hz InSbT_t InSbT;
 TM 1 Hz LN2P_t LN2P;
 TM 1 Hz LN2Depth_t LN2Depth;
 TM 1 Hz LN2_u16 LN2Stat;
+TM 1 Hz LN2_AStat LN2AlarmStat;
 TM 1 Hz LN2_DStat LN2DrvStat;
-TM 1 Hz LN2_DStat LN2AlarmStat;
 TM 1 Hz LN2_u8 LN2Stale;
 
 TM "Receive" LN2 1;
 Group LN2 (LN2TankT, InSbT, LN2P, LN2Depth, LN2Stat,
-    LN2DrvStat, LN2Stale) {
+    LN2DrvStat, LN2AlarmStat, LN2Stale) {
   LN2TankT = LN2.LN2TankT;
   InSbT = LN2.InSbT;
   LN2P = LN2.LN2P;
@@ -93,6 +127,7 @@ Group LN2 (LN2TankT, InSbT, LN2P, LN2Depth, LN2Stat,
   LN2Stat = LN2.LN2Stat;
   LN2DrvStat = LN2.LN2DrvStat;
   LN2.LN2DrvStat = LN2.LN2DrvStat & ~LN2_DS_CRNT;
+  LN2AlarmStat = LN2.LN2AlarmStat | (LN2.LN2AlarmStat2<<8);
   LN2Stale = LN2_obj->Stale(255);
   LN2_obj->synch();
 }

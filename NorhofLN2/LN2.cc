@@ -114,6 +114,7 @@ LN2::LN2(const char *port, LN2_t *data)
   InitReqs.push_back(LN2Request("re 095 2\r", &CalValRpt[4])); // Main +30
   InitReqs.push_back(LN2Request("rm 0c8 2\r", &CalValRpt[5])); // Pressure zero
   InitReq = InitReqs.begin();
+  Reqs.push_back(LN2Request("rm 219\r",   &TMdata->LN2AlarmStat2, LN2_DS_LN2AlarmStat2_CRNT));
   Reqs.push_back(LN2Request("rm 080 2\r", &TMdata->LN2TankT, LN2_DS_TankT_CRNT));
   Reqs.push_back(LN2Request("rm 086 2\r", &TMdata->InSbT, LN2_DS_InSbT_CRNT));
   Reqs.push_back(LN2Request("rm 088 2\r", &TMdata->LN2P, LN2_DS_LN2P_CRNT));
