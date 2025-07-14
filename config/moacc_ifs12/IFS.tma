@@ -517,8 +517,8 @@ Partition
 State Watchdog_Okay {
   depending on ( Dome_Failed ) { Validate Watchdog_Error; }
   depending on ( WTX_Failed ) { Validate Watchdog_Error; }
-  #depending on ( IdleScan_Failed ) { Validate Watchdog_Error; }
-  #depending on ( Pump_Failed ) { Validate Watchdog_Error; }
+  depending on ( Sun_Tracker_Failed ) { Validate Watchdog_Error; }
+  depending on ( IdleScan_Failed ) { Validate Watchdog_Error; }
 }
 
 State Watchdog_Error {
@@ -918,6 +918,19 @@ State IdleScan_Failed {
 #----------------------------------------------------------------
 # Partition 8: Sun Tracker Status
 #----------------------------------------------------------------
+
+State Sun_Tracker_Okay {
+   Hold Until (ST_stale == 255);
+   Hold Until (ST_stale < 255) or 20:00
+   else Validate Sun_Tracker_Failed;
+   Validate Sun_Tracker_Okay;
+}
+
+State Sun_Tracker_Failed {
+   { msg (0, "Sun Tracker or driver communication problems indicated by suntracker stale counter."); }   
+   > Email Error Message Sun Tracker or driver communication problems indicated by suntracker stale counter.
+   +1:00 { if (ST_stale < 2) Validate Sun_Tracker_Okay; }
+}
 
 Partition
 # -----------------------------------------------------------------------------
