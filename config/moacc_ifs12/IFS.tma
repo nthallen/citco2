@@ -205,6 +205,10 @@ State Ready_To_Play {
 }
 
 State Ready_To_Play2 {
+  depending on ( Watchdog_Error ) { Validate Failure; }
+  depending on ( Solar_Bedtime ) { Validate Bedtime; }
+  depending on ( Bad_Weather) { Validate Nap; }
+
   > _Algo P1 Ready_To_Play2
   Validate Dome_Open;
   > Sun Tracker Track To Programmed Sun Position
@@ -236,10 +240,11 @@ State Init_Set_InSb_Gains {
 }
 
 State Play NoLog {
-    > _Algo P1 Play
     depending on ( Watchdog_Error ) { Validate Failure; }
     depending on (Solar_Bedtime) { Validate Bedtime; }
     depending on ( Bad_Weather) { Validate Nap; }
+
+    > _Algo P1 Play
     { if ( IFSCStat == IFS_SCAN_ERROR ) {
         Validate Scanner_Failure;
       } else if (IFSCStat == IFS_SCAN_INSBNR) {
