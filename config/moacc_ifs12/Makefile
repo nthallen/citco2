@@ -13,8 +13,10 @@ config-phocus : config-TM
 config-gse : config-TM
 	ln -sf Site.agm.gse Site.agm
 config-report :
+	@[ -d $(EMAILDIR) ] || mkdir -p $(EMAILDIR)
 	distribute $(FORCE) $(EMAILDIR) doreport.pm
 config-slice-ipp :
+	@[ -d $(IPPDIR) ] || mkdir -p $(IPPDIR)
 	rm -f $(IPPDIR)/slice-ipp*.top $(IPPDIR)/flimit*.ipp
 	distribute $(FORCE) $(IPPDIR) slice-ipp*.top flimit*.ipp
 

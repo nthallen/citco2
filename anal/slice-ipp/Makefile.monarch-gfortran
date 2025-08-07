@@ -9,6 +9,7 @@ LDFLAGS=
 OPTLVL=
 
 TGTDIR=/home/citco2/bin/ipp
+LINKDIR=/usr/local/bin
 include local.mk
 DISTFILES=$(PGM)
 
@@ -16,7 +17,11 @@ $(PGM) : $(SRCS)
 	$(FC) -I$(IDIR) -O$(OPTLVL) -o $(PGM) $(FFLAGS) $(LDFLAGS) $(PGM).f
 
 distribution : $(DISTFILES)
+	@[ -d $(TGTDIR) ] || mkdir -p $(TGTDIR)
 	distribute $(TGTDIR) $(DISTFILES)
+
+links : $(DISTFILES)
+	for distfile in $(DISTFILES); do ln -fs $(TGTDIR)/$$distfile $(LINKDIR)/$$distfile; done
 
 clean :
 	rm -f $(PGM)

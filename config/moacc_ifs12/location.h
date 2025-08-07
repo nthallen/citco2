@@ -34,8 +34,17 @@
 
 /* Change these as necessary
    15/10 are standard.
+   You can uncomment ALLOW_HIGHER_WINDS to switch to 20/15
 */
-#define ws_fast 15
-#define ws_slow 10
 
+// #define ALLOW_HIGHER_WINDS
+
+#ifndef ALLOW_HIGHER_WINDS
+  #define ws_fast 15
+  #define ws_slow 10
+#else
+  /* Updated to 20/15 for OCO2 overpass 2025-08-04 19:21:00 */
+  #define ws_fast 20
+  #define ws_slow 15
+#endif
 #endif
