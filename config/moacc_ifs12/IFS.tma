@@ -235,7 +235,7 @@ State Init_Set_InSb_Gains {
   > _Algo P1 Init_Set_InSb_Gains
   > IFS Direct DTC=0x4040
   > IFS Direct PGN=0
-  Validate InSb_Chilled;
+  Validate InSb_Chilled_;
   Validate Play;
 }
 
@@ -330,7 +330,7 @@ State Scanner_CAN_Err {
                 IFSCStat == IFS_SCAN_WAIT ) &&
                ST_modus == ST_MODE_TMR );
 
-#   depending on (InSb_Chilled) { Validate Play; }
+    depending on (InSb_Chilled) { Validate Play; }
  +1 Validate Play_InGaAs;
 }
 
@@ -341,7 +341,7 @@ State Scanner_InSbNR {
 
   > _Algo P1 Scanner_InSbNR
   > Email Warning Message Unexpected InSb Not Ready Error. Reverting to InGaAs
-  Validate InSb_Not_Chilled;
+  Validate InSb_Not_Chilled_;
 
   Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
                IFSCStat == IFS_SCAN_WAIT ) &&
@@ -1035,23 +1035,23 @@ State InSb_Filled {
   { if (LN2Stat & 0x80) Validate InSb_Alarm; }
 }
 
-# InSb_Chilled means InSb is cold and detector gains have been set
-State InSb_Chilled NoLog {
+# InSb_Chilled_ means InSb is cold and detector gains have been set
+State InSb_Chilled_ NoLog {
   { if ((LN2Stat & 6) == 6) /* LN2Pump && LN2Valve */
       Validate InSb_Filling; }
   { if (LN2Stat & 0x80) Validate InSb_Alarm; }
   Hold until ((LN2DrvStat & LN2_DS_InSbT_CRNT) && (convert(InSbT) < INSB_T_LIMIT)) or 10
-  else Validate InSb_Not_Chilled;
-  Validate InSb_Chilled;
+  else Validate InSb_Not_Chilled_;
+  Validate InSb_Chilled_;
 }
 
-# InSb_Not_Chilled means we were once cold, but no more
-State InSb_Not_Chilled {
+# InSb_Not_Chilled_ means we were once cold, but no more
+State InSb_Not_Chilled_ {
   { if ((LN2Stat & 6) == 6) /* LN2Pump && LN2Valve */
       Validate InSb_Filling; }
   { if (LN2Stat & 0x80) Validate InSb_Alarm; }
   { if ((LN2DrvStat & LN2_DS_InSbT_CRNT) && (convert(InSbT) < INSB_T_LIMIT))
-      Validate InSb_Chilled;
+      Validate InSb_Chilled_;
   }
 }
 
@@ -1120,13 +1120,27 @@ State LN2_Watch NoLog {
 }
 
 State LN2_Watch_Failure {
-# > Email Error Message LN2 pump or driver not responding
-  > Log LN2 pump or driver not responding
+  > Email Error Message LN2 pump or driver not responding
+# > Log LN2 pump or driver not responding
   { if (LN2DrvStat & LN2_DS_CRNT) {
       LN2_Drv_Stale = 0;
       Validate LN2_Watch;
     }
   }
+}
+
+Partition
+#----------------------------------------------
+# Partition 15: InSb_Chilled
+#----------------------------------------------
+
+State InSb_Not_Chilled {
+  depending on (InSb_Chilled_) { Validate InSb_Chilled; }
+}
+
+State InSb_Chilled {
+  depending on (InSb_Not_Chilled_) { Validate InSb_Not_Chilled; }
+  depending on (InSb_Alarm_Watch) { Validate InSb_Not_Chilled; }
 }
 
 #Partition
