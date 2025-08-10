@@ -21,13 +21,10 @@
     }
   }
 
-  #ifdef SKIP_FOR_TESTING  
   #include "resistors.h"
   #include "preamps.h"
-  #endif
   
   void Set_Preamp_Gains( int InGaAs, int Si ) {
-#ifdef SKIP_FOR_TESTING
     char cmd[10];
     FILE *fp;
     if ( InGaAs < 0 || InGaAs > 3 ) {
@@ -53,7 +50,6 @@
       fprintf( fp, "R_Config_Index: %d\n", R_Config_Index );
       fclose( fp );
     }
-#endif
   }
   
 
@@ -71,5 +67,5 @@
   : IFS Read Status * { IFSq_send( "EQRead Status" ); }
   : IFS Reset SW * { if_IFSU.Turf("EUReset\n"); }
   : IFS Set Preamp Gains %d (Enter Gain Index for InGaAs)
-      %d (Enter Gain Index for Si) * { Set_Preamp_Gains( $5, $6 ); }
+      %d (Enter Gain Index for Si or InGaAs again) * { Set_Preamp_Gains( $5, $6 ); }
 ;

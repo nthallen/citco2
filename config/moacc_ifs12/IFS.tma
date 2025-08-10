@@ -1108,7 +1108,7 @@ Partition
   int LN2_Drv_Stale = 0;
 %}
 
-State LN2_Watch NoLog {
+State LN2_Watch {
   { if (LN2Stale >= 255)
       Validate LN2_Watch_Failure;
   }
@@ -1132,6 +1132,9 @@ State LN2_Watch_Failure {
 Partition
 #----------------------------------------------
 # Partition 15: InSb_Chilled
+# Provide a simpler organization where we don't leave InSb_Chilled
+# for routine filling and hence don't have to stop doing InSb scans
+# during 24-hour operations.
 #----------------------------------------------
 
 State InSb_Not_Chilled {
@@ -1139,6 +1142,7 @@ State InSb_Not_Chilled {
 }
 
 State InSb_Chilled {
+  depending on (InSb_Startup) { validate InSb_Not_Chilled; }
   depending on (InSb_Not_Chilled_) { Validate InSb_Not_Chilled; }
   depending on (InSb_Alarm_Watch) { Validate InSb_Not_Chilled; }
 }
