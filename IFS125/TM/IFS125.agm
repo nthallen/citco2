@@ -32,5 +32,11 @@ IFSscan.cmd : @MODDIR@/../IFSctrl Config/IFSopts.pm
 	if TMBINDIR=Config PERL5LIB=@MODDIR@/.. @MODDIR@/../IFSctrl cmdgen >IFSscan.cmd; then true; else rm IFSscan.cmd; false; fi
 IFSCStat.tmc : @MODDIR@/../IFSctrl Config/IFSopts.pm
 	if TMBINDIR=Config PERL5LIB=@MODDIR@/.. @MODDIR@/../IFSctrl display 11 >IFSCStat.tmc; then true; else rm IFSCStat.tmc; false; fi
+IFSsrvr.o : resistors.h
+resistors.h : Config/slice-ipp.in
+	@rm -f resistors.h
+	cd Config && slice-ipp
+	@rm -f Config/slice-ipp.stat
+	mv Config/resistors.h resistors.h
 
 }

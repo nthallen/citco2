@@ -32,10 +32,3 @@ IFSalgo : $extbase Config/IFS.tma $swsbase
 doit : IFS.doit
 
 CPPFLAGS = -I Config -DBLOCK_KB_CMDS
-%%
-IFSsrvr.o : resistors.h
-resistors.h : Config/slice-ipp.in
-	@rm -f resistors.h
-	cd Config && slice-ipp
-	@rm -f Config/slice-ipp.stat
-	mv Config/resistors.h resistors.h
