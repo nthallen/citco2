@@ -139,6 +139,7 @@ State Init_Close {
 State ReInit {
   > _Algo P1 ReInit
   > Startup Clear
+  Validate IdleScan_Wait;
   Validate Watchdog_Okay;
   Validate Init_Choice;
 }
@@ -146,6 +147,7 @@ State ReInit {
 State ReInit_and_Pump_Down {
   > _Algo P1 ReInit_and_Pump_Down
   > Startup Clear
+  Validate IdleScan_Wait;
   Validate Watchdog_Okay;
   Validate Pump_Down;
 }
@@ -918,6 +920,8 @@ State IdleScan_Failed {
             Validate IdleScan_Wait;
         }
 }
+
+State IdleScan_Disable {}
 
 #Partition
 #----------------------------------------------------------------
