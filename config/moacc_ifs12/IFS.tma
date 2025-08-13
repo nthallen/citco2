@@ -842,7 +842,7 @@ State Pump_IFS_Prep2 {
     Hold Until (convert(Pump_P) < 0.1) or 8:00
     else Validate Pump_Init_Failed;
  +1 > IFS direct VAC=1
-    Hold Until (convert(IFS_P) < 1.0) or 8:00;
+ +6 Hold Until (convert(IFS_P) < 0.5) or 8:00;
     Validate Pump_IFS_Constantly;
 }
 
