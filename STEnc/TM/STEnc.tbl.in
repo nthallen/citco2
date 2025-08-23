@@ -9,5 +9,6 @@ STEnc_HK {
   HBox { +-; "Enclosure HK"; -+ };
   Bits:      (STEnc_bits,2);
   Cmds:      (STEnc_cmds,2);
+  PDISO8:    (STEnc_fail,4);
   Stale:     (STEnc_stale,3);
 }

@@ -9,7 +9,8 @@
 
 STEnc::STEnc(STEnc_TM_t *TM)
      : TM(TM),
-       daqDeviceHandle(0)
+       daqDeviceHandle(0),
+       failure_reported(false)
 {
 }
 
@@ -39,8 +40,14 @@ bool STEnc::connect()
   // verify at least one DAQ device is detected
   if (numDevs == 0)
   {
-    msg(MSG_ERROR, "No DAQ device is detected");
+    if (!failure_reported)
+    {
+      msg(MSG_ERROR, "No DAQ device is detected");
+      failure_reported = true;
+    }
     return true;
+  } else {
+    failure_reported = false;
   }
 
   if (numDevs != 1)
@@ -132,7 +139,7 @@ bool STEnc::read_both()
 
 bool STEnc::check_ulerror(UlError err, const char *desc)
 {
-	if(err == ERR_NO_ERROR) return false;
+	if (err == ERR_NO_ERROR) return false;
   char errMsg[ERR_MSG_LEN];
   ulGetErrMsg(err, errMsg);
 	msg(MSG_ERROR, "%s: ulError: %d: %s",

@@ -60,6 +60,7 @@
         
         STEnc_TM_t *TM;
         DaqDeviceHandle daqDeviceHandle;
+        bool failure_reported;
     };
     
     class STEnc_cmd : public Cmd_reader {
