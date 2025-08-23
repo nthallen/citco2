@@ -17,18 +17,16 @@ int main(int argc, char **argv) {
     STEnc_TM_t STEnc_TM;
     STEnc_TM.STEnc_status = 0;
     STEnc *STE = new STEnc(&STEnc_TM);
-    if (!STE->connect()) {
-      msg(MSG_DEBUG, "Connected");
-      TM_data_sndr *TM = new TM_data_sndr("STEnc", 0,
-          "STEnc", &STEnc_TM, sizeof(STEnc_TM));
-      TM->connect();
-      ELoop.add_child(TM);
-      STEnc_cmd *Cmd = new STEnc_cmd(STE);
-      Cmd->connect();
-      ELoop.add_child(Cmd);
-      msg(MSG_DEBUG, "Entering event_loop");
-      ELoop.event_loop();
-    }
+    STE->connect();
+    TM_data_sndr *TM = new TM_data_sndr("STEnc", 0,
+        "STEnc", &STEnc_TM, sizeof(STEnc_TM));
+    TM->connect();
+    ELoop.add_child(TM);
+    STEnc_cmd *Cmd = new STEnc_cmd(STE);
+    Cmd->connect();
+    ELoop.add_child(Cmd);
+    msg(MSG_DEBUG, "Entering event_loop");
+    ELoop.event_loop();
   }
   AppID.report_shutdown();
 }
