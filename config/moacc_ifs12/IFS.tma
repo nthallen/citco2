@@ -746,20 +746,20 @@ State Pump_Down_Init {
 #      Validate Power_Pump_Off;
 #    }
 #  }
-   Validate Watchdog_Okay;
-   { pump_down_abort = 0; }
-   > Power Pump On
-   Hold Until ( WP_Pump_S ) or 10
-   else Validate Pump_Init_Failed;
-   Hold Until ( convert(Pump_P) < PUMP_P_TARGET || pump_down_abort ) or 8:00
-   else > Email Warning Message Pump Down Init is slow
-   Hold Until ( convert(Pump_P) < PUMP_P_TARGET || pump_down_abort ) or 30:00;
-   Hold Until ( convert(Pump_P) < 5*PUMP_P_TARGET || pump_down_abort ) or 30:00;
-   Hold Until ( convert(Pump_P) < 8*PUMP_P_TARGET || pump_down_abort ) or 30:00
-   else Validate Pump_Init_Failed;
-   Hold Until (pump_down_abort) or 2
-   else Validate Pump_Evacuate;
-   Validate Power_Pump_Off;
+      Validate Watchdog_Okay;
+      { pump_down_abort = 0; }
+      > Power Pump On
+      Hold Until ( WP_Pump_S ) or 10
+      else Validate Pump_Init_Failed;
+  +60 Hold Until ( convert(Pump_P) < PUMP_P_TARGET || pump_down_abort ) or 8:00
+      else > Email Warning Message Pump Down Init is slow
+      Hold Until ( convert(Pump_P) < PUMP_P_TARGET || pump_down_abort ) or 30:00;
+      Hold Until ( convert(Pump_P) < 5*PUMP_P_TARGET || pump_down_abort ) or 30:00;
+      Hold Until ( convert(Pump_P) < 8*PUMP_P_TARGET || pump_down_abort ) or 30:00
+      else Validate Pump_Init_Failed;
+      Hold Until (pump_down_abort) or 2
+      else Validate Pump_Evacuate;
+      Validate Power_Pump_Off;
 }
 
 State Pump_Evacuate {
