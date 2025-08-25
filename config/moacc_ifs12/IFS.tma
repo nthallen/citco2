@@ -201,8 +201,8 @@ State Ready_To_Play {
   depending on (Pump_IFS_Constantly) {
     Validate Ready_To_Play2;
   }
-  Validate Pump_IFS_Prep;
-  Hold Until Valid ( Pump_IFS_Constantly );
+# Validate Pump_IFS_Prep;
+# Hold Until Valid ( Pump_IFS_Constantly );
   Validate Ready_To_Play2;
 }
 
@@ -725,6 +725,14 @@ Partition
 # Partition 6: Pump Control
 #----------------------------------------------
 
+%{
+  /* Was 0.1 until leak was fixed
+   * 8/25/2025 Switching to 0.03
+   */
+  #define PUMP_P_TARGET (0.015)
+  #define IFS_P_TARGET (0.02)
+%}
+
 State Pump_Idle {}
 
 State Pump_Clear_to_Vent {}
@@ -743,11 +751,11 @@ State Pump_Down_Init {
    > Power Pump On
    Hold Until ( WP_Pump_S ) or 10
    else Validate Pump_Init_Failed;
-   Hold Until ( convert(Pump_P) < 0.1 || pump_down_abort ) or 8:00
+   Hold Until ( convert(Pump_P) < PUMP_P_TARGET || pump_down_abort ) or 8:00
    else > Email Warning Message Pump Down Init is slow
-   Hold Until ( convert(Pump_P) < 0.1 || pump_down_abort ) or 30:00;
-   Hold Until ( convert(Pump_P) < 0.5 || pump_down_abort ) or 30:00;
-   Hold Until ( convert(Pump_P) < 0.8 || pump_down_abort ) or 30:00
+   Hold Until ( convert(Pump_P) < PUMP_P_TARGET || pump_down_abort ) or 30:00;
+   Hold Until ( convert(Pump_P) < 5*PUMP_P_TARGET || pump_down_abort ) or 30:00;
+   Hold Until ( convert(Pump_P) < 8*PUMP_P_TARGET || pump_down_abort ) or 30:00
    else Validate Pump_Init_Failed;
    Hold Until (pump_down_abort) or 2
    else Validate Pump_Evacuate;
@@ -765,9 +773,10 @@ State Pump_Evacuate {
 #     }
 #   }
       > IFS direct VAC=1
-      Hold Until ( convert(IFS_P) < 0.5 || pump_down_abort ) or 5:00
+      Hold Until ( convert(IFS_P) < IFS_P_TARGET || pump_down_abort ) or 15:00
       else > Email Warning Message Pump Down of IFS is slow
-      Hold Until ( convert(IFS_P) < 0.5 || pump_down_abort ) or 40:00;
+      Hold Until ( convert(IFS_P) < IFS_P_TARGET || pump_down_abort ) or 45:00;
+      Hold Until ( convert(IFS_P) < 1.5*IFS_P_TARGET || pump_down_abort ) or 45:00;
       Hold Until ( convert(IFS_P) < 0.9 || pump_down_abort ) or 30
       else Validate Pump_Evac_Failed;
   +10 Validate Pump_Evac_End;
@@ -775,11 +784,15 @@ State Pump_Evacuate {
 
 State Pump_Evac_End {
     > IFS direct VAC=0
-      Hold Until ( convert(Pump_P) < 0.8 ) or 2:00
-      else Validate Pump_Evac_Failed;
+
+    Hold Until ( convert(Pump_P) < PUMP_P_TARGET ) or 2:00
+    else Validate Pump_Evac_Failed;
+
     Hold Until (pump_down_abort) or 60;
-      Hold Until ( convert(Pump_P) < 0.5 && convert(IFS_P) < 0.6 ) or 10
-      else Validate Pump_Warn;
+
+    Hold Until ( convert(Pump_P) < 0.5 && convert(IFS_P) < 0.6 ) or 10
+    else Validate Pump_Warn;
+
     Validate Power_Pump_Off;
 }
 
