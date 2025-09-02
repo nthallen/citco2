@@ -1,0 +1,16 @@
+127.0.0.1   localhost
+127.0.1.1   moacc-ovayok
+10.10.0.1   ifs125
+10.10.0.2   suntracker
+10.10.0.8   phocus
+10.10.0.9   midas
+10.10.0.243 webcam
+10.10.0.251 opus
+10.10.0.252 webpower
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
