@@ -1,0 +1,2 @@
+# Nort's crontab
+*/5 * * * * /home/citco2/bin/Email/doreport
