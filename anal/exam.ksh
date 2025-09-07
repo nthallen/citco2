@@ -13,14 +13,15 @@ function nl_error {
    # links in /home/citco2, allowing this to work on
    # development systems as well.
    HOME=/home/citco2
-   IPP=$HOME/ipp 
+   ANAL=$HOME/bin/anal
+   IPP=$HOME/bin/ipp
    DP=$HOME/dp
 
 # Get the name of the slice directories
    Parentdir=''
    Slicedirs=''
    for dir in $*; do
-     myParent=`dirname $dir`
+     myParent=$(dirname $dir)
      [ -n "$Parentdir" ] || Parentdir=$myParent
      if [ ! "$Parentdir" -ef "$myParent" ]; then
        echo Run $dir cannot be processed with runs from $Parentdir
@@ -37,11 +38,11 @@ function nl_error {
      SPEC=/removable/citco2/spectra
      SPECTMP=/removable/citco2/spectra.tmp
    else
-     SPEC=/data/spectra
-     SPECTMP=/data/spectra.tmp
+     SPEC=/home/citco2/spectra
+     SPECTMP=/home/citco2/spectra.tmp
    fi
 
-ipp_srcs=`ls $IPP/slice-ipp*.top`
+ipp_srcs=$(ls $IPP/slice-ipp*.top)
 for ipp_src in $ipp_srcs; do
   scantype=${ipp_src##*slice-ipp}
   scantype=${scantype%.top}
@@ -68,7 +69,7 @@ $Parentdir/
 $SPECTMP/
 EOF
      cat $IPP/slice-ipp$scantype.top
-     /home/citco2/catalog $scanarg $Slicedirs
+     $ANAL/catalog $scanarg $Slicedirs
    ) >slice-ipp.in
    cp -f $IPP/flimit$scantype.ipp flimit.ipp
    $IPP/slice-ipp
@@ -77,7 +78,7 @@ done
 
 if [ -d $DPBIN ]; then
 # Generate the name of the sunrun and runlog
-   N=`date +%Y%m%d`
+   N=(date +%Y%m%d)
    M=$(basename $(ls $SPECTMP/??20??????s*a.* | head -1) | cut -c 1-2)
    N=$M$N
    WORK=$DP/work/$N

@@ -1,67 +1,141 @@
 #! /bin/sh
 # Analysis script to run under reduce as:
-# Analysis='bin/anal/ifsreduce background $analdir $directory'
-#   Can also be run in the foreground as
-# Analysis='bin/anal/ifsreduce $directory'
-# Assumes infoext has been run during extractions
-# This script will actually only enqueue processing unless the
-# environment variable BEDTIME = "yes"
+#   Analysis='bin/$(cat VERSION)/ifsreduce -q $directory'
+#   [ "$BEDTIME" = yes ] && Analysis="$Analysis -s"
+#
+# Note that in this configuration, running reduce interactively
+# will only queue the run for processing.
+#
+# Can also be run in the foreground as
+#   bin/$(cat VERSION)/ifsreduce -q $directory 
+#
+# Options:
+#   -q $directory : Queue $directory for overnight processing
+#        $directory must begin with "raw/", consistent with
+#        how reduce invokes the Analysis script
+#   -s : Invoke -p via SSH
+#   -H hostname : Name of host to ssh to (localhost)
+#   -p : Invoke -P inside nice nohup background execution
+#   -P : Perform overnight processing in the foreground
+#   -l logfile : specify logfile
+#
+# Only one of options -s, -p or -P should be specified.
+# -s invokes -p via ssh, and -p invokes -P in the background,
+# so specifying more than one is redundant.
 
+# We may be running via SSH, so need to initialize path
+cd /home/citco2
+export PATH=/bin:/usr/bin:/usr/local/bin
+umask g+w
+
+function info {
+  msg -V -n ifsreduce -- "$*"
+}
 
 function nl_error {
-  echo "ifsreduce: $*" >&2
-  echo "2 ifsreduce: $*" >>/data/citco2/report.queue
-  exit 1;
+  msg -V -n ifsreduce "[Error] $*" >&2
+  echo "2 ifsreduce: $*" >>/home/citco2/report.queue
+  exit 1
 }
+
+opt_q=''
+opt_p=no
+opt_P=no
+opt_s=no
+opt_H=localhost
+opt_l=''
+
+while getopts "q:H:pPs" option; do
+  case $option in
+    q) opt_q=$OPTARG;;
+    H) opt_H=$OPTARG;;
+    p) opt_p=yes;;
+    P) opt_P=yes;;
+    s) opt_s=yes;;
+    l) opt_l=$OPTARG;;
+    *) nl_error "Invalid option '-$option'"
+  esac
+done
+
+if [ -n "$opt_l" ]; then
+  exec 2>>$opt_l 1>&2
+fi
+
+if [ -n "$opt_q" ]; then
+  run=${opt_q#*raw/}
+  [ "$run" = "$opt_q" ] &&
+    nl_error "Expected raw/ in directory path '$opt_q'"
+  if [ $opt_H = localhost ]; then
+    [ -d "$opt_q" ] ||
+      nl_error "Specified directory '$opt_q' is not a directory"
+    echo $opt_q >>saved.runs
+    info "Directory $opt_q queued for processing"
+  else
+    ssh $opt_H $0 -q $opt_q
+  fi
+fi
+
+if [ $opt_s = yes ]; then
+  info "Invoking analysis via SSH $opt_H"
+  ssh $opt_H $0 -p || nl_error "ssh failed"
+  exit 0
+fi
+
+if [ $opt_p = yes ]; then
+  info "Proceeding with run analysis in the background"
+  [ -d anal ] || mkdir anal
+  logfile=anal/ifsreduce_$(date +%y%m%d_%H%M%S).log
+  nohup nice -2 $0 -P -l $logfile 2>&1 &
+  exit 0
+fi
 
 # Not really an analysis task, but check status of NTP sync: doing it here
 # ensures this information is saved and sent in the outgoing emails. 
 echo "Status of NTP sync:"
-/usr/bin/ntpq -p 127.0.0.1 | grep -v "==" | cut -c 1-38,44-78
+timedatectl timesync-status
+# /usr/bin/ntpq -p 127.0.0.1 | grep -v "==" | cut -c 1-38,44-78
 
-analdir=''
+# analdir=''
 
-if [ "$1" = "background" ]; then
-  shift
-  analdir=$1
-  [ -d "$analdir" ] || nl_error Invalid analdir argument
-  shift
-fi
+# if [ "$1" = "background" ]; then
+  # shift
+  # analdir=$1
+  # [ -d "$analdir" ] || nl_error Invalid analdir argument
+  # shift
+# fi
 
-if [ -n "$1" ]; then
-  dir=$1
-  [ -d "$dir" ] || nl_error Directory argument is not a directory
-  run=/${dir#*raw/}
-  [ "$run" = "$dir" ] && nl_error Expected raw/ in directory path
+# if [ -n "$1" ]; then
+  # dir=$1
+  # [ -d "$dir" ] || nl_error Directory argument is not a directory
+  # run=/${dir#*raw/}
+  # [ "$run" = "$dir" ] && nl_error Expected raw/ in directory path
 
-  # Add this run to /data/citco2/saved.runs
-  echo $dir >>/data/citco2/saved.runs
+  # # Add this run to /home/citco2/saved.runs
+  # echo $dir >>/home/citco2/saved.runs
 
-  if [ ! "$BEDTIME" = "yes" ]; then
-    echo Directory $dir queued for bedtime processing
-    exit 0
-  fi
+  # if [ ! "$BEDTIME" = "yes" ]; then
+    # echo Directory $dir queued for bedtime processing
+    # exit 0
+  # fi
 
-  if [ -n "$analdir" ]; then
-    echo Proceeding with bedtime processing in the background
-    nohup nice -2 $0 background $analdir >$analdir/ifsreduce.log 2>&1 &
-    exit 0
-  fi
-fi
+  # if [ -n "$analdir" ]; then
+    # echo Proceeding with bedtime processing in the background
+    # nohup nice -2 $0 background $analdir >$analdir/ifsreduce.log 2>&1 &
+    # exit 0
+  # fi
+# fi
 
-[ -f /data/citco2/saved.runs ] || nl_error Cannot find saved.runs file
-rm -f /data/citco2/saved.runs.$$
-mv /data/citco2/saved.runs /data/citco2/saved.runs.$$
-dirs=`cat /data/citco2/saved.runs.$$`
+[ -f /home/citco2/saved.runs ] || nl_error Cannot find saved.runs file
+rm -f /home/citco2/saved.runs.$$
+mv /home/citco2/saved.runs /home/citco2/saved.runs.$$
+dirs=$(cat /home/citco2/saved.runs.$$)
 
 for dir in $dirs; do
   # redo our sanity checks
-  [ -n "$dir" ] || nl_error Must specify a directory argument
-  [ -d "$dir" ] || nl_error Directory argument is not a directory
+  [ -n "$dir" ] || nl_error saved.runs was apparently empty
+  [ -d "$dir" ] || nl_error "Directory '$dir' from saved.runs.$$ not a directory"
   run=/${dir#*raw/}
-  [ "$run" = "$dir" ] && nl_error Expected raw/ in directory path
-  saveset=${dir#*raw/flight/}
-  [ "$saveset" = "$dir" ] && nl_error Expected raw/flight/ in directory path
+  [ "$run" = "$dir" ] && nl_error "Expected raw/ in directory path '$dir'"
 
   # Show remaining disk space
   echo "Status of disk space:"
@@ -85,65 +159,17 @@ for dir in $dirs; do
     dircksum -w "$dir"
   fi
 
-  # Detect removable drive
-  if [ -d "/removable" ]; then
-#    destroot=/removable
-    destroot=/NO-REMOVABLE-FOUND  # Disable the use of removable drive
-  elif [ -d "/fs/usb0" ]; then
-    destroot=/fs/usb0
-  elif [ -d "/fs/hd10-qnx4-1" ]; then
-    destroot=/fs/hd10-qnx4-1
-  else
-    destroot=/NO-REMOVABLE-FOUND
-  fi
-  dest=$destroot/citco2/raw$run
-
-  # Then copy from fixed disk to removable one
-  #   if the removable disk is missing and we have the needed config file,
-  #   create data transfer script instead.
-  if [ ! -d $destroot ]; then
-    echo Removable drive is missing: skipping data copy
-    if [ -f /home/citco2/src/QNX6/TM/Config/rsync_tx_vars ]; then
-      . /home/citco2/src/QNX6/TM/Config/rsync_tx_vars
-      site=$(ls -l /home/citco2/src/QNX6/TM/Config | cut -d/ -f10)
-      txscript="/tmp/transfer-request.sh"
-      txout="/tmp/transfer-result-$saveset.out"
-      if [ ! -f $txscript ]; then
-        echo "#!/bin/sh" > $txscript
-        echo "cd /data/citco2 || exit" >> $txscript
-      fi
-      fulldest="$txuser@$txdest$site"
-      echo "/usr/pkg/bin/rsync -a -e ssh $dir $fulldest > $txout 2>&1" >> $txscript
-      echo "/bin/chmod g+w $txout" >> $txscript
-      echo "/usr/bin/touch -c $txout" >> $txscript
-      chmod a+x $txscript
-      echo "Requested transfer of $dir to:"
-      echo "  $fulldest"
-    fi
-  elif [ ! -f $dest/.MD5SUM ]; then
-    echo "Copying data to $dest"
-    cp -cpr "$dir" $dest
-  else
-    echo "Skipping copy of $dir"
-  fi
-
-  # Verify the dircksum of the copy
-  if [ ! -d $destroot ]; then
-    echo Removable drive is missing: skipping cksum check
-  else
-    echo "Calculating dircksum on $dest"
-    dircksum $dest || nl_error dircksum failed
-  fi
+  # Deleted removable drive code
 done
 
 echo Invoking spectral analysis script
 /home/citco2/bin/anal/exam.ksh $dirs
 
-rm /data/citco2/saved.runs.$$
+rm /home/citco2/saved.runs.$$
 echo ifsreduce processing completed
-if [ -n "$analdir" -a -f $analdir/ifsreduce.log ]; then
-  logfile=`fullpath $analdir/ifsreduce.log`
-  echo "0 [$logfile] ifsreduce.log" >>/data/citco2/report.queue
+if [ -n "$opt_l" -a -f $opt_l ]; then
+  logfile=$(realpath $opt_l)
+  echo "0 [$logfile] ifsreduce.log" >>/home/citco2/report.queue
 fi
 
 exit 0
