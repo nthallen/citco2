@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # bin2csv $dir
 
 function nl_error {
@@ -6,7 +6,7 @@ function nl_error {
   exit 1
 }
 
-Extractions="infoext IFSengext"
+Extractions=IFSengext
 
 dir=$1
 [ -d $dir ] || nl_error "Cannot locate directory '$dir'"
@@ -18,9 +18,11 @@ dest=$dir/TM
 [ -d $dest ] || mkdir $dest || nl_error "Cannot mkdir '$dest'"
 
 cd /home/citco2
+# Hack until we retire runs before VERSION 3.0.9
+[ -d $dir/scan ] && Extractions="$Extractions infoext"
 extract $dir $Extractions
 cd /home/citco2/anal/$RUN
 
 cp cceng_1.csv $dest/${RUN}_1.csv
 
-rm -f *.csv
+# rm -f *.csv
