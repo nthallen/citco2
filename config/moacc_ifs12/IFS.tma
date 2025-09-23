@@ -81,11 +81,13 @@ State Init_Choice "Startup.tmas" {
 }
 
 State Init_Decide {
-#    > IFS Read Status
-     > _Algo P1 Init_Decide
-  +2 depending on (Solar_Bedtime) { Validate Init_Close; }
-  +2 depending on ( Bad_Weather ) { Validate Nap; }
- +10 Validate Ready_To_Play;
+#     > IFS Read Status
+      > _Algo P1 Init_Decide
+   +2 depending on (Solar_Bedtime) { Validate Init_Close; }
+      depending on (Solar_Night_Descending) { Validate Init_Close; }
+      depending on (Solar_Night_Ascending) { Validate Init_Close; }
+   +2 depending on ( Bad_Weather ) { Validate Nap; }
+  +10 Validate Ready_To_Play;
 }
 
 State Unexpected_Restart {
