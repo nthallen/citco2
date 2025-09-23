@@ -2,16 +2,14 @@
    Program to generate info files
    
    Condition to mark beginning of a new scan:
-     [ was: IFSSN == 0 && IFSSlW > IFSSlW_prev ]
-     IFSSN == 0 && IFSTR > 0
+     IFSSN == 0 && IFSSlW > IFSSlW_prev
    Now start averaging until IFSSN changes, stopping when
     IFSTR == 0 or
     IFSSR == 0 or
     IFSCStat == Idle or Wait or Error or
     (IFSSN_prev > 0 && IFSSN == 0)
    
-   Determine first_slice_number after start of scan when
-    IFSSlW > IFSSlw_prev
+   Determine first_slice_number
 */
 
 %{
@@ -72,8 +70,6 @@
        } else msg( 1, "scd file '%s' not found\n", fname );
        fclose(slice_fp);
        slice_fp = 0;
-     } else {
-       msg(1, "info file not open in close_info(%ld)", slice_num);
      }
    }
    
@@ -190,22 +186,15 @@ State ( Report_Idle, Report_Averages );
 depending on ( Not_Scanning ) {
   if ( IFSSN == 0 && IFSTR > 0 &&
       ( IFSCStat > IFS_SCAN_RESET || IFSCStat == IFS_SCAN_ERROR ) ) {
-    first_slice_number = 0;
+    first_slice_number = IFSSlW;
+    open_info(first_slice_number, 0);
     Validate Scanning;
-  } else {
-    IFSSlW_prev = IFSSlW;
   }
+  IFSSlW_prev = IFSSlW;
 }
 
 depending on ( Scanning ) {
   int EOS;
-  if (IFSSlW > IFSSlW_prev) {
-    if (first_slice_number == 0) {
-      first_slice_number = IFSSlW;
-      open_info(first_slice_number, 0);
-    }
-    IFSSlW_prev = IFSSlW;
-  }
   EOS =
     IFSTR == 0 || IFSSR == 0 ||
     IFSCStat == IFS_SCAN_IDLE ||
@@ -219,6 +208,7 @@ depending on ( Scanning ) {
     if (EOS) Validate Not_Scanning;
     else open_info(first_slice_number, IFSSN);
   }
+  IFSSlW_prev = IFSSlW;
 }
 
 depending on ( Scanning ) { Rec_t_int(text(ST_t_int)); }
