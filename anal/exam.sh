@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
 function nl_error {
-  echo "exam.ksh: $*" >&2
+  echo "exam.sh: $*" >&2
   exit 1
 }
 
 # Set parameters
-   echo The input of Exam.ksh is $*  #YZH
+   echo The input of exam.sh is $*  #YZH
    unset noclobber
    # The analysis should take place under /d1/home/citco2
    # on container systems, but this is handled vi soft

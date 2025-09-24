@@ -95,81 +95,70 @@ echo "Status of NTP sync:"
 timedatectl timesync-status
 # /usr/bin/ntpq -p 127.0.0.1 | grep -v "==" | cut -c 1-38,44-78
 
-# analdir=''
+if [ $opt_P = yes ]; then
+  [ -f /home/citco2/saved.runs ] || nl_error "No runs queued in saved.runs"
+  rm -f /home/citco2/saved.runs.$$
+  mv /home/citco2/saved.runs /home/citco2/saved.runs.$$
+  dirs=$(cat /home/citco2/saved.runs.$$)
 
-# if [ "$1" = "background" ]; then
-  # shift
-  # analdir=$1
-  # [ -d "$analdir" ] || nl_error Invalid analdir argument
-  # shift
-# fi
+  for dir in $dirs; do
+    # redo our sanity checks
+    [ -n "$dir" ] || nl_error saved.runs was apparently empty
+    [ -d "$dir" ] || nl_error "Directory '$dir' from saved.runs.$$ not a directory"
+    run=/${dir#*raw/}
+    [ "$run" = "$dir" ] && nl_error "Expected raw/ in directory path '$dir'"
 
-# if [ -n "$1" ]; then
-  # dir=$1
-  # [ -d "$dir" ] || nl_error Directory argument is not a directory
-  # run=/${dir#*raw/}
-  # [ "$run" = "$dir" ] && nl_error Expected raw/ in directory path
+    # Show remaining disk space
+    echo "Status of disk space:"
+    echo "Filesystem             1K-blocks      Used      Free     Use%  Mounted on"
+    df -k /home /var /
 
-  # # Add this run to /home/citco2/saved.runs
-  # echo $dir >>/home/citco2/saved.runs
+    # First do extractions
+    if [ ! -d $dir/TM ]; then
+      rm -f $dir/.MD5SUM
+      echo "Executing bin2csv on $dir"
+      /home/citco2/bin/anal/bin2csv $dir
+    else
+      echo "Skipping bin2csv on $dir"
+    fi
+    
+    # Then do dircksum on the directory
+    if [ -f $dir/.MD5SUM ]; then
+      echo "Skipping dircksum on $dir"
+    else
+      echo "Calculating dircksum on $dir"
+      dircksum -w "$dir"
+    fi
 
-  # if [ ! "$BEDTIME" = "yes" ]; then
-    # echo Directory $dir queued for bedtime processing
-    # exit 0
-  # fi
+    # Deleted removable drive code
+    if [ -f /home/citco2/src/QNX6/TM/Config/rsync_tx_vars ]; then
+      . /home/citco2/src/QNX6/TM/Config/rsync_tx_vars
+      site=$(ls -l /home/citco2/src/TM/Config | cut -d/ -f8)
+      txscript="/tmp/transfer-request.sh"
+      txout="/tmp/transfer-result-$saveset.out"
+      if [ ! -f $txscript ]; then
+        echo "#!/bin/sh" > $txscript
+        echo "cd /data/citco2 || exit" >> $txscript
+      fi
+      fulldest="$txuser@$txdest$site"
+      echo "/usr/pkg/bin/rsync -a -e ssh $dir $fulldest > $txout 2>&1" >> $txscript
+      echo "/bin/chmod g+w $txout" >> $txscript
+      echo "/usr/bin/touch -c $txout" >> $txscript
+      chmod a+x $txscript
+      echo "Requested transfer of $dir to:"
+      echo "  $fulldest"
+    fi
+  done
 
-  # if [ -n "$analdir" ]; then
-    # echo Proceeding with bedtime processing in the background
-    # nohup nice -2 $0 background $analdir >$analdir/ifsreduce.log 2>&1 &
-    # exit 0
-  # fi
-# fi
+  echo Invoking spectral analysis script
+  /home/citco2/bin/anal/exam.sh $dirs
 
-[ -f /home/citco2/saved.runs ] || nl_error Cannot find saved.runs file
-rm -f /home/citco2/saved.runs.$$
-mv /home/citco2/saved.runs /home/citco2/saved.runs.$$
-dirs=$(cat /home/citco2/saved.runs.$$)
-
-for dir in $dirs; do
-  # redo our sanity checks
-  [ -n "$dir" ] || nl_error saved.runs was apparently empty
-  [ -d "$dir" ] || nl_error "Directory '$dir' from saved.runs.$$ not a directory"
-  run=/${dir#*raw/}
-  [ "$run" = "$dir" ] && nl_error "Expected raw/ in directory path '$dir'"
-
-  # Show remaining disk space
-  echo "Status of disk space:"
-  echo "Filesystem             1K-blocks      Used      Free     Use%  Mounted on"
-  df -k | grep -v "/dev/hd. " | sed -e "s/  *$//"
-
-  # First do extractions
-  if [ ! -d $dir/TM ]; then
-    rm -f $dir/.MD5SUM
-    echo "Executing bin2csv on $dir"
-    /home/citco2/bin/anal/bin2csv $dir
-  else
-    echo "Skipping bin2csv on $dir"
+  rm /home/citco2/saved.runs.$$
+  echo ifsreduce processing completed
+  if [ -n "$opt_l" -a -f $opt_l ]; then
+    logfile=$(realpath $opt_l)
+    echo "0 [$logfile] ifsreduce.log" >>/home/citco2/report.queue
   fi
-  
-  # Then do dircksum on the directory
-  if [ -f $dir/.MD5SUM ]; then
-    echo "Skipping dircksum on $dir"
-  else
-    echo "Calculating dircksum on $dir"
-    dircksum -w "$dir"
-  fi
-
-  # Deleted removable drive code
-done
-
-echo Invoking spectral analysis script
-/home/citco2/bin/anal/exam.ksh $dirs
-
-rm /home/citco2/saved.runs.$$
-echo ifsreduce processing completed
-if [ -n "$opt_l" -a -f $opt_l ]; then
-  logfile=$(realpath $opt_l)
-  echo "0 [$logfile] ifsreduce.log" >>/home/citco2/report.queue
 fi
 
 exit 0
