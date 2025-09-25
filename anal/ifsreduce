@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # Analysis script to run under reduce as:
 #   Analysis='bin/$(cat VERSION)/ifsreduce -q $directory'
 #   [ "$BEDTIME" = yes ] && Analysis="$Analysis -s"

@@ -1,13 +1,13 @@
 # ToDo:
 #   doreport --handled by Email Module
 #   ifsreduce
-#   exam.ksh
+#   exam.sh
 #   bin2csv
 #   copy-csv
 #   extract-csv
 #   dotransfer
 .PHONY : links
-SCRIPTS=IFScheck IFSloop OpusHdr bitcvt.sh catalog bin2csv
+SCRIPTS=IFScheck IFSloop OpusHdr bitcvt.sh catalog bin2csv exam.sh ifsreduce
 LINKS=OpusHdr IFSloop IFScheck
 TGTDIR=/home/citco2/bin/anal
 LINKDIR=/usr/local/bin
