@@ -1,27 +1,54 @@
 #! /bin/bash
-# Analysis script to run under reduce as:
-#   Analysis='bin/$(cat VERSION)/ifsreduce -q $directory'
-#   [ "$BEDTIME" = yes ] && Analysis="$Analysis -s"
-#
-# Note that in this configuration, running reduce interactively
-# will only queue the run for processing.
-#
-# Can also be run in the foreground as
-#   bin/$(cat VERSION)/ifsreduce -q $directory 
-#
-# Options:
-#   -q $directory : Queue $directory for overnight processing
-#        $directory must begin with "raw/", consistent with
-#        how reduce invokes the Analysis script
-#   -s : Invoke -p via SSH
-#   -H hostname : Name of host to ssh to (localhost)
-#   -p : Invoke -P inside nice nohup background execution
-#   -P : Perform overnight processing in the foreground
-#   -l logfile : specify logfile
-#
-# Only one of options -s, -p or -P should be specified.
-# -s invokes -p via ssh, and -p invokes -P in the background,
-# so specifying more than one is redundant.
+
+function print_usage {
+cat <<'EOF'
+Analysis script to run under reduce.
+
+Options:
+  -h : Display this help text
+  -q $directory : Queue $directory for overnight processing
+       $directory must begin with "raw/", consistent with
+       how reduce invokes the Analysis script
+  -s : Invoke -p via SSH
+  -H hostname : Name of host to ssh to (localhost)
+  -p : Invoke -P inside nice nohup background execution
+  -P : Perform overnight processing in the foreground
+  -l logfile : specify logfile
+
+Only one of options -s, -p or -P should be specified.
+-s invokes -p via ssh, and -p invokes -P in the background,
+so specifying more than one is redundant.
+
+To be run during reduce, the following must be specified in
+Experiment.config:
+
+  Analysis='bin/$(cat VERSION)/ifsreduce -q $directory'
+  [ "$BEDTIME" = yes ] && Analysis="$Analysis -s -l ifsreduce.log"
+
+Note that in this configuration, running reduce interactively
+will only queue the run for processing.
+
+ifsreduce can also be executed for a run previously created
+by saverun:
+
+  bin/$(cat VERSION)/ifsreduce -q $directory
+
+Multiple runs can be queued this way and subsequently processed
+as a batch using one of the options -s, -p or -P:
+
+  bin/$(cat VERSION)/ifsreduce -P
+
+For a one-off execution, you can combine -q with e.g. -P:
+
+  bin/$(cat VERSION)/ifsreduce -q $directory -P
+
+When using the -s option, you must ensure that the user can
+successfully 'ssh localhost'. This might require setting up
+the user's ~/.ssh/config file to specify any required options,
+such as port number.
+EOF
+exit 0
+}
 
 # We may be running via SSH, so need to initialize path
 cd /home/citco2
@@ -45,13 +72,14 @@ opt_s=no
 opt_H=localhost
 opt_l=''
 
-while getopts "q:H:pPs" option; do
+while getopts "q:H:pPsh" option; do
   case $option in
     q) opt_q=$OPTARG;;
     H) opt_H=$OPTARG;;
     p) opt_p=yes;;
     P) opt_P=yes;;
     s) opt_s=yes;;
+    h) print_usage;;
     l) opt_l=$OPTARG;;
     *) nl_error "Invalid option '-$option'"
   esac
