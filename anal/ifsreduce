@@ -72,7 +72,7 @@ opt_s=no
 opt_H=localhost
 opt_l=''
 
-while getopts "q:H:pPsh" option; do
+while getopts ":q:H:l:pPsh" option; do
   case $option in
     q) opt_q=$OPTARG;;
     H) opt_H=$OPTARG;;
@@ -81,7 +81,8 @@ while getopts "q:H:pPsh" option; do
     s) opt_s=yes;;
     h) print_usage;;
     l) opt_l=$OPTARG;;
-    *) nl_error "Invalid option '-$option'"
+    :) nl_error "Option '-$OPTARG' requires an argument";;
+    *) nl_error "Invalid option '-$OPTARG'";;
   esac
 done
 
@@ -117,14 +118,16 @@ if [ $opt_p = yes ]; then
   exit 0
 fi
 
-# Not really an analysis task, but check status of NTP sync: doing it here
-# ensures this information is saved and sent in the outgoing emails. 
-echo "Status of NTP sync:"
-timedatectl timesync-status
-# /usr/bin/ntpq -p 127.0.0.1 | grep -v "==" | cut -c 1-38,44-78
-
 if [ $opt_P = yes ]; then
   [ -f /home/citco2/saved.runs ] || nl_error "No runs queued in saved.runs"
+
+  # Not really an analysis task, but check status of NTP sync: doing it here
+  # ensures this information is saved and sent in the outgoing emails. 
+  echo "Status of NTP sync:"
+  timedatectl timesync-status
+  # /usr/bin/ntpq -p 127.0.0.1 | grep -v "==" | cut -c 1-38,44-78
+  echo
+
   rm -f /home/citco2/saved.runs.$$
   mv /home/citco2/saved.runs /home/citco2/saved.runs.$$
   dirs=$(cat /home/citco2/saved.runs.$$)
@@ -138,8 +141,9 @@ if [ $opt_P = yes ]; then
 
     # Show remaining disk space
     echo "Status of disk space:"
-    echo "Filesystem             1K-blocks      Used      Free     Use%  Mounted on"
+    # echo "Filesystem             1K-blocks      Used      Free     Use%  Mounted on"
     df -k /home /var /
+    echo
 
     # First do extractions
     if [ ! -d $dir/TM ]; then
@@ -149,6 +153,7 @@ if [ $opt_P = yes ]; then
     else
       echo "Skipping bin2csv on $dir"
     fi
+    echo
     
     # Then do dircksum on the directory
     if [ -f $dir/.MD5SUM ]; then
@@ -157,24 +162,27 @@ if [ $opt_P = yes ]; then
       echo "Calculating dircksum on $dir"
       dircksum -w "$dir"
     fi
+    echo
 
     # Deleted removable drive code
-    if [ -f /home/citco2/src/QNX6/TM/Config/rsync_tx_vars ]; then
-      . /home/citco2/src/QNX6/TM/Config/rsync_tx_vars
+    if [ -f /home/citco2/src/TM/Config/rsync_tx_vars ]; then
+      . /home/citco2/src/TM/Config/rsync_tx_vars
       site=$(ls -l /home/citco2/src/TM/Config | cut -d/ -f8)
+      saveset=$(/usr/bin/basename $dir)
       txscript="/tmp/transfer-request.sh"
       txout="/tmp/transfer-result-$saveset.out"
       if [ ! -f $txscript ]; then
-        echo "#!/bin/sh" > $txscript
-        echo "cd /data/citco2 || exit" >> $txscript
+        echo "#! /bin/bash" > $txscript
+        echo "cd /home/citco2 || exit" >> $txscript
       fi
       fulldest="$txuser@$txdest$site"
-      echo "/usr/pkg/bin/rsync -a -e ssh $dir $fulldest > $txout 2>&1" >> $txscript
-      echo "/bin/chmod g+w $txout" >> $txscript
+      echo "/usr/bin/rsync -a -e ssh $dir $fulldest > $txout 2>&1" >> $txscript
+      echo "/usr/bin/chmod g+w $txout" >> $txscript
       echo "/usr/bin/touch -c $txout" >> $txscript
       chmod a+x $txscript
       echo "Requested transfer of $dir to:"
       echo "  $fulldest"
+      echo
     fi
   done
 
@@ -182,7 +190,7 @@ if [ $opt_P = yes ]; then
   /home/citco2/bin/anal/exam.sh $dirs
 
   rm /home/citco2/saved.runs.$$
-  echo ifsreduce processing completed
+  echo -e "\nifsreduce processing completed"
   if [ -n "$opt_l" -a -f $opt_l ]; then
     logfile=$(realpath $opt_l)
     echo "0 [$logfile] ifsreduce.log" >>/home/citco2/report.queue

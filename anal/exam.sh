@@ -53,9 +53,9 @@ for ipp_src in $ipp_srcs; do
   [ -f $IPP/flimit$scantype.ipp ] ||
     nl_error "Missing configuration file: $IPP/flimit$scantype.ipp"
   if [ -n "$scantype" ]; then
-    echo "\nProcessing ${scantype#.} scans\n"
+    echo -e "\nProcessing ${scantype#.} scans\n"
   else
-    echo "\nProcessing all scans\n"
+    echo -e "\nProcessing all scans\n"
   fi
 
 # Run slice-ipp to form spectra
