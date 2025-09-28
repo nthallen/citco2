@@ -8,8 +8,8 @@
  1 WTX_WindSpd @Panel@WTX_Wind Speed
  1 wslimit_fast WTX_Wind Speed fast
  1 wslimit_slow WTX_Wind Speed slow
- 1 is_high:ws_high:0 WTX_Wind Status
- 1 is_log:ws_low:0 WTX_Wind Status
+ 1 is_high:ws_high:0 WTX_Wind Status %.0lf
+ 1 is_low:ws_low:0 WTX_Wind Status %.0lf
  1 WTX_WindQ @Panel@WTX_Wind Quality
  
  1 WTX_PrecipType @Panel@WTX_Precip Type %.0lf
