@@ -180,7 +180,7 @@
   avgdata ZVB_avg = { "Zeno_VBatt" };
   */
   #define REF(x) &x
-  
+  #define not_WTX_nan(x) (x != 32767)
 %}
 
 State ( Not_Scanning, Scanning );
@@ -222,16 +222,16 @@ depending on ( Scanning ) {
 
 depending on ( Scanning ) { Rec_t_int(text(ST_t_int)); }
 
-depending on ( Scanning ) { Rec_avgstd(REF(ZWS_as), convert(WTX_WindSpd)); }
+depending on ( Scanning ) { if (not_WTX_nan(WTX_WindSpd)) Rec_avgstd(REF(ZWS_as), convert(WTX_WindSpd)); }
 depending on ( Report_Averages Once ) { Report_avgstd(REF(ZWS_as)); Reset_avgstd(REF(ZWS_as)); }
 
-depending on ( Scanning ) { Rec_max(REF(ZWS_max), convert(WTX_WindSpd)); }
+depending on ( Scanning ) { if (not_WTX_nan(WTX_WindSpd)) Rec_max(REF(ZWS_max), convert(WTX_WindSpd)); }
 depending on ( Report_Averages Once ) { Report_max(REF(ZWS_max)); Reset_max(REF(ZWS_max)); }
 
 depending on ( Scanning ) { Rec_avgstd(REF(ZWD_as), convert(WTX_WindDir)); }
 depending on ( Report_Averages Once ) { Report_avgstd(REF(ZWD_as)); Reset_avgstd(REF(ZWD_as)); }
 
-depending on ( Scanning ) { Rec_avg(REF(ZT_avg), convert(WTX_AirT)); }
+depending on ( Scanning ) { if (not_WTX_nan(WTX_AirT)) Rec_avg(REF(ZT_avg), convert(WTX_AirT)); }
 depending on ( Report_Averages Once ) { Report_avg(REF(ZT_avg)); Reset_avg(REF(ZT_avg)); }
 
 depending on ( Scanning ) { Rec_avg(REF(ZRH_avg), convert(WTX_RH)); }
