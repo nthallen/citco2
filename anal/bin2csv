@@ -24,7 +24,7 @@ cd /home/citco2
 extract $dir $Extractions
 cd /home/citco2/anal/$RUN
 
-cp cceng_1.csv $dest/${RUN}_1.csv
+cp -v cceng_1.csv $dest/${RUN}_1.csv
 
 # Leave the csv in anal for short term retrieval of engineering data
 # rm -f *.csv

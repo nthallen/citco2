@@ -13,7 +13,8 @@ Options:
   -H hostname : Name of host to ssh to (localhost)
   -p : Invoke -P inside nice nohup background execution
   -P : Perform overnight processing in the foreground
-  -l logfile : specify logfile
+  -l : Log to a time/date unique logfile
+  -L logfile : specify logfile (used internally)
 
 Only one of options -s, -p or -P should be specified.
 -s invokes -p via ssh, and -p invokes -P in the background,
@@ -23,7 +24,7 @@ To be run during reduce, the following must be specified in
 Experiment.config:
 
   Analysis='bin/$(cat VERSION)/ifsreduce -q $directory'
-  [ "$BEDTIME" = yes ] && Analysis="$Analysis -s -l ifsreduce.log"
+  [ "$BEDTIME" = yes ] && Analysis="$Analysis -s -l"
 
 Note that in this configuration, running reduce interactively
 will only queue the run for processing.
@@ -71,8 +72,9 @@ opt_P=no
 opt_s=no
 opt_H=localhost
 opt_l=''
+opt_L=''
 
-while getopts ":q:H:l:pPsh" option; do
+while getopts ":q:H:L:lpPsh" option; do
   case $option in
     q) opt_q=$OPTARG;;
     H) opt_H=$OPTARG;;
@@ -80,14 +82,18 @@ while getopts ":q:H:l:pPsh" option; do
     P) opt_P=yes;;
     s) opt_s=yes;;
     h) print_usage;;
-    l) opt_l=$OPTARG;;
+    l) opt_l=yes;;
+    L) opt_L=$OPTARG;;
     :) nl_error "Option '-$OPTARG' requires an argument";;
     *) nl_error "Invalid option '-$OPTARG'";;
   esac
 done
 
-if [ -n "$opt_l" ]; then
-  exec 2>>$opt_l 1>&2
+if [ -n "$opt_l" -o -n "$opt_L" ]; then
+  [ -d anal ] || mkdir anal
+  [ -n "$opt_L" ] ||
+    opt_L=/home/citco2/anal/ifsreduce_$(date +%y%m%d_%H%M%S).log
+  exec 2>>$opt_L 1>&2
 fi
 
 if [ -n "$opt_q" ]; then
@@ -104,17 +110,20 @@ if [ -n "$opt_q" ]; then
   fi
 fi
 
+logargs=''
+[ -n "$opt_L" ] && logargs="-L $opt_L"
+
 if [ $opt_s = yes ]; then
   info "Invoking analysis via SSH $opt_H"
-  ssh $opt_H $0 -p || nl_error "ssh failed"
+  [ -n "$logargs" ] && exec 2>/dev/null 1>&2
+  ssh $opt_H $0 -p $logargs || nl_error "ssh failed"
   exit 0
 fi
 
 if [ $opt_p = yes ]; then
   info "Proceeding with run analysis in the background"
-  [ -d anal ] || mkdir anal
-  logfile=anal/ifsreduce_$(date +%y%m%d_%H%M%S).log
-  nohup nice -2 $0 -P -l $logfile 2>&1 &
+  [ -n "$logargs" ] && exec 2>/dev/null 1>&2
+  nohup nice -2 $0 -P $logargs &
   exit 0
 fi
 
@@ -191,9 +200,9 @@ if [ $opt_P = yes ]; then
 
   rm /home/citco2/saved.runs.$$
   echo -e "\nifsreduce processing completed"
-  if [ -n "$opt_l" -a -f $opt_l ]; then
-    logfile=$(realpath $opt_l)
-    echo "0 [$logfile] ifsreduce.log" >>/home/citco2/report.queue
+  if [ -n "$opt_L" -a -f $opt_L ]; then
+    logfile=$(realpath $opt_L)
+    echo "0 [$logfile] $(basename $run) ifsreduce.log" >>/home/citco2/report.queue
   fi
 fi
 
