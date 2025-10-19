@@ -5,7 +5,7 @@ our %default_msg = (
           'Orfeo Colebatch <orfeo.colebatch@utoronto.ca>',
           'Kim Strong <strong@atmosp.physics.utoronto.ca>',
           'Erin McGee <e.mcgee@mail.utoronto.ca>',
-          'jblavier <jblavier@caesar.jpl.nasa.gov>'
+          'jblavier <jblavier@members.fsf.org>'
         ],
   From => 'moacc_ifs12 <tccon.cambridgebay@fastmail.ca>',
   Subject => 'moacc_ifs12',
