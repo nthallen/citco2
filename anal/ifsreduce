@@ -51,6 +51,8 @@ EOF
 exit 0
 }
 
+# Record the full path to the invoking command
+cmd=$(realpath $0)
 # We may be running via SSH, so need to initialize path
 cd /home/citco2
 export PATH=/bin:/usr/bin:/usr/local/bin
@@ -106,7 +108,7 @@ if [ -n "$opt_q" ]; then
     echo $opt_q >>saved.runs
     info "Directory $opt_q queued for processing"
   else
-    ssh $opt_H $0 -q $opt_q
+    ssh $opt_H $cmd -q $opt_q
   fi
 fi
 
@@ -115,15 +117,16 @@ logargs=''
 
 if [ $opt_s = yes ]; then
   info "Invoking analysis via SSH $opt_H"
+  info "ssh $opt_H $cmd -p $logargs"
   [ -n "$logargs" ] && exec 2>/dev/null 1>&2
-  ssh $opt_H $0 -p $logargs || nl_error "ssh failed"
+  ssh $opt_H $cmd -p $logargs || nl_error "ssh failed"
   exit 0
 fi
 
 if [ $opt_p = yes ]; then
   info "Proceeding with run analysis in the background"
   [ -n "$logargs" ] && exec 2>/dev/null 1>&2
-  nohup nice -2 $0 -P $logargs &
+  nohup nice -2 $cmd -P $logargs &
   exit 0
 fi
 
@@ -176,10 +179,12 @@ if [ $opt_P = yes ]; then
     # Deleted removable drive code
     if [ -f /home/citco2/src/TM/Config/rsync_tx_vars ]; then
       . /home/citco2/src/TM/Config/rsync_tx_vars
+      tmpdir="/home/citco2/transfer"
+      [ -d $tmpdir ] || mkdir $tmpdir
       site=$(ls -l /home/citco2/src/TM/Config | cut -d/ -f8)
       saveset=$(/usr/bin/basename $dir)
-      txscript="/tmp/transfer-request.sh"
-      txout="/tmp/transfer-result-$saveset.out"
+      txscript="$tmpdir/transfer-request.sh"
+      txout="$tmpdir/transfer-result-$saveset.out"
       if [ ! -f $txscript ]; then
         echo "#! /bin/bash" > $txscript
         echo "cd /home/citco2 || exit" >> $txscript

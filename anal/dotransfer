@@ -1,6 +1,7 @@
 #!/bin/sh
 
-TXSCRIPT="/tmp/transfer-request.sh"
+tmpdir="/home/citco2/transfer"
+TXSCRIPT="$tmpdir/transfer-request.sh"
 
 NOW=$(date +_%F_%T)
 

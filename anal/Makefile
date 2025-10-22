@@ -7,7 +7,7 @@
 #   extract-csv
 #   dotransfer
 .PHONY : links
-SCRIPTS=IFScheck IFSloop OpusHdr bitcvt.sh catalog bin2csv exam.sh ifsreduce
+SCRIPTS=IFScheck IFSloop OpusHdr bitcvt.sh catalog bin2csv exam.sh ifsreduce dotransfer
 LINKS=OpusHdr IFSloop IFScheck
 TGTDIR=/home/citco2/bin/anal
 LINKDIR=/usr/local/bin
