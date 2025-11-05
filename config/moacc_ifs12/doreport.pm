@@ -1,7 +1,7 @@
 package DoReport;
 
 our %default_msg = (
-  To => [ 'Norton Allen <allen@huarp.harvard.edu>',
+  To => [ 'Norton Allen <norton_allen@fastmail.net>',
           'Orfeo Colebatch <orfeo.colebatch@utoronto.ca>',
           'Kim Strong <strong@atmosp.physics.utoronto.ca>',
           'Erin McGee <e.mcgee@mail.utoronto.ca>',
