@@ -385,7 +385,7 @@ State Bedtime {
 State Up_After_Bedtime {
   > _Algo P1 Up_After_Bedtime
   > Startup Wakeup Clear
-  Validate InSb_Fill;
+# Validate InSb_Fill;
   Validate IFS_Status_Update;
   Validate Pump_Down_Init;
   Hold until Valid (Pump_Idle);
