@@ -15,6 +15,7 @@
   1 LasBOF    IFS Laser
 
   1 ScBlkT    IFS_HK Temps
+  1 IFSSrcT   IFS_HK Temps
   1 IFS_P     IFS_HK Press
   1 IFHum     IFS_HK IFHum
   # 1 IFSDiag
