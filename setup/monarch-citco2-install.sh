@@ -52,6 +52,8 @@ function wrap_path {
 }
 
 exp_option='citco2:nthallen/citco2.git'
+base_debian_pkgs='cmake doxygen gawk graphviz gdb gcc g++ git bison flex libncurses-dev openssh-server screen'
+exp_debian_pkgs=' liburi-perl libhttp-date-perl libhttp-message-perl libio-socket-ssl-perl libwww-perl libxml2-dev libcurl4-openssl-dev libusb-1.0-0-dev'
 exp_base=''
 exp_url=''
 testmode=no
@@ -316,12 +318,14 @@ echo
 if [ $machine = Linux ]; then
   release=`cat /etc/issue`
   case "$release" in
-    Ubuntu*) distro=Ubuntu;;
+    Debian*) distro=Debian;;
+    Ubuntu*) distro=Debian;;
     *) distro=Unclear;;
   esac
-  if [ $distro = Ubuntu ]; then
+  if [ $distro = Debian ]; then
     echo "monarch-citco2-install.sh: Checking prerequisites"
-    sudo apt install cmake doxygen graphviz gdb gcc g++ git bison flex libncurses-dev openssh-server screen
+    # cmake doxygen gawk graphviz gdb gcc g++ git bison flex libncurses-dev openssh-server screen
+    sudo apt install $base_debian_pkgs$exp_debian_pkgs
   else
     echo "monarch-citco2-install.sh: Not specifically configured for release '$release'."
     echo "Need to determine how to add packages to meet build prerequisites."
