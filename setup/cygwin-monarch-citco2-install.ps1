@@ -144,7 +144,7 @@ if ($setup_cygwin) {
   if (Test-Path -Path setup-x86_64.exe -PathType Leaf)
   {
     $base_pkgs = "bzip2,cygwin-doc,file,less,openssh,git,chere,cmake,doxygen,graphviz,gcc-core,gcc-g++,gdb,make,bison,flex,perl,libncurses-devel,screen"
-    $exp_pkgs = ',perl-URI,perl-HTTP-Date,perl-IO-Socket-SSL,perl-HTTP-Message,perl-libwww-perl,libxml2-devel,libcurl-devel,gcc-fortran'""
+    $exp_pkgs = ',perl-URI,perl-HTTP-Date,perl-IO-Socket-SSL,perl-HTTP-Message,perl-libwww-perl,libxml2-devel,libcurl-devel,gcc-fortran'
     $all_pkgs = "$base_pkgs$exp_pkgs"
     Write-Output "`nInvoking Cygwin Setup`n"
     start-process setup-x86_64.exe  -Wait -argumentlist "--packages $all_pkgs --upgrade-also --no-desktop"
