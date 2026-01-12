@@ -838,36 +838,36 @@ c      parameter (dtc_si     = 2)
      &     path,verbose,1,errnum,strlen,cval)
           if(errnum.eq.0) then
             if(index(cval(1:strlen),
-     &       'Si- Diode & Slave [Internal Pos.2]').eq.1) then
+     &       'Si- Diode & Slave').eq.1) then
               i4head(i_dtccode)=1
             elseif(index(cval(1:strlen),'Si').eq.1) then
               i4head(i_dtccode)=1
             elseif(index(cval(1:strlen),'InGaAs').eq.1) then
               i4head(i_dtccode)=1
             elseif(index(cval(1:strlen),
-     &       'RT-Si Diode AC + RT-InGaAs AC [Internal Pos.2]').eq.1)then
+     &       'RT-Si Diode AC + RT-InGaAs AC').eq.1)then
               i4head(i_dtccode)=1
             elseif(index(cval(1:strlen),
-     &       'RT-Si Diode DC + RT-InGaAs DC [Internal Pos.1]').eq.1)then
+     &       'RT-Si Diode DC + RT-InGaAs DC').eq.1)then
               i4head(i_dtccode)=2
             elseif(index(cval(1:strlen),
-     &       'LN-InSb DC + RT-InGaAs DC [Internal Pos.1]').eq.1)then
+     &       'LN-InSb DC + RT-InGaAs DC').eq.1)then
               i4head(i_dtccode)=2
             elseif(index(cval(1:strlen),
-     &       'LN-InSb FOV=30° 24H  + RT-InGaAs DC [Internal Pos.1]'
+     &       'LN-InSb FOV=30° 24H  + RT-InGaAs DC'
      &       ).eq.1)then
               i4head(i_dtccode)=2
             elseif(index(cval(1:strlen),
-     &       'RT-InGaAs DC [Internal Pos.1]').eq.1)then
+     &       'RT-InGaAs DC').eq.1)then
               i4head(i_dtccode)=2
             elseif(index(cval(1:strlen),
-     &       'LN-InSb FOV=30° [Internal Pos.4]').eq.1) then
+     &       'LN-InSb FOV=30°').eq.1) then
               i4head(i_dtccode)=dtc_insb
             elseif(index(cval(1:strlen),
-     &       'LN-InSb FOV=30° DC [Internal Pos.4]').eq.1) then
+     &       'LN-InSb FOV=30° DC').eq.1) then
               i4head(i_dtccode)=dtc_insb
             elseif(index(cval(1:strlen),
-     &       'RT-Si Diode DC [Internal Pos.4]').eq.1) then
+     &       'RT-Si Diode DC').eq.1) then
               i4head(i_dtccode)=dtc_si
             elseif(index(cval(1:strlen),'Bolometer').eq.1) then
               i4head(i_dtccode)=dtc_bolom

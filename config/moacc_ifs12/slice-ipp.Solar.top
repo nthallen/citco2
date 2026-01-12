@@ -92,7 +92,7 @@ ac
 : is the minimum value of the average suntracker intensity.  Setting a
 : threshold to zero eliminates that particular check.
 
-0.05 20.0
+0.05 10.0
 
 : Parameter #15 checks the igram data validity based on the extreme values
 : MNY and MXY reported in the OPUS header.  For an igram to be valid, and
