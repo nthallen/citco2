@@ -18,7 +18,7 @@
 
 TM typedef uint8_t STEnc_pos_t { text "%7d" STEnc_pos_text[]; }
 TM typedef uint8_t STEnc_cmd_t { text "%7d" STEnc_cmd_text[]; }
-TM typedef uint8_t STEnc_bits_t { text "%02X"; }
+TM typedef uint16_t STEnc_bits_t { text "%04X"; }
 TM typedef uint8_t STEnc_cmds_t { text "%02X"; }
 TM typedef uint8_t STEnc_off_on_t { text "%3u" STEnc_off_on_text(); }
 TM typedef uint8_t STEnc_fail_t { text "%4u" STEnc_fail_text(); }
@@ -33,7 +33,7 @@ STEnc_cmd_t STEnc_cmd; Invalidate STEnc_cmd;
 { STEnc_cmd = (STEnc_status>>8) & 3; Validate STEnc_cmd; }
 
 STEnc_bits_t STEnc_bits; Invalidate STEnc_bits;
-{ STEnc_bits = STEnc_status & 0xFF; Validate STEnc_bits; }
+{ STEnc_bits = STEnc_status; Validate STEnc_bits; }
 
 STEnc_cmds_t STEnc_cmds; Invalidate STEnc_cmds;
 { STEnc_cmds = (STEnc_status>>8) & 0xFF; Validate STEnc_cmds; }
