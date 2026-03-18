@@ -7,8 +7,17 @@ SunTracker {
   t_int:   (ST_t_int,8);
 }
 
+SunTracker_AE_HK {
+  ""    Azi              Ele;
+  Mdl:  ""               (Sol_ele,7)      deg;
+  TPG:  (ST_tpg_azi,6)   (ST_tpg_ele,7)   deg;
+  diff: (ST_azi_diff,6)  (ST_ele_diff,6)  DN;
+  volt: (ST_azi_volts,5) (ST_ele_volts,5) V;
+}
+
 SunTracker_HK {
   HBox { +-; "Sun Tracker HK"; -+ };
+  [SunTracker_AE_HK];
   flip:    (ST_flip,3);
   Tdrift:  (ST_Tdrift,6);
   Stale:   (ST_stale,3);

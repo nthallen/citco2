@@ -20,6 +20,10 @@
 
 typedef struct __attribute__((__packed__)) {
   // uint16_t ST_status; // Unused with HTML-based tracker
+  float    ST_azi_diff;
+  float    ST_ele_diff;
+  float    ST_azi_volts;
+  float    ST_ele_volts;
   int16_t  ST_Tdrift;
   uint16_t ST_tpg_azi;
   int16_t  ST_tpg_ele;
@@ -38,8 +42,10 @@ typedef struct __attribute__((__packed__)) {
  * TPM Track to Programmed Moon Position
  * TMM Manual Position 
  * TPG Track to Programmed Geo Position
- * TTM Track by Diode
+ * TTM Track by Diode (non-CamTracker spectrometers)
  * INIT 
+ * AOA
+ * TMR CamTracker
  */
 #define ST_MODE_TPL 0
 #define ST_MODE_TPS 1

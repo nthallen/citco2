@@ -19,6 +19,8 @@
 %}
 TM "Receive" ST_SSR 0;
 
+TM typedef float    ST_diff_t  { text "%6.0f"; }
+TM typedef float    ST_volts_t { text "%5.3f"; }
 TM typedef uint16_t ST_angle_t { text "%6.2lf"; }
 TM typedef int16_t  ST_elev_t  { text "%7.2lf"; }
 TM typedef int16_t  ST_drift_t { text "%6d"; }
@@ -38,9 +40,18 @@ TM 1 Hz ST_UCHAR   ST_stale;
 /* TM 1 Hz ST_USHRT ST_min_int; */
 /* TM 1 Hz ST_USHRT ST_max_int; */
 /* TM 1 Hz ST_UCHAR ST_cdt; */
+TM 1 Hz ST_diff_t  ST_azi_diff;
+TM 1 Hz ST_diff_t  ST_ele_diff;
+TM 1 Hz ST_volts_t ST_azi_volts;
+TM 1 Hz ST_volts_t ST_ele_volts;
 
-Group ST ( ST_Tdrift, ST_tpg_azi, ST_tpg_ele,
+Group ST ( ST_azi_diff, ST_ele_diff, ST_azi_volts, ST_ele_volts,
+           ST_Tdrift, ST_tpg_azi, ST_tpg_ele,
            ST_t_int, ST_flip, ST_modus, ST_stale ) {
+  ST_azi_diff = ST_SSR.ST_azi_diff;
+  ST_ele_diff = ST_SSR.ST_ele_diff;
+  ST_azi_volts = ST_SSR.ST_azi_volts;
+  ST_ele_volts = ST_SSR.ST_ele_volts;
   ST_Tdrift = ST_SSR.ST_Tdrift;
   ST_tpg_azi = ST_SSR.ST_tpg_azi;
   ST_tpg_ele = ST_SSR.ST_tpg_ele;

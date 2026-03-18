@@ -12,3 +12,8 @@
   1 Rad_Close_Pct   ST Ratio
   1 OK2Open:ok_to_open:0 ST Status %.0lf
   1 ST_flip_bit:ST_flip:0 ST Status Flip
+  1 ST_azi_diff     ST Diff
+  1 ST_ele_diff     ST Diff
+  1 ST_azi_volts    ST Volts
+  1 ST_ele_volts    ST_Volts
+  
