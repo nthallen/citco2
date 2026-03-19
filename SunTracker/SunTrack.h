@@ -20,8 +20,8 @@
 
 typedef struct __attribute__((__packed__)) {
   // uint16_t ST_status; // Unused with HTML-based tracker
-  float    ST_azi_diff;
-  float    ST_ele_diff;
+  uint32_t ST_azi_diff;
+  uint32_t ST_ele_diff;
   float    ST_azi_volts;
   float    ST_ele_volts;
   int16_t  ST_Tdrift;

@@ -23,6 +23,10 @@ ST_Pkt::ST_Pkt() {
   datetime[0] = '\0';
   Cloud_Detector = '\0';
   setenv("TZ","UTC00",1);
+  ST_SSR.ST_azi_diff = 0.;
+  ST_SSR.ST_ele_diff = 0.;
+  ST_SSR.ST_azi_volts = 0.;
+  ST_SSR.ST_ele_volts = 0.;
   ST_SSR.ST_Tdrift = 0;
   ST_SSR.ST_tpg_azi = 0;
   ST_SSR.ST_tpg_ele = 0;
@@ -149,6 +153,10 @@ void ST_Pkt::report() {
     ST_SSR.ST_Tdrift = deltaT;
     ST_SSR.ST_tpg_azi = (unsigned short)(swap(pkt.Geo_Position_Azimuth)*100);
     ST_SSR.ST_tpg_ele = (unsigned short)(swap(pkt.Geo_Position_Elevation)*100);
+    ST_SSR.ST_azi_diff = swap(pkt.Counter_Differ_Azimuth);
+    ST_SSR.ST_ele_diff = swap(pkt.Counter_Differ_Elevation);
+    ST_SSR.ST_azi_volts = swap(pkt.AZI_Voltage);
+    ST_SSR.ST_ele_volts = swap(pkt.ELE_Voltage);
     if (strcmp(currentmode, "Position Local") == 0) {
       ST_SSR.ST_modus = ST_MODE_TPL;
     } else if (strncmp(currentmode, "Position Sun", 12) == 0) {
