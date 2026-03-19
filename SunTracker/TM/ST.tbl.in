@@ -11,8 +11,8 @@ SunTracker_AE_HK {
   ""    Azi              Ele;
   Mdl:  ""               (Sol_ele,7)      deg;
   TPG:  (ST_tpg_azi,6)   (ST_tpg_ele,7)   deg;
-  diff: (ST_azi_diff,6)  (ST_ele_diff,6)  DN;
-  volt: (ST_azi_volts,5) (ST_ele_volts,5) V;
+  diff: (ST_azi_diff,7)  (ST_ele_diff,7)  DN;
+  volt: (ST_azi_volts,7) (ST_ele_volts,7) V;
 }
 
 SunTracker_HK {

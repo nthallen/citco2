@@ -19,8 +19,8 @@
 %}
 TM "Receive" ST_SSR 0;
 
-TM typedef float    ST_diff_t  { text "%6.0f"; }
-TM typedef float    ST_volts_t { text "%5.3f"; }
+TM typedef int32_t  ST_diff_t  { text "%7ld"; }
+TM typedef float    ST_volts_t { text "%7.3f"; }
 TM typedef uint16_t ST_angle_t { text "%6.2lf"; }
 TM typedef int16_t  ST_elev_t  { text "%7.2lf"; }
 TM typedef int16_t  ST_drift_t { text "%6d"; }
