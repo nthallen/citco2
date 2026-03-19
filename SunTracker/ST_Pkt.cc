@@ -155,8 +155,8 @@ void ST_Pkt::report() {
     ST_SSR.ST_tpg_ele = (unsigned short)(swap(pkt.Geo_Position_Elevation)*100);
     ST_SSR.ST_azi_diff = swap(pkt.Counter_Differ_Azimuth);
     ST_SSR.ST_ele_diff = swap(pkt.Counter_Differ_Elevation);
-    ST_SSR.ST_azi_volts = swap(pkt.AZI_Voltage)/1000.;
-    ST_SSR.ST_ele_volts = swap(pkt.ELE_Voltage)/1000.;
+    ST_SSR.ST_azi_volts = swap(pkt.AZI_Voltage);
+    ST_SSR.ST_ele_volts = swap(pkt.ELE_Voltage);
     if (strcmp(currentmode, "Position Local") == 0) {
       ST_SSR.ST_modus = ST_MODE_TPL;
     } else if (strncmp(currentmode, "Position Sun", 12) == 0) {
