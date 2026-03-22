@@ -182,5 +182,20 @@ class ST_Sleep : public Transaction {
     int End(CURLcode);
 };
 
+class ST_Set_Enable;
+typedef int (ST_Set_Enable::*ST_Set_EnableReq)(CURLcode);
+
+class ST_Set_Enable : public Transaction {
+  public:
+    ST_Set_Enable(curl_multi_obj *co, const char *trans_desc, bool enable);
+    ~ST_Set_Enable();
+    int take_next_step(CURLcode);
+  private:
+    bool enable;
+    ST_Set_EnableReq next_step;
+    int Submit_req(CURLcode);
+    int End(CURLcode);
+};
+
 #endif // __cplusplus
 #endif

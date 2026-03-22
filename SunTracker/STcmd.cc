@@ -25,6 +25,21 @@ bool STcmd::app_input()
   return rv;
 }
 
+/**
+  Handles commands from command server:
+    R  : Read from device website to connect
+    IN : Request initialization mode
+    ME : Enable motors
+    MD : Disable motors
+    SL : Request Sleep Mode
+    TY[[-+]\d] : Synchronize time with optional single-digit offset
+    TS : TPS mode (track to programmed sun position)
+    TM : TPM mode (track to programmed moon position)
+    TD : TTM mode (track via photodiodes) (non-CamTracker systems)
+    TR : TMR mode (track via CamTracker) (CamTracker systems)
+    Q  : Driver quit
+  @return true on error
+ */
 bool STcmd::execute_cmd()
 {
   int delta = 0;
@@ -38,6 +53,18 @@ bool STcmd::execute_cmd()
           co->enqueue_transaction(new ST_Set_Mode(co, "Init Mode", 5));
           return false;
         default: break;
+      }
+      break;
+    case 'M':
+      switch (buf[1]) {
+        case 'E':
+          co->enqueue_transaction(new ST_Set_Enable(co, "Enable Motors", true));
+          return false;
+        case 'D':
+          co->enqueue_transaction(new ST_Set_Enable(co, "Disable Motors", false));
+          return false;
+        default:
+          break;
       }
       break;
     case 'S':

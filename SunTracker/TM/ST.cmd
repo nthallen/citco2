@@ -16,9 +16,7 @@
 #     } else if ( elevation < -72 || elevation > 90 ) {
 #       msg( 2, "Elevation out of range" );
 #     } else {
-#       unsigned short iazi = floor(azimuth*10);
-#       signed short iele = floor(elevation*10);
-#       if_SunTrack.Turf("%s%d,%d\n");
+#       if_SunTrack.Turf("TPG=%.2lf;%.2lf\n", azimuth, elevation);
 #     }
 #   }
   ;
@@ -34,6 +32,8 @@
   : Init { $0 = "IN"; }
   : Sleep { $0 = "SL"; }
   : Connect { $0 = "R"; }
+  : Motors Enable { $0 = "ME"; }
+  : Motors Disable { $0 = "MD"; }
   : Synchronize Time { $0 = "TY"; }
   : Exit { $0 = "Q"; }
   ;

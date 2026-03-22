@@ -41,13 +41,13 @@ int ST_Set_Time::Submit_Time_Form( CURLcode code ) {
     if ( Set_Time_Form ) {
       time_t now;
       struct tm *tms;
-      char tbuf[11];
+      char tbuf[36]; // more space to quiet warning
       now = time(NULL) + delta_T;
       tms = gmtime(&now);
       // Now set date and time
-      snprintf( tbuf, 11, "%02d/%02d/%04d", tms->tm_mday, tms->tm_mon+1, tms->tm_year+1900 );
+      snprintf( tbuf, 36, "%02d/%02d/%04d", tms->tm_mday, tms->tm_mon+1, tms->tm_year+1900 );
       Set_Time_Form->set( "DATE", tbuf );
-      snprintf( tbuf, 11, "%02d:%02d:%02d", tms->tm_hour, tms->tm_min, tms->tm_sec );
+      snprintf( tbuf, 36, "%02d:%02d:%02d", tms->tm_hour, tms->tm_min, tms->tm_sec );
       Set_Time_Form->set( "TIME", tbuf ); // plus delta_T, UTC
       if ( ! Set_Time_Form->select_single( "TZH", "0" ) )
         msg(2, "Did not find TZH to select" );

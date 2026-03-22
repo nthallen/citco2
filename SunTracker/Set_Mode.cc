@@ -66,3 +66,38 @@ int ST_Sleep::End( CURLcode code ) {
   co->dequeue_transaction();
   return 0;
 }
+
+ST_Set_Enable::ST_Set_Enable(curl_multi_obj *co, const char *trans_desc, bool enable)
+    : Transaction( co, trans_desc ),
+      enable(enable),
+      next_step(&ST_Set_Enable::Submit_req)
+{
+}
+
+ST_Set_Enable::~ST_Set_Enable() {}
+
+int ST_Set_Enable::take_next_step(CURLcode code) {
+  return (this->*next_step)(code);
+}
+
+int ST_Set_Enable::Submit_req(CURLcode code) {
+  char URL[80];
+  nl_assert( code == 0 );
+  snprintf(URL,80,"http://%s/tracker/toptrack.htm?sub=Send&EDM=%d",
+    hostname, enable ? 1 : 0);
+  co->set_url(URL);
+  next_step = &ST_Set_Enable::End;
+  msg(0, "ST_Set_Enable::Submit_req: %s", URL);
+  co->multi_add(enable ?
+    "Submit motor enable request" :
+    "Submit motor disable request" );
+  return 0;
+}
+
+int ST_Set_Enable::End( CURLcode code ) {
+  if ( code != 0 ) {
+    msg( 2, "Enable request failed" );
+  }
+  co->dequeue_transaction();
+  return 0;
+}
