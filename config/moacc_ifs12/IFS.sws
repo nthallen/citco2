@@ -19,6 +19,7 @@ SW_Variable: <uint8_t,UCHAR> SWStat SW Status
   SWS_PUMP_IFS 18 Pump IFS Continuously: Validate Pump_IFS_Prep; break;
   SWS_IDLESCAN_DA 19 IFS IdleScan Disable: Validate IdleScan_Disable; break;
   SWS_IDLESCAN_EN 20 IFS IdleScan Enable: Validate IdleScan_Wait; break;
+  SWS_DOME_CLEAR_FAILURE 21 Enclosure Clear Failure State: Validate Dome_Holding; break;
 
   SWS_SHUTDOWN_QUICKLY 251 Shutdown Quickly: Validate Quick_Shutdown; break;
   SWS_SHUTDOWN 252 Shutdown Completely: Validate Full_Shutdown; break;
