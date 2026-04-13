@@ -1219,7 +1219,7 @@ State ST_Motors_Recover {
   +5:00 > Sun Tracker Motors Enable
         Hold Until (ST_azi_volts > 19. || ST_azi_volts < -19. ||
                     ST_ele_volts > 19. || ST_ele_volts < -19.) or 10
-        else Validate ST_Motors_Monitor;
+        else Validate ST_Motors_Recovered;
 
         Hold Until (ST_azi_volts < 19. && ST_azi_volts > -19. &&
                     ST_ele_volts < 19. && ST_ele_volts > -19.) or 5
