@@ -213,21 +213,23 @@ State Ready_To_Play {
 }
 
 State Ready_To_Play2 {
-  depending on ( Watchdog_Error ) { Validate Failure; }
-  depending on ( Solar_Bedtime ) { Validate Bedtime; }
-  depending on ( Bad_Weather) { Validate Nap; }
+    depending on ( Watchdog_Error ) { Validate Failure; }
+    depending on ( Solar_Bedtime ) { Validate Bedtime; }
+    depending on ( Bad_Weather) { Validate Nap; }
 
-  > _Algo P1 Ready_To_Play2
-  Validate Dome_Open;
-  > Sun Tracker Track To Programmed Sun Position
-  Hold Until Valid ( Dome_Opened ) or 2:00;
-  > Sun Tracker Track by CamTracker
+    > _Algo P1 Ready_To_Play2
+    Validate Dome_Open;
+    > Sun Tracker Track To Programmed Sun Position
+    Hold Until Valid ( Dome_Opened ) or 2:00;
+ +1 > Sun Tracker Track by CamTracker
 
-  > Email Report Message Enclosure opened in Ready_to_Play2
+    > Email Report Message Enclosure opened in Ready_to_Play2
 
-  Hold Until ( (IFSCStat == IFS_SCAN_IDLE ||
-                IFSCStat == IFS_SCAN_WAIT ) &&
-               ST_modus == ST_MODE_TMR );
+    Hold Until ((IFSCStat == IFS_SCAN_IDLE ||
+                 IFSCStat == IFS_SCAN_WAIT ) &&
+                ST_modus == ST_MODE_TMR &&
+                ST_azi_volts != 0. &&
+                ST_ele_volts != 0.);
 
     > Email Report Message Scanning
    #We do this on wakeup at ETL:
@@ -717,7 +719,7 @@ State Dome_Open {
   Validate Dome_Opened;
 }
 
-State Dome_Opened NoLog {
+State Dome_Opened {
   { if (STEnc_stale == 255) Validate Dome_Lost_Contact; }
 }
 
@@ -1191,7 +1193,41 @@ State InSb_Chilled {
 # Partition 15: O2 Sensor Monitor
 #----------------------------------------------
 
-#Partition
+Partition
 #----------------------------------------------
-# Partition 16: Sun Tracker Monitor
+# Partition 16: Sun Tracker Motors Monitor
 #----------------------------------------------
+State ST_Motors_Monitor {
+      Hold Until (ST_azi_volts > 19. || ST_azi_volts < -19. ||
+                  ST_ele_volts > 19. || ST_ele_volts < -19.);
+      Hold Until (ST_azi_volts < 19. && ST_azi_volts > -19. &&
+                  ST_ele_volts < 19. && ST_ele_volts > -19.) or 10
+      else Validate ST_Motors_Stuck;
+   +1 Validate ST_Motors_Monitor;
+}
+
+State ST_Motors_Stuck {
+     +1 { ci_sendfcmd(Cmd_Send,
+            "Email Error Message AziV: %.3f EleV: %.3f: disabling motors\n",
+            convert(ST_azi_volts), convert(ST_ele_volts));
+        }
+     +1 Validate ST_Motors_Recover;
+}
+
+State ST_Motors_Recover {
+     +1 > Sun Tracker Motors Disable
+  +5:00 > Sun Tracker Motors Enable
+        Hold Until (ST_azi_volts > 19. || ST_azi_volts < -19. ||
+                    ST_ele_volts > 19. || ST_ele_volts < -19.) or 10
+        else Validate ST_Motors_Monitor;
+
+        Hold Until (ST_azi_volts < 19. && ST_azi_volts > -19. &&
+                    ST_ele_volts < 19. && ST_ele_volts > -19.) or 5
+        else Validate ST_Motors_Recovered;
+     +1 Validate ST_Motors_Recover;
+}
+
+State ST_Motors_Recovered {
+  > Email Report Message Tracker Motors recovered
+  Validate ST_Motors_Monitor;
+}
