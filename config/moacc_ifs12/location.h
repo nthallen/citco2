@@ -37,7 +37,7 @@
    You can uncomment ALLOW_HIGHER_WINDS to switch to 20/15
 */
 
-// #define ALLOW_HIGHER_WINDS
+#define ALLOW_HIGHER_WINDS
 
 #ifndef ALLOW_HIGHER_WINDS
   #define ws_fast 15

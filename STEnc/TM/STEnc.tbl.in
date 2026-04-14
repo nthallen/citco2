@@ -5,10 +5,21 @@ STEnc {
   Command:   (STEnc_cmd,7);
 }
 
-STEnc_HK {
+STEnc_HKraw {
   HBox { +-; "Enclosure HK"; -+ };
   Bits:      (STEnc_bits,4);
   Cmds:      (STEnc_cmds,2);
   PDISO8:    (STEnc_fail,4);
   Stale:     (STEnc_stale,3);
+}
+
+STEnc_HK {
+  HBox { +-; "Enclosure HK"; -+ };
+  Position:   (STEnc_pos,7);
+  Command:    (STEnc_cmd,7);
+  "DS_2C/Wtx:" HBox { (STEnc_DS_2C,3); "/"; (STEnc_Weather,3) };
+  " Man/Stby:" HBox { (STEnc_DS_2C_Man,3); "/"; (STEnc_DS_2C_Stby,3) };
+  "Power/Op:"  HBox { (STEnc_Power,3); "/"; (STEnc_Operating,3) };
+  PDISO8:     (STEnc_fail,4);
+  Stale:      (STEnc_stale,3);
 }

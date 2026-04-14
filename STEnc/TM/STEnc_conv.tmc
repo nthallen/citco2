@@ -47,5 +47,11 @@ STEnc_off_on_t STEnc_DS_2C_Man; Invalidate STEnc_DS_2C_Man;
 STEnc_off_on_t STEnc_DS_2C_Stby; Invalidate STEnc_DS_2C_Stby;
 { STEnc_DS_2C_Stby = (STEnc_status>>13) & 1; Validate STEnc_DS_2C_Stby; }
 
+STEnc_off_on_t STEnc_Weather; Invalidate STEnc_Weather;
+{ STEnc_Weather = (STEnc_status>>3) & 1; Validate STEnc_Weather; }
+
 STEnc_off_on_t STEnc_Power; Invalidate STEnc_Power;
 { STEnc_Power = (STEnc_status>>4) & 1; Validate STEnc_Power; }
+
+STEnc_off_on_t STEnc_Operating; Invalidate STEnc_Operating;
+{ STEnc_Operating = (STEnc_status>>2) & 1; Validate STEnc_Operating; }
