@@ -42,10 +42,10 @@ STEnc_off_on_t STEnc_DS_2C; Invalidate STEnc_DS_2C;
 { STEnc_DS_2C = (STEnc_status>>6) & 1; Validate STEnc_DS_2C; }
 
 STEnc_off_on_t STEnc_DS_2C_Man; Invalidate STEnc_DS_2C_Man;
-{ STEnc_DS_2C_Man = (STEnc_status>>12) & 1; Validate STEnc_DS_2C_Man; }
+{ STEnc_DS_2C_Man = (STEnc_status>>13) & 1; Validate STEnc_DS_2C_Man; }
 
 STEnc_off_on_t STEnc_DS_2C_Stby; Invalidate STEnc_DS_2C_Stby;
-{ STEnc_DS_2C_Stby = (STEnc_status>>13) & 1; Validate STEnc_DS_2C_Stby; }
+{ STEnc_DS_2C_Stby = (STEnc_status>>12) & 1; Validate STEnc_DS_2C_Stby; }
 
 STEnc_off_on_t STEnc_Weather; Invalidate STEnc_Weather;
 { STEnc_Weather = (STEnc_status>>3) & 1; Validate STEnc_Weather; }
