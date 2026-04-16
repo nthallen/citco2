@@ -197,5 +197,20 @@ class ST_Set_Enable : public Transaction {
     int End(CURLcode);
 };
 
+class ST_Set_Flip;
+typedef int (ST_Set_Flip::*ST_Set_FlipReq)(CURLcode);
+
+class ST_Set_Flip : public Transaction {
+  public:
+    ST_Set_Flip(curl_multi_obj *co, const char *trans_desc, int flipstate);
+    ~ST_Set_Flip();
+    int take_next_step(CURLcode);
+  private:
+    int flipstate;
+    ST_Set_FlipReq next_step;
+    int Submit_req(CURLcode);
+    int End(CURLcode);
+};
+
 #endif // __cplusplus
 #endif

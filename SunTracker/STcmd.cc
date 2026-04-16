@@ -43,6 +43,7 @@ bool STcmd::app_input()
 bool STcmd::execute_cmd()
 {
   int delta = 0;
+  int flipstate;
   switch (buf[0]) {
     case 'R':
       co->enqueue_transaction(new ST_Read_Top(co, "Read Top to Connect"));
@@ -53,6 +54,23 @@ bool STcmd::execute_cmd()
           co->enqueue_transaction(new ST_Set_Mode(co, "Init Mode", 5));
           return false;
         default: break;
+      }
+      break;
+    case 'F':
+      flipstate = -1;
+      switch (buf[1]) {
+        case '0': // Flip Left
+          flipstate = 0;
+          break;
+        case '1': // Flip Right
+          flipstate = 1;
+          break;
+        default:
+          break;
+      }
+      if (flipstate >= 0) {
+        co->enqueue_transaction(new ST_Set_Flip(co, "Set Flip State", flipstate));
+        return false;
       }
       break;
     case 'M':
