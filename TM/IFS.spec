@@ -10,6 +10,7 @@ OBJ = resistors.h
 
 tmcbase = base.tmc
 extbase = WindSpeed.tmc
+extbase = ScanReady.tmc
 genuibase = IFS.genui
 Module TMAstat TMA=Config/IFS.tma TextWidth=22
 swsbase = Config/IFS.sws
