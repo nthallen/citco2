@@ -228,11 +228,7 @@ State Ready_To_Play2 {
 
     > Email Report Message Enclosure opened in Ready_to_Play2
 
-    Hold Until (ScanReady &&
-                ST_modus == ST_MODE_TMR &&
-                ST_azi_volts != 0. &&
-                ST_ele_volts != 0. &&
-                convert(ST_t_int) > 8.5 );
+    Hold Until (ScanReallyReady);
 
     > Email Report Message Scanning
    #We do this on wakeup at ETL:
@@ -269,11 +265,7 @@ State Play NoLog {
 
     > IFS Solar
     Hold Until (!ScanReady);
-    Hold Until ( ScanReady &&
-                 ST_modus == ST_MODE_TMR &&
-                 ST_azi_volts != 0. &&
-                 ST_ele_volts != 0. &&
-                 convert(ST_t_int) > 8.5 );
+    Hold Until (ScanReallyReady);
 
     depending on (InSb_Chilled) { Validate Play; }
  +1 > Email Warning Message Heading to Play_InGaAs: !InSb_Chilled
@@ -296,27 +288,15 @@ State Play_InGaAs NoLog {
   > _Algo P1 Play_InGaAs
   > IFS SolarInGaAs
   Hold Until (!ScanReady);
-  Hold Until ( ScanReady &&
-               ST_modus == ST_MODE_TMR &&
-               ST_azi_volts != 0. &&
-               ST_ele_volts != 0. &&
-               convert(ST_t_int) > 8.5);
+  Hold Until (ScanReallyReady);
   > IFS SolarInGaAsLR
 # depending on (Refill_Ready) { Validate Refill_Now; }
   +1
     Hold Until (!ScanReady);
-    Hold Until ( ScanReady &&
-                 ST_modus == ST_MODE_TMR &&
-                 ST_azi_volts != 0. &&
-                 ST_ele_volts != 0. &&
-                 convert(ST_t_int) > 8.5);
+    Hold Until (ScanReallyReady);
   > IFS SolarInGaAsLR
     Hold Until (!ScanReady);
-    Hold Until ( ScanReady &&
-                 ST_modus == ST_MODE_TMR &&
-                 ST_azi_volts != 0. &&
-                 ST_ele_volts != 0. &&
-                 convert(ST_t_int) > 8.5);
+    Hold Until (ScanReallyReady);
 
  +1  depending on (InSb_Filled) { Validate Init_Set_InSb_Gains; }
      depending on (InSb_Chilled) { Validate Play; }
