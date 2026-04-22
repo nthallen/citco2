@@ -201,38 +201,34 @@ State Wake_Up {
     depending on ( Solar_Bedtime ) { Validate Bedtime; }
 }
 
+# Ready_To_Play was split into two states in order to handle
+# branching. The first state was to do pump down in the morning,
+# but we have decided to pump down on startup instead, so this
+# split isn't doing anything for us at the moment.
 State Ready_To_Play {
-  depending on ( Watchdog_Error ) { Validate Failure; }
-  depending on ( Solar_Bedtime ) { Validate Bedtime; }
-  depending on ( Bad_Weather) { Validate Nap; }
-
-  > _Algo P1 Ready_To_Play
-  depending on (Pump_IFS_Constantly) {
-    Validate Ready_To_Play2;
-  }
-# Validate Pump_IFS_Prep;
-# Hold Until Valid ( Pump_IFS_Constantly );
-  Validate Ready_To_Play2;
-}
-
-State Ready_To_Play2 {
     depending on ( Watchdog_Error ) { Validate Failure; }
     depending on ( Solar_Bedtime ) { Validate Bedtime; }
     depending on ( Bad_Weather) { Validate Nap; }
+    > _Algo P1 Ready_To_Play
 
-    > _Algo P1 Ready_To_Play2
     Validate Dome_Open;
     > Sun Tracker Track To Programmed Sun Position
+
+ +4 Hold Until (abs(ST_azi_diff) < 50 &&
+                abs(ST_ele_diff) < 50);
     Hold Until Valid ( Dome_Opened ) or 2:00;
+
  +1 > Sun Tracker Track by CamTracker
 
-    > Email Report Message Enclosure opened in Ready_to_Play2
+    > Email Report Message Enclosure opened in Ready_To_Play
 
     Hold Until (ScanReallyReady);
 
     > Email Report Message Scanning
+
    #We do this on wakeup at ETL:
    #depending on (InSb_Startup) { Validate InSb_Fill; }
+
  +1 Validate IFS_Status_Idle;
     depending on (InSb_Filled) { Validate Init_Set_InSb_Gains; }
     depending on (InSb_Chilled) { Validate Play; }
