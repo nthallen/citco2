@@ -678,7 +678,7 @@ State Dome_Holding {
 State Dome_Close {
   { if ( STEnc_stale == 255 ) Validate Dome_Lost_Contact; }
   > Enclosure Close
-  Hold Until (STEnc_pos&1) or 2:10
+  Hold Until (STEnc_pos&1) or 2:20
   else Validate Dome_Close_Failed;
   Validate Dome_Closed;
 }
@@ -690,7 +690,7 @@ State Dome_Closed {
 State Dome_Open {
   { if ( STEnc_stale == 255 ) Validate Dome_Lost_Contact; }
   > Enclosure Open
-  Hold Until (STEnc_pos&2) or 2:10
+  Hold Until (STEnc_pos&2) or 2:20
   else Validate Dome_Open_Failed;
   Validate Dome_Opened;
 }
