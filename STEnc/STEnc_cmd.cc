@@ -50,7 +50,7 @@ bool STEnc_cmd::app_input()
           relay_cmd = (relay_cmd & ~STEnc::RELAY_ENC_MASK)
             | STEnc::RELAY_OPEN;
           break;
-        case 2: relay_cmd = STEnc::RELAY_NONE; break;
+        case 2:
           relay_cmd = (relay_cmd & ~STEnc::RELAY_ENC_MASK);
           break;
         case 5: /* Manual On */
@@ -62,6 +62,7 @@ bool STEnc_cmd::app_input()
             | STEnc::RELAY_ASE_DS_2C_STBY;
           break;
         case 7: /* Standby/Manual Off */
+          msg(DEBUG, "S7: relay_cmd in:  %02X", relay_cmd);
           relay_cmd = (relay_cmd & ~STEnc::RELAY_ASE_DS_2C_MASK);
           break;
         default:

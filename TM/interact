@@ -10,7 +10,7 @@ jpg=https://webcam/axis-cgi/jpg/image.cgi
   Launch    -       PTB330
   Launch    -       WTX530 -e
   Launch    -       SunTracker -2
-  Launch    -       STEnc
+  Launch    -       STEnc -v
   Launch    -       MKS925
   Launch    -       LN2 -p /dev/ttyS2
   Launch    -       tmdf -p /home
