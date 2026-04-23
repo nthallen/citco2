@@ -62,7 +62,7 @@ bool STEnc_cmd::app_input()
             | STEnc::RELAY_ASE_DS_2C_STBY;
           break;
         case 7: /* Standby/Manual Off */
-          msg(MSG_DEBUG, "S7: relay_cmd in:  %02X", relay_cmd);
+          msg(MSG_DEBUG, "S7: relay_cmd in:  x%02X", relay_cmd);
           relay_cmd = (relay_cmd & ~STEnc::RELAY_ASE_DS_2C_MASK);
           break;
         default:
@@ -71,7 +71,7 @@ bool STEnc_cmd::app_input()
           consume(nc);
           return false;
       }
-      msg(MSG_DEBUG, "Sending relay command %d", relay_cmd);
+      msg(MSG_DEBUG, "Sending relay command x%02X", relay_cmd);
       STE->set_relays(relay_cmd);
       break;
     default:
