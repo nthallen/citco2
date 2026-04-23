@@ -62,7 +62,7 @@ bool STEnc_cmd::app_input()
             | STEnc::RELAY_ASE_DS_2C_STBY;
           break;
         case 7: /* Standby/Manual Off */
-          msg(DEBUG, "S7: relay_cmd in:  %02X", relay_cmd);
+          msg(MSG_DEBUG, "S7: relay_cmd in:  %02X", relay_cmd);
           relay_cmd = (relay_cmd & ~STEnc::RELAY_ASE_DS_2C_MASK);
           break;
         default:
