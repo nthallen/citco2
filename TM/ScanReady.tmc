@@ -23,7 +23,7 @@ ScanReady_t ScanReallyReady; Invalidate ScanReallyReady;
     ST_modus == ST_MODE_TMR &&
     ST_azi_volts != 0. &&
     ST_ele_volts != 0. &&
-    convert(ST_t_int) > 8.5;
+    convert(ST_t_int) > 6.0;
   Validate ScanReady;
   Validate ScanReallyReady;
 }
