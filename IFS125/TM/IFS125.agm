@@ -1,5 +1,7 @@
-ModuleDef IFS125 [ Panel= ] {
+ModuleDef IFS125 [ Panel= IFSCStat_w=11 ] {
   IFS125 Bruker Spectrometer
+  Panel is used to specify which panel to use in the tabbed MATLAB interface
+  IFSCStat_w defines how wide to make the IFSCStat field
 }
 
 mode (default) {
@@ -22,16 +24,18 @@ mode (default) {
   DISTRIB = @MODDIR@/../IFSUserAgent.pm
   DISTRIB = Config/IFSUAconfig.pm
   DISTRIB = Config/IFSopts.pm
+  SRCDIST = IFSCStat.labels
   CPPFLAGS = -I @MODDIR@
-  IGNORE = IFS125.genui IFS125.tbl IFSUAconfig.pm
-  IGNORE = IFSCStat.tmc IFSscan.cmd
+  IGNORE = IFSUAconfig.pm
   OBJ = IFS125.genui IFS125.tbl
-  OBJ = IFSCStat.tmc IFSscan.cmd
+  OBJ = IFSCStat.tmc IFSCStat.labels IFSscan.cmd
   %%
 IFSscan.cmd : @MODDIR@/../IFSctrl Config/IFSopts.pm
 	if TMBINDIR=Config PERL5LIB=@MODDIR@/.. @MODDIR@/../IFSctrl cmdgen >IFSscan.cmd; then true; else rm IFSscan.cmd; false; fi
 IFSCStat.tmc : @MODDIR@/../IFSctrl Config/IFSopts.pm
-	if TMBINDIR=Config PERL5LIB=@MODDIR@/.. @MODDIR@/../IFSctrl display 11 >IFSCStat.tmc; then true; else rm IFSCStat.tmc; false; fi
+	if TMBINDIR=Config PERL5LIB=@MODDIR@/.. @MODDIR@/../IFSctrl display @IFSCStat_w@ >IFSCStat.tmc; then true; else rm IFSCStat.tmc; false; fi
+IFSCStat.labels : @MODDIR@/../IFSctrl Config/IFSopts.pm
+	if TMBINDIR=Config PERL5LIB=@MODDIR@/.. @MODDIR@/../IFSctrl labels @IFSCStat_w@ >IFSCStat.labels; then true; else rm IFSCStat.labels; false; fi
 IFSsrvr.o : resistors.h
 resistors.h : Config/slice-ipp.in
 	@rm -f resistors.h

@@ -1,6 +1,6 @@
 IFS {
   HBox { +-; IFS125; -+ };
-  Status:  (IFSCStat,11);
+  Status:  (IFSCStat,@IFSCStat_w@);
   { Scan HBox { (IFSSN,2); "/"; (IFSSR,2) } (IFSTR,5) Sec };
   ReqNum:  (IFSRN,5);
   Stale:   (IFSStale,5);

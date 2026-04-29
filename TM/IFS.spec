@@ -22,7 +22,7 @@ Module PTB330
 Module WTX530
 Module SunTracker
 Module MKS925
-Module IFS125
+Module IFS125 IFSCStat_w=15
 Module LN2
 Module webpower
 
