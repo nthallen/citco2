@@ -126,9 +126,8 @@ State Failure {
   +1 > IFS IdleScan
  +60 > Power Pump Off
   +1 > Startup Define Validate Failure;
-     > Sun Tracker Sleep
-  #  Hold until (ST_modus != ST_MODE_TMR) or 2
-  #  else > Sun Tracker Track to Programmed Sun Position
+  #  > Sun Tracker Sleep
+     > Sun Tracker Track to Programmed Sun Position
      Hold until valid (Solar_Bedtime);
   +1 > Savelog Shutdown from Failure
      Validate Shutdown;
@@ -173,9 +172,8 @@ State Sleep {
   depending on ( Solar_Bedtime ) { Validate Bedtime; }
   > _Algo P1 Sleep
   # TPS works better @ Cambridge Bay, but sleep wins if enclosure can't be closed
-  > Sun Tracker Sleep
-# Hold until (ST_modus != ST_MODE_TMR) or 2
-# else > Sun Tracker Track to Programmed Sun Position
+# > Sun Tracker Sleep
+  > Sun Tracker Track to Programmed Sun Position
   Validate IFS_Status_Update;
   Hold Until Valid (Solar_Day_Ascending);
   Validate Wake_Up;
@@ -350,9 +348,8 @@ State Nap {
       Weather_Reason ); }
   > _Algo P1 Nap
   Validate Dome_Close;
-  > Sun Tracker Sleep
-# Hold until (ST_modus != ST_MODE_TMR) or 2
-# else > Sun Tracker Track to Programmed Sun Position
+# > Sun Tracker Sleep
+  > Sun Tracker Track to Programmed Sun Position
   # Wait specifically for IDLE before starting IFS_Status_Update
   Hold Until ( IFSCStat == IFS_SCAN_IDLE) or 4:00;
   Validate IFS_Status_Update;
@@ -378,9 +375,8 @@ State Bedtime {
   #   stuck at elevations below -2 degrees, and TMR drives azimuth against
   #   the stops and elevation well below -2 degrees.
 
-      > Sun Tracker Sleep
-  #   Hold until (ST_modus != ST_MODE_TMR) or 2
-  #   else > Sun Tracker Track to Programmed Sun Position
+  #   > Sun Tracker Sleep
+      > Sun Tracker Track to Programmed Sun Position
       > Email Report Message Enclosure closed for the evening
   +10 Validate Lights_Out;
 }
