@@ -21,6 +21,7 @@ MKS925.tbl
 IFS125.genui
 IFS125.tbl
 IFSCStat.tmc
+IFSCStat.labels
 IFSscan.cmd
 LN2.genui
 LN2.tbl
@@ -94,11 +95,7 @@ ST.genui
 ST.tbl
 MKS925.genui
 MKS925.tbl
-IFS125.genui
-IFS125.tbl
 IFSUAconfig.pm
-IFSCStat.tmc
-IFSscan.cmd
 LN2.genui
 LN2.tbl
 webpower.genui
