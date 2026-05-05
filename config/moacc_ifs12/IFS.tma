@@ -246,8 +246,6 @@ State Play NoLog {
     depending on ( Watchdog_Error ) { Validate Failure; }
     depending on (Solar_Bedtime) { Validate Bedtime; }
     depending on ( Bad_Weather) { Validate Nap; }
-
-    > _Algo P1 Play
     { if ( IFSCStat == IFS_SCAN_ERROR ) {
         Validate Scanner_Failure;
       } else if (IFSCStat == IFS_SCAN_INSBNR) {
@@ -257,6 +255,7 @@ State Play NoLog {
       }
     }
 
+    > _Algo P1 Play
     > IFS Solar
     Hold Until (!ScanReady);
     Hold Until (ScanReallyReady);
@@ -1202,4 +1201,19 @@ State ST_Motors_Recover {
 State ST_Motors_Recovered {
   > Email Report Message Tracker Motors recovered
   Validate ST_Motors_Monitor;
+}
+
+Partition
+#----------------------------------------------
+# Partition 17: Sun Tracker Flip State Monitor
+#----------------------------------------------
+
+State Flip_Monitor {
+      Hold Until (ScanFlipRequired);
+   +1 { ci_sendfcmd(Cmd_Send, "Sun Tracker Flip %d\n",
+          ST_flip ? 0 : 1);
+      }
+   +1 Hold Until (!ScanFlipRequired) or 60
+      else > Email Error Message ScanFlipRequired not cleared after 60 seconds
+   Validate Flip_Monitor;
 }
