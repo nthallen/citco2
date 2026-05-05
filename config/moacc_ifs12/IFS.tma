@@ -1210,8 +1210,11 @@ Partition
 
 State Flip_Monitor {
       Hold Until (ScanFlipRequired);
-   +1 { ci_sendfcmd(Cmd_Send, "Sun Tracker Flip %d\n",
-          ST_flip ? 0 : 1);
+   +1 { if (ScanFlipRequired)
+          ci_sendfcmd(Cmd_Send, "Sun Tracker Flip %d\n",
+            ST_flip ? 0 : 1);
+        else ci_sendfcmd(Cmd_Send,
+          "Email Warning Message ScanFlipRequired resolved without intervention?\n");
       }
    +1 Hold Until (!ScanFlipRequired) or 60
       else > Email Error Message ScanFlipRequired not cleared after 60 seconds
