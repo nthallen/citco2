@@ -1206,17 +1206,48 @@ State ST_Motors_Recovered {
 Partition
 #----------------------------------------------
 # Partition 17: Sun Tracker Flip State Monitor
+#   Solar scans as currently configured require 3.9 minutes
+#   Solar Azimuth runs between 3.3 - 4.4 minutes/degree (as observed 5/5/2026)
+#   We encounter trouble at Azimuth 210.88
+#   We want to flip between scans, so we need to anticipate the upcoming
+#   limit by more than 4 minutes. If we set our limit at azimuth 209, that
+#   gives us 1.88 degrees, which is between 6.2 and 8.3 minutes, so well
+#   in excess of the ~4 minutes required.
+#   I should double check the azimuth speed at other times of year, but
+#   basic math says azimuth will change at 360 deg/24 hour, which
+#   is 360 deg/(24 * 3600)secs or 1 deg/240 secs or 4 min/deg on average.
+#   We just need to check that the extrema aren't too extreme.
+#   4/1/2026 we see the same variation, although the phase is shifted. We
+#   are closer to the slowest change (4.4 minutes/degree) whereas by 5/5
+#   we are seeing 3.9 min
 #----------------------------------------------
+%{
+  uint8_t Flip_New_State;
+%}
 
 State Flip_Monitor {
       Hold Until (ScanFlipRequired);
-   +1 { if (ScanFlipRequired)
-          ci_sendfcmd(Cmd_Send, "Sun Tracker Flip %d\n",
-            ST_flip ? 0 : 1);
-        else ci_sendfcmd(Cmd_Send,
-          "Email Warning Message ScanFlipRequired resolved without intervention?\n");
+   +1 { if (ScanFlipRequired) { /* to guard against a race */
+          Flip_New_State = ST_flip ? 0 : 1;
+          Validate Flip_Now;
+        } else {
+          ci_sendfcmd(Cmd_Send,
+            "Email Warning Message ScanFlipRequired resolved without intervention?\n");
+          Validate Flip_Monitor;
+        }
       }
-   +1 Hold Until (!ScanFlipRequired) or 60
-      else > Email Error Message ScanFlipRequired not cleared after 60 seconds
-   Validate Flip_Monitor;
+}
+
+State Flip_Now {
+      { ci_sendfcmd(Cmd_Send, "Sun Tracker Flip %d\n", Flip_New_State); }
+   +1 Hold Until (ST_flip == Flip_New_State) or 15
+      else Validate Flip_Not;
+      Hold Until (abs(ST_azi_diff) < 50 && abs(ST_ele_diff) < 50) or 75
+      else Validate Flip_Not;
+      Validate Flip_Monitor;
+}
+
+State Flip_Not {
+      > Email Warning Message Flip procedure timed out, will keep trying
+  +30 Validate Flip_Monitor;
 }
