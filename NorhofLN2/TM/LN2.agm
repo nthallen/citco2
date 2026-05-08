@@ -8,7 +8,6 @@ cmdbase = LN2.cmd
 extbase = LN2_conv.tmc
 genuibase = LN2.genui:LN2.genui.in
 - : LN2.tbl:LN2.tbl.in
-IGNORE = LN2.genui LN2.tbl
 OBJ = LN2.genui LN2.tbl
 DISTRIB = @MODDIR@/../LN2
 CPPFLAGS = -I @MODDIR@/..
