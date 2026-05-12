@@ -45,6 +45,13 @@ IFSalgo.cc
 IFSalgooui.cc
 IFSalgo.o
 IFSalgooui.o
+IFSjsonext.cdf
+IFSjsonextcdf.oui
+IFSjsonextcdf.tmc
+IFSjsonext.cc
+IFSjsonextoui.cc
+IFSjsonext.o
+IFSjsonextoui.o
 doit.dep
 IFScmd.cc
 IFScmd.dat
@@ -107,6 +114,7 @@ AlgoP4.labels
 infoext
 IFSdispnc
 IFSalgo
+IFSjsonext
 doit
 IFScltnc
 IFSsrvr

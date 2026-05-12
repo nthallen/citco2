@@ -30,6 +30,7 @@ Module Config/Site
 
 IFSdisp : $extbase IFS.tbl IFS_HK.tbl
 IFSalgo : $extbase Config/IFS.tma $swsbase
+IFSjsonext : $extbase $genuibase
 doit : IFS.doit
 
 CPPFLAGS = -I Config -DBLOCK_KB_CMDS
