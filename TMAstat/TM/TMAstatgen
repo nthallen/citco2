@@ -11,6 +11,7 @@ die "TMAstatgen: -W argument must be an integer\n"
 
 my @partitions;
 my %partition;
+my @label_files;
 
 while (my $line = <>) {
   next unless $line =~ m/^[^#]*>\s_?Algo\s/;
@@ -45,6 +46,8 @@ open(my $tmc, ">", "TMAstat.tmc")
   or die "Can't write to TMAstat.tmc\n";
 open(my $sws, ">", "TMAstat.sws")
   or die "Can't write to TMAstat.sws\n";
+open(my $dep, ">", "TMAstat.dep")
+  or die "Can't write to TMAstat.dep\n";
 
 print $tmc "%{\n";
 
@@ -67,6 +70,13 @@ for my $partition (@partitions) {
     "SW_Variable: <uint8_t,Algo${partition}_t> Algo$partition Algo $partition\n",
     map "  : $_->[0] { \$0 = $_->[1]; }\n",
       map [ $states->[$_-1],$_ ], (1 .. @$states);
+
+  my $label_file = "Algo$partition.labels";
+  push @label_files, $label_file;
+  open(my $lbl, ">", $label_file)
+    or die "Can't write to $label_file\n";
+  print $lbl map "$_\n", "Undefined", @$states;
+  close($lbl) || warn "Close error";
 }
 
 print $tmc "%}\n";
@@ -74,8 +84,12 @@ for my $partition (@partitions) {
   print $tmc "TM typedef uint8_t Algo${partition}_t { text \"%$opts{W}u\" Algo${partition}_textf(); }\n";
 }
 
+print $dep "SRCDIST+=", join(" ", @label_files), "\n";
+print $dep "IGNORE+=TMAstat.dep ", join(" ", @label_files), "\n";
+
 close($tmc) || warn "Close error";
 close($sws) || warn "Close error";
+close($dep) || warn "Close error";
 #  print map "$partition " . $states->[$_-1] . " " . $_ . "\n",
 #    (1 .. $nstates);
 #}

@@ -100,6 +100,10 @@ webpower.genui
 webpower.tbl
 STEnc.tbl
 STEnc.genui
+TMAstat.dep
+AlgoP1.labels
+AlgoP3.labels
+AlgoP4.labels
 infoext
 IFSdispnc
 IFSalgo

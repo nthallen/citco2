@@ -10,5 +10,6 @@ swsbase = TMAstat.sws:
 IGNORE = TMAstat.tmc TMAstat.sws
 OBJ = TMAstat.tmc TMAstat.sws
 %%
-TMAstat.tmc TMAstat.sws : @TMA@ @MODDIR@/TMAstatgen
+TMAstat.tmc TMAstat.sws TMAstat.dep : @TMA@ @MODDIR@/TMAstatgen
 	@MODDIR@/TMAstatgen -W @TextWidth@ @TMA@
+-include TMAstat.dep
