@@ -1,15 +1,22 @@
 ### Begin citco2 ssh_config_insert ###
-# Match all is necessary to close any preceding host blocks
-Match all
-include /etc/monarch/citco2/ssh_config
+
+host moacc-phocus phocus 129.222.154.221
+hostname 129.222.154.221
+port 10569
+ForwardAgent yes
+ForwardX11 yes
+ForwardX11Trusted yes
+SetEnv TERM=xterm-256color
+# This is for IFSjsonext
+LocalForward localhost:1506 127.0.0.1:1506
 
 # Users have their own accounts on the "flight" computer.
 # The general configuration defined in the file above therefore
-# does not specify a filename. If your username on your local
+# does not specify a username. If your username on your local
 # machine differs from your username on the flight computer,
 # you will need to specify it outside this block using the
 # following syntax or equivalent:
-#   hostname moacc-phocus
+#   host phocus
 #   user my_username
 
 ### End citco2 ssh_config_insert ###

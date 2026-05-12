@@ -17,6 +17,7 @@ jpg=https://webcam/axis-cgi/jpg/image.cgi
   Launch    -       IFSctrl server 10.10.0.1:80 -j $jpg
   Launch    -       webpower
   Launch    -TMC-   IFSalgo
+  Launch    -TMC-   IFSjsonext -H jsonext:127.0.0.1
 
   if [ -n "$launch_error" ]; then
     echo "2 [/home/citco2/flight.sh.log] Possible startup error" >>/home/citco2/report.queue
