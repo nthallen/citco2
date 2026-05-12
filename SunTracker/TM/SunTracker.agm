@@ -16,7 +16,6 @@ mode (present,default) {
   genuibase = ST.genui:ST.genui.in
   DISTRIB = @MODDIR@/../SunTracker
   CPPFLAGS = -I @MODDIR@/.. -I @MODDIR@
-  IGNORE = ST.genui ST.tbl
   OBJ = ST.genui ST.tbl
   %%
 .PHONY : @MODDIR@/../SunTracker

@@ -12,7 +12,6 @@ mode (present, present_no_driver) {
   extbase   = STEnc_conv.tmc
   - : STEnc.tbl:STEnc.tbl.in
   CPPFLAGS = -I @MODDIR@/..
-  IGNORE = STEnc.tbl STEnc.genui
   OBJ    = STEnc.tbl STEnc.genui
 }
 

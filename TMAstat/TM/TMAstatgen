@@ -85,7 +85,7 @@ for my $partition (@partitions) {
 }
 
 print $dep "SRCDIST+=", join(" ", @label_files), "\n";
-print $dep "IGNORE+=TMAstat.dep ", join(" ", @label_files), "\n";
+print $dep "OBJ+=TMAstat.dep ", join(" ", @label_files), "\n";
 
 close($tmc) || warn "Close error";
 close($sws) || warn "Close error";

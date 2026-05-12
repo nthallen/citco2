@@ -3,8 +3,6 @@ TGTDIR = /home/citco2
 DISTRIB = interact services
 SCRIPT = VERSION Experiment.config
 IGNORE = Makefile '*.exe' Config
-IGNORE = SWData.h SWData.tmc SWData_col.tmc SWData.cmd
-IGNORE = resistors.h
 OBJ = SWData.h SWData.tmc SWData_col.tmc SWData.cmd
 OBJ = resistors.h
 

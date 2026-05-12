@@ -7,7 +7,6 @@ ModuleDef TMAstat [ TMA= TextWidth=15 ] {
 
 tmcbase = TMAstat.tmc:
 swsbase = TMAstat.sws:
-IGNORE = TMAstat.tmc TMAstat.sws
 OBJ = TMAstat.tmc TMAstat.sws
 %%
 TMAstat.tmc TMAstat.sws TMAstat.dep : @TMA@ @MODDIR@/TMAstatgen

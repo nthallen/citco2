@@ -9,7 +9,6 @@ mode (default) {
   - : WTX530.tbl:WTX530.tbl.in
   DISTRIB = @MODDIR@/../WTX530
   CPPFLAGS = -I @MODDIR@/..
-  IGNORE = WTX530.genui WTX530.tbl
   OBJ = WTX530.genui WTX530.tbl
   %%
 .PHONY : clean-WTX530 @MODDIR@/../WTX530
