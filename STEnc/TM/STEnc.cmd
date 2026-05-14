@@ -2,7 +2,7 @@
 
 &command
   : Enclosure &STEnc_Command * { if_STEnc.Turf("%s\n", $2); }
-  : ASE DS-2C &ASEoverride &ASE_On_Off * { if_STEnc.Turf("S:%u\n", $4 ? $3 : 7); }
+  : DS-2C &ASEoverride &ASE_On_Off * { if_STEnc.Turf("S:%u\n", $3 ? $2 : 7); }
   ;
 &STEnc_Command <const char *>
   : Open { $0 = "S:1"; }
