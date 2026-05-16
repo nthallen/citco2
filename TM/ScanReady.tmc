@@ -21,6 +21,7 @@ ScanReady_t ScanFlipRequired; Invalidate ScanFlipRequired;
 { ScanReady = IFSCStat == IFS_SCAN_IDLE || IFSCStat == IFS_SCAN_WAIT;
   ScanFlipRequired =
     ScanReady &&
+    ((ST_modus == ST_MODE_TPS) || (ST_modus == ST_MODE_TMR)) &&
     ((convert(ST_tpg_azi) > 209. && ST_flip != 0) ||
      (convert(ST_tpg_azi) < 51. && ST_flip == 0));
   ScanReallyReady =

@@ -1225,8 +1225,6 @@ Partition
   uint8_t Flip_New_State;
 %}
 
-State Flip_disabled {}
-
 State Flip_Monitor {
       Hold Until (ScanFlipRequired);
    +1 { if (ScanFlipRequired) { /* to guard against a race */
@@ -1251,5 +1249,6 @@ State Flip_Now {
 
 State Flip_Not {
       > Email Warning Message Flip procedure timed out, will keep trying
-  +30 Validate Flip_Monitor;
+  +1:00:00
+      Validate Flip_Monitor;
 }
