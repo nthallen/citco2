@@ -23,6 +23,7 @@
          * @return true if there is an error (reported)
          */
         bool set_relays(uint8_t val);
+        uint8_t read_relays();
         bool read_both();
         // Command bit definitions
         static const uint8_t RELAY_OPEN = 2;

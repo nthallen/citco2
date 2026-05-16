@@ -9,7 +9,7 @@
 STEnc_cmd::STEnc_cmd(STEnc *STE)
     : Cmd_reader("cmd", 20, "STEnc"),
       STE(STE),
-      relay_cmd(0)
+      relay_cmd(STE->read_relays())
 {
   flags |= gflag(0);
 }

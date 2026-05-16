@@ -107,6 +107,17 @@ bool STEnc::set_relays(uint8_t val)
   return check_ulerror(err, "ulDOut(PORT0)");
 }
 
+uint8_t STEnc::read_relays()
+{
+  uint16_t relays16;
+  if (read(AUXPORT0, "ulDIn(PORT0)", relays16)) {
+    TM->STEnc_status |= 1<<7;
+    return 0
+  }
+  uint8_t relays8 = relays16 & 0xFF;
+  return relays8;
+}
+
 bool STEnc::read(DigitalPortType ptype, const char *desc, uint16_t &rval)
 {
   unsigned long long data;
