@@ -1225,6 +1225,8 @@ Partition
   uint8_t Flip_New_State;
 %}
 
+State Flip_disabled {}
+
 State Flip_Monitor {
       Hold Until (ScanFlipRequired);
    +1 { if (ScanFlipRequired) { /* to guard against a race */
