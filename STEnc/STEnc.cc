@@ -112,7 +112,7 @@ uint8_t STEnc::read_relays()
   uint16_t relays16;
   if (read(AUXPORT0, "ulDIn(PORT0)", relays16)) {
     TM->STEnc_status |= 1<<7;
-    return 0
+    return 0;
   }
   uint8_t relays8 = relays16 & 0xFF;
   return relays8;
