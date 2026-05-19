@@ -32,7 +32,7 @@ ScanReady_t ScanFlipRequired; Invalidate ScanFlipRequired;
     ST_ele_volts != 0. &&
     abs(ST_azi_diff) < 50 &&
     abs(ST_ele_diff) < 50 &&
-    convert(ST_t_int) > 6.0;
+    convert(ST_t_int) > 2.0;
   Validate ScanReady;
   Validate ScanFlipRequired;
   Validate ScanReallyReady;
