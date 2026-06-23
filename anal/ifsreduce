@@ -160,6 +160,8 @@ if [ $opt_P = yes ]; then
     # First do extractions
     if [ ! -d $dir/TM ]; then
       rm -f $dir/.MD5SUM
+      echo "Delaying to ensure full shutdown"
+      sleep 20
       echo "Executing bin2csv on $dir"
       /home/citco2/bin/anal/bin2csv $dir
     else
